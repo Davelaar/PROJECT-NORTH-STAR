@@ -1,4 +1,11 @@
 import type { Messages } from "./types";
+import {
+  accountEn,
+  consentEn,
+  footerEn,
+  legalPagesEn,
+  spoolsEn,
+} from "./prod-en";
 
 export const messages: Messages = {
   brand: "Open Filament",
@@ -23,6 +30,7 @@ export const messages: Messages = {
     identify: "Identificar",
     openMenu: "Abrir menu",
     closeMenu: "Fechar menu",
+    mySpools: "Meus carretéis",
     primaryAria: "Principal",
   },
   fields: {
@@ -74,6 +82,7 @@ export const messages: Messages = {
     browseFullCatalog: "Ver o catálogo completo",
     featuredMaterials: "Materiais em destaque",
     recentlyAdded: "Adicionados recentemente",
+    mostComplete: "Most complete catalog entries",
   },
   identify: {
     heading: "Identificar um carretel",
@@ -446,4 +455,9 @@ export const messages: Messages = {
     yes: "sim",
     no: "não",
   },
+  consent: consentEn,
+  footer: footerEn,
+  spools: spoolsEn,
+  account: accountEn,
+  legalPages: legalPagesEn,
 };

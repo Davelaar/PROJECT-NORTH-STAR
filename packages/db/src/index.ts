@@ -44,3 +44,29 @@ export type {
   CatalogSearchResult,
   Provenance,
 } from "./catalog-public.js";
+export {
+  listUserSpools,
+  getOwnedSpool,
+  upsertUserSpool,
+  softDeleteUserSpool,
+  hardDeleteUserSpool,
+  resolvePublicSpoolByIdentity,
+  purgeAllUserSpools,
+} from "./user-spools.js";
+export type {
+  SpoolWriteInput,
+  PublicSpoolProjection,
+} from "./user-spools.js";
+export {
+  exportUserData,
+  deleteUserAccount,
+  listActiveSessions,
+  revokeSession,
+  revokeOtherSessions,
+  upsertPrivacyPrefs,
+  recordContributionTerms,
+  purgeSoftDeletedSpools,
+  revokeExpiredTokens,
+} from "./account-privacy.js";
+export { searchAutocomplete } from "./autocomplete.js";
+export type { AutocompleteHit } from "./autocomplete.js";

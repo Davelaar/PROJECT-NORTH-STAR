@@ -1,4 +1,11 @@
 import type { Messages } from "./types";
+import {
+  accountEn,
+  consentEn,
+  footerEn,
+  legalPagesEn,
+  spoolsEn,
+} from "./prod-en";
 
 export const messages: Messages = {
   brand: "Open Filament",
@@ -24,6 +31,7 @@ export const messages: Messages = {
     openMenu: "Open menu",
     closeMenu: "Close menu",
     primaryAria: "Primary",
+    mySpools: "My Spools",
   },
   fields: {
     manufacturer: "Brand",
@@ -74,6 +82,7 @@ export const messages: Messages = {
     browseFullCatalog: "Browse the full catalog",
     featuredMaterials: "Featured materials",
     recentlyAdded: "Recently added",
+    mostComplete: "Most complete catalog entries",
   },
   identify: {
     heading: "Identify a spool",
@@ -446,4 +455,9 @@ export const messages: Messages = {
     yes: "yes",
     no: "no",
   },
+  consent: consentEn,
+  footer: footerEn,
+  spools: spoolsEn,
+  account: accountEn,
+  legalPages: legalPagesEn,
 };

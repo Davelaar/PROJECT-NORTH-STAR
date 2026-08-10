@@ -1,4 +1,11 @@
 import type { Messages } from "./types";
+import {
+  accountEn,
+  consentEn,
+  footerEn,
+  legalPagesEn,
+  spoolsEn,
+} from "./prod-en";
 
 /**
  * Simplified Chinese (简体中文) — written for mainland CN makers and OEM brands.
@@ -28,6 +35,7 @@ export const messages: Messages = {
     identify: "识别",
     openMenu: "打开菜单",
     closeMenu: "关闭菜单",
+    mySpools: "我的线轴",
     primaryAria: "主导航",
   },
   fields: {
@@ -79,6 +87,7 @@ export const messages: Messages = {
     browseFullCatalog: "浏览完整目录",
     featuredMaterials: "精选材料",
     recentlyAdded: "最近添加",
+    mostComplete: "Most complete catalog entries",
   },
   identify: {
     heading: "识别一盘料",
@@ -453,4 +462,9 @@ export const messages: Messages = {
     yes: "是",
     no: "否",
   },
+  consent: consentEn,
+  footer: footerEn,
+  spools: spoolsEn,
+  account: accountEn,
+  legalPages: legalPagesEn,
 };

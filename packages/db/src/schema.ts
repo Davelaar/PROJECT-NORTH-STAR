@@ -43,6 +43,8 @@ export const users = sqliteTable("users", {
     .notNull()
     .default("active"),
   locale: text("locale").notNull().default("en"),
+  emailVerifiedAt: text("email_verified_at"),
+  deletedAt: text("deleted_at"),
   ...timestamps,
 });
 
@@ -59,6 +61,8 @@ export const apiTokens = sqliteTable(
     scopes: text("scopes").notNull(), // JSON array
     expiresAt: text("expires_at"),
     revokedAt: text("revoked_at"),
+    lastUsedAt: text("last_used_at"),
+    userAgent: text("user_agent"),
     ...timestamps,
   },
   (t) => [index("api_tokens_user_idx").on(t.userId)],
@@ -617,4 +621,159 @@ export const searchDocuments = sqliteTable(
     uniqueIndex("search_entity_unique").on(t.entityType, t.entityUuid),
     index("search_normalized_idx").on(t.normalized),
   ],
+);
+
+export const SPOOL_STATUSES = [
+  "sealed",
+  "open",
+  "active",
+  "drying",
+  "stored",
+  "low",
+  "empty",
+  "archived",
+] as const;
+
+export type SpoolStatus = (typeof SPOOL_STATUSES)[number];
+
+/** Cloud-synced personal spool inventory. Private; ownership enforced in API. */
+export const userSpools = sqliteTable(
+  "user_spools",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    /** Client-generated id for idempotent sync / import dedupe. */
+    clientId: text("client_id"),
+    manufacturerUuid: text("manufacturer_uuid"),
+    manufacturerName: text("manufacturer_name"),
+    productUuid: text("product_uuid"),
+    productName: text("product_name"),
+    variantUuid: text("variant_uuid"),
+    variantName: text("variant_name"),
+    colorHex: text("color_hex"),
+    materialCode: text("material_code"),
+    initialNetWeightG: real("initial_net_weight_g"),
+    currentWeightG: real("current_weight_g"),
+    tareWeightG: real("tare_weight_g"),
+    remainingPercent: real("remaining_percent"),
+    purchaseDate: text("purchase_date"),
+    openedDate: text("opened_date"),
+    batchLot: text("batch_lot"),
+    notes: text("notes"),
+    storageLocation: text("storage_location"),
+    status: text("status", { enum: SPOOL_STATUSES }).notNull().default("sealed"),
+    preferredPrinterUuid: text("preferred_printer_uuid"),
+    preferredNozzleMm: real("preferred_nozzle_mm"),
+    archivedAt: text("archived_at"),
+    deletedAt: text("deleted_at"),
+    syncVersion: integer("sync_version").notNull().default(1),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex("user_spools_user_client_unique").on(t.userId, t.clientId),
+    index("user_spools_user_idx").on(t.userId),
+    index("user_spools_status_idx").on(t.userId, t.status),
+  ],
+);
+
+export const userSpoolDryingEvents = sqliteTable(
+  "user_spool_drying_events",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    spoolId: integer("spool_id")
+      .notNull()
+      .references(() => userSpools.id, { onDelete: "cascade" }),
+    startedAt: text("started_at").notNull(),
+    endedAt: text("ended_at"),
+    tempC: real("temp_c"),
+    durationHours: real("duration_hours"),
+    notes: text("notes"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [index("user_spool_drying_spool_idx").on(t.spoolId)],
+);
+
+export const userSpoolIdentities = sqliteTable(
+  "user_spool_identities",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    spoolId: integer("spool_id")
+      .notNull()
+      .references(() => userSpools.id, { onDelete: "cascade" }),
+    kind: text("kind", { enum: ["qr", "rfid"] }).notNull(),
+    value: text("value").notNull(),
+    label: text("label"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [
+    uniqueIndex("user_spool_identities_kind_value").on(t.kind, t.value),
+    index("user_spool_identities_spool_idx").on(t.spoolId),
+  ],
+);
+
+export const userPrivacyPrefs = sqliteTable("user_privacy_prefs", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  consentVersion: text("consent_version").notNull(),
+  analytics: integer("analytics", { mode: "boolean" }).notNull().default(false),
+  marketing: integer("marketing", { mode: "boolean" }).notNull().default(false),
+  preferences: integer("preferences", { mode: "boolean" })
+    .notNull()
+    .default(true),
+  locale: text("locale").notNull().default("en"),
+  decidedAt: text("decided_at").notNull(),
+  updatedAt: text("updated_at")
+    .notNull()
+    .default(sql`(datetime('now'))`),
+});
+
+export const accountDeletionJobs = sqliteTable(
+  "account_deletion_jobs",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status", {
+      enum: ["pending", "completed", "failed"],
+    })
+      .notNull()
+      .default("pending"),
+    requestedAt: text("requested_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+    completedAt: text("completed_at"),
+    notes: text("notes"),
+  },
+  (t) => [index("account_deletion_jobs_status_idx").on(t.status)],
+);
+
+export const contributionTermsAcceptances = sqliteTable(
+  "contribution_terms_acceptances",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    termsVersion: text("terms_version").notNull(),
+    acceptedAt: text("accepted_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+    ipHash: text("ip_hash"),
+    contributionRef: text("contribution_ref"),
+  },
 );

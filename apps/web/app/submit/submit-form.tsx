@@ -53,6 +53,7 @@ export function SubmitProfileForm() {
   const [flowRatio, setFlowRatio] = useState("");
   const [pressureAdvance, setPressureAdvance] = useState("");
 
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [profileUuid, setProfileUuid] = useState<string | null>(null);
@@ -115,8 +116,21 @@ export function SubmitProfileForm() {
     e.preventDefault();
     setError("");
     setProfileUuid(null);
+    if (!termsAccepted) {
+      setError("Accept the contribution terms to continue.");
+      return;
+    }
     setBusy(true);
     try {
+      await fetch(`${getApiBase()}/api/v1/contributions/terms`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          termsVersion:
+            process.env.NEXT_PUBLIC_CONTRIBUTION_TERMS_VERSION ?? "2026-08-10",
+          contributionRef: variantUuid || undefined,
+        }),
+      });
       const res = await fetch(`${getApiBase()}/api/v1/community/profiles`, {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -409,8 +423,26 @@ export function SubmitProfileForm() {
 
       {error ? <div className="banner-warn">{error}</div> : null}
 
-      <button type="submit" className="button" disabled={busy || !variantUuid}>
-        {busy ? messages.common.loading : m.submit}
+      <label className="terms-accept">
+        <input
+          type="checkbox"
+          checked={termsAccepted}
+          onChange={(e) => setTermsAccepted(e.target.checked)}
+          required
+        />
+        <span>
+          I accept the{" "}
+          <Link href="/terms">contribution terms</Link> and understand my email
+          stays private while the calibration may remain public if I later delete
+          my account (anonymized attribution).
+        </span>
+      </label>
+
+      <button
+        type="submit"
+        className="button"
+        disabled={busy || !variantUuid || !termsAccepted}
+      >        {busy ? messages.common.loading : m.submit}
       </button>
       <p className="muted">{m.ofdNote}</p>
     </form>

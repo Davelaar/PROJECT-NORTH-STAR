@@ -1357,7 +1357,9 @@ export async function registerRoutes(app: FastifyInstance) {
     };
   });
 
-  app.post("/api/v1/auth/login", async (req, reply) => {
+  app.post("/api/v1/auth/login", {
+    config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    handler: async (req, reply) => {
     const bodySchema = z
       .object({
         username: z.string().min(1).optional(),
@@ -1378,9 +1380,12 @@ export async function registerRoutes(app: FastifyInstance) {
     );
     if (!result) return unauthorized(reply, "Invalid credentials");
     return { token: result.token, user: publicUser(result.user) };
+    },
   });
 
-  app.post("/api/v1/auth/register", async (req, reply) => {
+  app.post("/api/v1/auth/register", {
+    config: { rateLimit: { max: 10, timeWindow: "1 hour" } },
+    handler: async (req, reply) => {
     const bodySchema = z.object({
       username: z.string().min(3).max(64),
       email: z.string().email(),
@@ -1402,6 +1407,7 @@ export async function registerRoutes(app: FastifyInstance) {
         cause: err instanceof Error ? err.message : String(err),
       });
     }
+    },
   });
 }
 

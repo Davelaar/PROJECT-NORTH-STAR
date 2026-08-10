@@ -2,7 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import { SearchAutocomplete } from "./components/search-autocomplete";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import type { Metadata } from "next";
 
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages: m } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: m.brand,
+    description: m.home.lead,
+    path: "/",
+  });
+}
 type PreviewSection = {
   id: string;
   items: Array<{
@@ -60,6 +71,7 @@ export default async function HomePage() {
   const sectionTitle = (id: string) => {
     if (id === "featuredMaterials") return m.home.featuredMaterials;
     if (id === "recentlyAdded") return m.home.recentlyAdded;
+    if (id === "mostComplete") return m.home.mostComplete;
     return id;
   };
 
@@ -89,10 +101,10 @@ export default async function HomePage() {
             <p className="home-lead">{m.home.lead}</p>
             <div className="home-cta">
               <form className="search-row home-search" action="/search" method="get">
-                <input
+                <SearchAutocomplete
                   name="q"
                   placeholder={m.home.searchPlaceholder}
-                  aria-label={m.nav.search}
+                  ariaLabel={m.nav.search}
                 />
                 <button type="submit">{m.home.searchButton}</button>
               </form>
@@ -193,13 +205,6 @@ export default async function HomePage() {
           </div>
         </section>
       </article>
-
-      <footer className="site-footer home-footer">
-        <Link href="/docs/slicers">{m.export.supportedSlicersLink}</Link>
-        <Link href="/docs/api">{m.nav.docsApi}</Link>
-        <Link href="/hardware">{m.nav.hardware}</Link>
-        <Link href="/contribute">{m.nav.contribute}</Link>
-      </footer>
     </div>
   );
 }

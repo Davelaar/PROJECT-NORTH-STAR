@@ -1,4 +1,11 @@
 import type { Messages } from "./types";
+import {
+  accountEn,
+  consentEn,
+  footerEn,
+  legalPagesEn,
+  spoolsEn,
+} from "./prod-en";
 
 export const messages: Messages = {
   brand: "Open Filament",
@@ -23,6 +30,7 @@ export const messages: Messages = {
     identify: "Распознать",
     openMenu: "Открыть меню",
     closeMenu: "Закрыть меню",
+    mySpools: "Мои катушки",
     primaryAria: "Основное",
   },
   fields: {
@@ -74,6 +82,7 @@ export const messages: Messages = {
     browseFullCatalog: "Полный каталог",
     featuredMaterials: "Избранные материалы",
     recentlyAdded: "Недавно добавленные",
+    mostComplete: "Most complete catalog entries",
   },
   identify: {
     heading: "Распознать катушку",
@@ -446,4 +455,9 @@ export const messages: Messages = {
     yes: "да",
     no: "нет",
   },
+  consent: consentEn,
+  footer: footerEn,
+  spools: spoolsEn,
+  account: accountEn,
+  legalPages: legalPagesEn,
 };

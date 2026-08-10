@@ -17,6 +17,7 @@ export function SiteHeader() {
   const primary: NavItem[] = [
     { href: "/search", label: m.nav.filaments },
     { href: "/identify", label: m.nav.identify },
+    { href: "/my-spools", label: m.nav.mySpools },
     { href: "/submit", label: m.nav.submit },
     { href: "/contribute", label: m.nav.contribute },
   ];
@@ -86,6 +87,7 @@ export function SiteHeader() {
             <Link href="/rfid">{m.nav.rfid}</Link>
             <Link href="/export">{m.export.downloadForSlicer}</Link>
             <Link href="/hardware">{m.nav.hardware}</Link>
+            <Link href="/account">{m.nav.me}</Link>
             <Link href="/docs/api">{m.nav.docsApi}</Link>
           </div>
           <LanguageSwitcher />

@@ -89,6 +89,23 @@ export async function resolveBearerUser(
   if (row.revokedAt) return null;
   if (row.expiresAt && new Date(row.expiresAt) < new Date()) return null;
   if (row.role === "anonymous") return null;
+  const status = db
+    .select({ status: schema.users.status })
+    .from(schema.users)
+    .where(eq(schema.users.id, row.id))
+    .get();
+  if (!status || status.status === "deleted" || status.status === "suspended") {
+    return null;
+  }
+  // Touch last_used_at without blocking the request path on failure.
+  try {
+    db.update(schema.apiTokens)
+      .set({ lastUsedAt: new Date().toISOString() })
+      .where(eq(schema.apiTokens.tokenHash, tokenHash))
+      .run();
+  } catch {
+    // ignore
+  }
   return {
     id: row.id,
     uuid: row.uuid,
@@ -131,6 +148,7 @@ export async function loginWithPassword(
       .where(eq(schema.users.email, usernameOrEmail))
       .get();
   if (!user?.passwordHash) return null;
+  if (user.status === "deleted" || user.status === "suspended") return null;
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) return null;
   const scopes = scopesForRole(user.role);

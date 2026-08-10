@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import { SearchAutocomplete } from "../components/search-autocomplete";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+import type { Metadata } from "next";
 
 type CatalogProduct = {
   uuid: string;
@@ -43,6 +46,22 @@ type ColorResponse = {
   materialFacets: Array<{ code: string; count: number }>;
   results: ColorHit[];
 };
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; brand?: string; material?: string }>;
+}): Promise<Metadata> {
+  const { messages: m } = await getLocaleMessages();
+  const sp = await searchParams;
+  const hasQuery = Boolean(sp.q || sp.brand || sp.material);
+  return buildPageMetadata({
+    title: m.search.heading,
+    description: m.search.empty,
+    path: "/search",
+    noIndex: hasQuery,
+  });
+}
 
 type Manufacturer = { uuid: string; name: string };
 type Material = { code: string; name: string };
@@ -202,12 +221,14 @@ export default async function SearchPage({
         <label className="visually-hidden" htmlFor="catalog-q">
           {m.nav.search}
         </label>
-        <input
-          id="catalog-q"
-          name="q"
-          defaultValue={q}
-          placeholder={m.home.searchPlaceholder}
-        />
+        <div id="catalog-q">
+          <SearchAutocomplete
+            name="q"
+            defaultValue={q}
+            placeholder={m.home.searchPlaceholder}
+            ariaLabel={m.nav.search}
+          />
+        </div>
         <label>
           <span className="visually-hidden">{m.search.filterBrand}</span>
           <select name="brand" defaultValue={brand} aria-label={m.search.filterBrand}>

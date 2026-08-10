@@ -142,6 +142,20 @@ export function getCatalogPreview(
     .slice(0, Math.max(0, limit - featured.length))
     .map(toItem);
 
+  // Most complete: products with the most variants (deterministic stand-in until download popularity exists)
+  const mostComplete = [...products]
+    .sort(
+      (a, b) =>
+        (variantCounts.get(b.uuid) ?? 0) - (variantCounts.get(a.uuid) ?? 0) ||
+        compareCatalogLabels(
+          a.manufacturerName,
+          a.productName,
+          b.manufacturerName,
+          b.productName,
+        ),
+    )
+    .map(toItem);
+
   // Deduplicate by uuid while preserving order
   const seen = new Set<string>();
   const featuredSection: CatalogPreviewItem[] = [];
@@ -153,9 +167,21 @@ export function getCatalogPreview(
   const recentSection: CatalogPreviewItem[] = [];
   for (const item of recent) {
     if (seen.has(item.uuid)) continue;
-    if (featuredSection.length + recentSection.length >= limit) break;
+    if (featuredSection.length + recentSection.length >= Math.ceil(limit * 0.7)) break;
     seen.add(item.uuid);
     recentSection.push(item);
+  }
+  const completeSection: CatalogPreviewItem[] = [];
+  for (const item of mostComplete) {
+    if (seen.has(item.uuid)) continue;
+    if (
+      featuredSection.length + recentSection.length + completeSection.length >=
+      limit
+    ) {
+      break;
+    }
+    seen.add(item.uuid);
+    completeSection.push(item);
   }
 
   const sections: CatalogPreviewSection[] = [];
@@ -164,6 +190,9 @@ export function getCatalogPreview(
   }
   if (recentSection.length) {
     sections.push({ id: "recentlyAdded", items: recentSection });
+  }
+  if (completeSection.length) {
+    sections.push({ id: "mostComplete", items: completeSection });
   }
 
   return { sections, totalLimit: limit };

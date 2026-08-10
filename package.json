@@ -16,6 +16,8 @@
     "test": "pnpm -r --filter=./packages/* build && pnpm -r test",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
+    "e2e": "playwright test",
+    "e2e:install": "playwright install chromium",
     "db:generate": "pnpm --filter @open-filament/db generate",
     "db:migrate": "pnpm --filter @open-filament/db migrate",
     "db:seed": "pnpm --filter @open-filament/db seed",
@@ -30,5 +32,8 @@
     "db:dedupe-brands": "pnpm --filter @open-filament/db dedupe-brands",
     "db:fetch-ofd": "./scripts/fetch-ofd-catalog.sh",
     "db:bootstrap-catalog": "./scripts/bootstrap-catalog.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.51.1"
   }
 }

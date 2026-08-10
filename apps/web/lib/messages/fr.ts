@@ -1,4 +1,11 @@
 import type { Messages } from "./types";
+import {
+  accountEn,
+  consentEn,
+  footerEn,
+  legalPagesEn,
+  spoolsEn,
+} from "./prod-en";
 
 export const messages: Messages = {
   brand: "Open Filament",
@@ -23,6 +30,7 @@ export const messages: Messages = {
     identify: "Identifier",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
+    mySpools: "Mes bobines",
     primaryAria: "Principal",
   },
   fields: {
@@ -74,6 +82,7 @@ export const messages: Messages = {
     browseFullCatalog: "Parcourir le catalogue complet",
     featuredMaterials: "Matières en vedette",
     recentlyAdded: "Ajoutés récemment",
+    mostComplete: "Most complete catalog entries",
   },
   identify: {
     heading: "Identifier une bobine",
@@ -446,4 +455,9 @@ export const messages: Messages = {
     yes: "oui",
     no: "non",
   },
+  consent: consentEn,
+  footer: footerEn,
+  spools: spoolsEn,
+  account: accountEn,
+  legalPages: legalPagesEn,
 };
