@@ -1,31 +1,74 @@
-# Open Filament Bridge (stub)
+# Open Filament Bridge
 
-Localhost companion process intended for privileged OS actions (slicer profile install, NFC/RFID transport) in later phases.
+Localhost companion for slicer preset install and CFS RFID encode/simulate.
 
-## Current stub
+Binds **127.0.0.1:8788** only. Does **not** expose unrestricted filesystem access — installs write only into detected slicer filament directories (or `OF_BRIDGE_FILAMENT_ROOT_OVERRIDE`).
 
-- Binds **`127.0.0.1:8788` only**
-- `GET /health`
-- `GET /v1/slicers` — returns an empty list
-- `POST /v1/auth/session` — accepts any body; **does not validate** tokens
+## Auth
 
-## Security non-goals (this stub)
+All routes except `GET /health` require header:
 
-This stub **does not** provide:
+```
+X-OF-Bridge-Token: <token>
+```
 
-- Authentication or authorization against the Open Filament API
-- Origin / CSRF protections beyond loopback binding
-- Filesystem sandboxing or path allowlists
-- NFC/RFID hardware access
-- TLS
-- Multi-user isolation
+Token from env `OF_BRIDGE_TOKEN`, default **`local-dev-token`**.
 
-Do **not** expose this process on a public interface. Do **not** treat stub session acceptance as a security boundary.
+## Endpoints
 
-See `docs/LOCAL_BRIDGE.md` and `docs/SECURITY.md`.
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Status, version, detected slicers |
+| GET | `/v1/slicers` | Creality Print + OrcaSlicer filament dirs |
+| POST | `/v1/presets/install` | Write `.json` (+ optional `.info`) with backup |
+| POST | `/v1/presets/list` | List presets in filament dir |
+| POST | `/v1/rfid/encode` | CFS plaintext + AES-encrypted blocks |
+| POST | `/v1/rfid/simulate-write` | In-memory write/read/verify (no NFC hardware) |
+| POST | `/v1/auth/session` | Check shared-secret token |
+
+### Install body
+
+```json
+{
+  "slicer": "creality_print",
+  "presetJson": { "name": "...", "from": "User", "inherits": "..." },
+  "infoText": "sync_info = \\nuser_id = ...",
+  "fileName": "My ASA @Creality K2 Plus 0.6 nozzle.json",
+  "userId": "9731329878"
+}
+```
+
+Backups go to `<filament>/.open-filament-backups/of-<timestamp>/`.
+
+### Test / dry-run install root
+
+```bash
+export OF_BRIDGE_FILAMENT_ROOT_OVERRIDE=/tmp/of-filament-test
+cargo run -p open-filament-bridge
+```
+
+When unset, the bridge uses the first detected Creality/Orca user filament directory (e.g. macOS Creality Print `…/user/<id>/filament/`).
 
 ## Run
 
 ```bash
 cargo run -p open-filament-bridge
+cargo test -p open-filament-bridge
 ```
+
+## Security boundaries (honest)
+
+**Does:**
+
+- Loopback bind only
+- Shared-secret header gate
+- Allowlisted filament dirs + filename sanitization
+- Backup before overwrite
+
+**Does not:**
+
+- Unrestricted FS read/write
+- PC/SC / NFC hardware write (simulate path only)
+- TLS / remote auth / multi-user isolation
+
+Do not expose this process on a public interface.

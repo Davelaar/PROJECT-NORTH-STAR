@@ -86,15 +86,27 @@ export function buildOpenApiDocument(baseUrl: string) {
       },
       "/api/v1/rfid/encode": {
         post: {
-          summary: "Encode research stub RFID payload",
-          responses: { "200": { description: "Stub payload + warnings" } },
+          summary: "Encode Creality CFS-compatible RFID payload",
+          responses: { "200": { description: "Plaintext + encrypted blocks" } },
+        },
+      },
+      "/api/v1/rfid/verify": {
+        post: {
+          summary: "Decrypt and verify CFS ciphertext",
+          responses: { "200": { description: "Decoded fields" } },
         },
       },
       "/api/v1/exports/creality": {
-        post: { summary: "Export Creality user preset", responses: { "200": { description: "OK" } } },
+        post: {
+          summary: "Export Creality Print user preset + bridge install payload",
+          responses: { "200": { description: "OK" } },
+        },
       },
       "/api/v1/exports/orca": {
-        post: { summary: "Export Orca filament preset", responses: { "200": { description: "OK" } } },
+        post: {
+          summary: "Export OrcaSlicer filament preset + bridge install payload",
+          responses: { "200": { description: "OK" } },
+        },
       },
       "/api/v1/exports/openfilamentprofile": {
         post: { summary: "Export OpenFilamentProfile", responses: { "200": { description: "OK" } } },

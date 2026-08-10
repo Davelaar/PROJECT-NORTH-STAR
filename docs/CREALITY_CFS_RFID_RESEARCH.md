@@ -1,33 +1,29 @@
 # Creality CFS RFID research notes
 
-**Status:** Protocol **not verified**. No hardware dump campaign in this repo yet.
+**Status:** Protocol implemented in-repo from community reverse engineering. See **[CREALITY_CFS_RFID.md](./CREALITY_CFS_RFID.md)** for the working format, keys, and test vectors.
 
-## KNOWN
+## KNOWN (community-verified)
 
-- Creality CFS (Creality Filament System) uses spool RFID for material recognition on supported printers.
-- Community interest exists in reading/writing compatible tags; public reverse-engineering is incomplete/fragmented.
-- Open Filament registers a scheme row (`Creality CFS Compatible`, `research-stub-0`) for catalog wiring only.
+- MIFARE Classic 1K, Sector 1, blocks 4–5–6, AES-128-ECB payload encryption
+- 48-byte ASCII field layout and generic material codes (PLA…ASA…)
+- Data key and UID→Key A derivation (public community docs + matching ciphertext/UID vectors)
+- Open Filament ships working encode/decrypt/simulate in `@open-filament/rfid-cfs` and the Rust bridge
 
-## OBSERVED
+## OBSERVED (this machine / fixtures)
 
-- None in this repository. No captured tag dumps, no authenticated sector traces, no printer acceptance tests.
+- Software round-trips against published HyperPLA ciphertext and UID Key A vectors
+- Local Creality Print 7.0 user filament wrappers inform slicer install (separate from RFID)
 
 ## INFERRED
 
-- Tags are likely ISO14443-type NFC with vendor-specific data layout (common for AMS/CFS-class systems) — **inference only**.
-- Color mapping from marketing names to vendor IDs is likely lossy.
+- Printer acceptance of third-party tags depends on firmware material/supplier tables and successful sector auth — validate on hardware when available
 
-## UNKNOWN
+## UNKNOWN / remaining
 
-- Exact memory map / sector layout
-- Material and color identifier tables
-- Authentication keys / crypto
-- CRC or checksum algorithms
-- Capacity and writable regions
-- Whether user-written tags are accepted by production firmware
+- Full vendor-specific material ID catalog beyond generics
+- Production firmware edge cases
+- **PC/SC / NFC hardware write** in Open Filament (simulate path only today)
 
-## Stub used here
+## Historical note
 
-Open Filament ships `open-filament-cfs-research-stub-v1` (16-byte ASCII layout) solely so APIs and UI can be developed. **Do not write stub payloads expecting CFS hardware recognition.**
-
-Phase 10: collect fixtures, classify evidence, then replace stub constants.
+Earlier Open Filament versions shipped a 16-byte research stub. That stub is removed; do not use stub payloads.

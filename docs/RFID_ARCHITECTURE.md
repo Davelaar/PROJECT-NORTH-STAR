@@ -1,18 +1,16 @@
 # RFID architecture
 
-RFID is an **adapter layer** over filament variants + schemes.
+## Layers
 
-## Components
+- Codec package: `@open-filament/rfid-cfs` (working CFS-compatible codec)
+- API: `GET /rfid/schemes`, `POST /rfid/encode`, `POST /rfid/verify`
+- Bridge: `POST /v1/rfid/encode`, `POST /v1/rfid/simulate-write` (Rust AES mirror)
+- Transport: `MemoryTagTransport` for verify without hardware
 
-- DB: `rfid_schemes`, `rfid_mappings`
-- Codec package: `@open-filament/rfid-cfs` (research stub today)
-- API: `GET /rfid/schemes`, `POST /rfid/encode`
-- Future: bridge `TagTransport` HAL for physical readers
+## Codec
 
-## Current codec
+`CrealityCfsCodec` builds the community-documented 48-byte ASCII layout, AES-128-ECB encrypts blocks for Sector 1, and can derive UID Key A. See `docs/CREALITY_CFS_RFID.md`.
 
-`CrealityCfsCodec` implements a **documented research stub** (version byte + ASCII material + color). It is **not** claimed to be real Creality CFS.
+## Hardware
 
-Real CFS material/color IDs, auth keys, sector layout: **UNKNOWN** until Phase 10 research produces verified fixtures.
-
-See `CREALITY_CFS_RFID_RESEARCH.md`.
+Simulate path always available. Physical tag write (PC/SC, Proxmark, RC522, Android) remains external / next step.

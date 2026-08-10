@@ -1,132 +1,119 @@
+import { encryptPayload, decryptPayload, deriveUidKeyA, toHex, fromHex } from "./crypto.js";
+import { encodePlaintext, decodePlaintext, type EncodePlaintextInput } from "./payload.js";
+import { MemoryTagTransport } from "./transport.js";
+import {
+  CFS_DATA_KEY_HEX,
+  CFS_UID_KEY_HEX,
+  CFS_PAYLOAD_LENGTH,
+  CFS_SECTOR,
+  CFS_DATA_BLOCKS,
+} from "./keys.js";
+import { MATERIAL_CATALOG, WEIGHT_LENGTH_CODES } from "./materials.js";
+
+export type CfsEncodeResult = {
+  format: "creality-cfs-v1";
+  plaintextAscii: string;
+  plaintextHex: string;
+  ciphertextHex: string;
+  blocksHex: { block4: string; block5: string; block6: string };
+  fields: ReturnType<typeof encodePlaintext>["fields"];
+  uidKeyAHex?: string;
+  notes: string[];
+};
+
 /**
- * Creality CFS RFID codec — RESEARCH STUB ONLY.
- *
- * Documented stub format (NOT claimed as real CFS):
- *   byte 0      : version (0x01)
- *   bytes 1..8  : ASCII material code, space-padded (8 chars)
- *   bytes 9..15 : ASCII color token, space-padded (7 chars)
- *
- * Real CFS material IDs, color IDs, auth, and sector layout are UNKNOWN.
+ * Working Creality CFS-compatible codec based on community reverse engineering.
+ * Not affiliated with Creality. Implements AES-128-ECB payload crypto and
+ * plaintext field layout verified against public community tools/docs.
  */
-
-export const STUB_FORMAT_VERSION = 0x01;
-export const STUB_PAYLOAD_LENGTH = 16;
-export const STUB_MATERIAL_LEN = 8;
-export const STUB_COLOR_LEN = 7;
-
-/** Explicit placeholders — not real CFS constants. */
-export const UNKNOWN_CFS_CONSTANTS = {
-  materialIdTable: "UNKNOWN",
-  colorIdTable: "UNKNOWN",
-  authKey: "UNKNOWN",
-  sectorLayout: "UNKNOWN",
-  crcPolynomial: "UNKNOWN",
-  tagCapacityBytes: "UNKNOWN",
-} as const;
-
-export type StubEncodeInput = {
-  materialCode: string;
-  colorToken: string;
-};
-
-export type StubDecodeResult = {
-  version: number;
-  materialCode: string;
-  colorToken: string;
-  format: "open-filament-cfs-research-stub-v1";
-  warnings: string[];
-};
-
 export class CrealityCfsCodec {
-  readonly name = "creality-cfs-research-stub";
-  readonly status = "research_stub" as const;
+  readonly name = "creality-cfs";
+  readonly status = "community_verified" as const;
 
-  /** Real CFS constants are not available — all UNKNOWN. */
-  getUnknownConstants() {
-    return { ...UNKNOWN_CFS_CONSTANTS };
+  encodePlaintext(input: EncodePlaintextInput) {
+    return encodePlaintext(input);
   }
 
-  encode(input: StubEncodeInput): {
-    payload: Uint8Array;
-    hex: string;
-    warnings: string[];
-  } {
-    const warnings = [
-      "Payload uses Open Filament research stub format — NOT verified Creality CFS bytes",
-      "Do not write this payload to CFS hardware expecting printer recognition",
-      `Unknown CFS constants: ${Object.keys(UNKNOWN_CFS_CONSTANTS).join(", ")}`,
-    ];
-
-    const material = padAscii(input.materialCode, STUB_MATERIAL_LEN);
-    const color = padAscii(input.colorToken, STUB_COLOR_LEN);
-    const payload = new Uint8Array(STUB_PAYLOAD_LENGTH);
-    payload[0] = STUB_FORMAT_VERSION;
-    payload.set(material, 1);
-    payload.set(color, 1 + STUB_MATERIAL_LEN);
-
-    return { payload, hex: toHex(payload), warnings };
+  encryptPayload(plaintext: Uint8Array) {
+    return encryptPayload(plaintext);
   }
 
-  decode(payload: Uint8Array | string): StubDecodeResult {
-    const bytes =
-      typeof payload === "string" ? fromHex(payload) : new Uint8Array(payload);
-    if (bytes.length !== STUB_PAYLOAD_LENGTH) {
-      throw new Error(
-        `Stub payload must be ${STUB_PAYLOAD_LENGTH} bytes, got ${bytes.length}`,
-      );
-    }
-    const version = bytes[0]!;
-    if (version !== STUB_FORMAT_VERSION) {
-      throw new Error(
-        `Unsupported stub version 0x${version.toString(16)}; expected 0x${STUB_FORMAT_VERSION.toString(16)}`,
-      );
-    }
-    const materialCode = asciiFrom(
-      bytes.subarray(1, 1 + STUB_MATERIAL_LEN),
-    ).trim();
-    const colorToken = asciiFrom(
-      bytes.subarray(1 + STUB_MATERIAL_LEN, STUB_PAYLOAD_LENGTH),
-    ).trim();
+  decryptPayload(ciphertext: Uint8Array) {
+    return decryptPayload(ciphertext);
+  }
 
-    return {
-      version,
-      materialCode,
-      colorToken,
-      format: "open-filament-cfs-research-stub-v1",
-      warnings: [
-        "Decoded research stub format only — not a claim of real CFS field meanings",
+  decodePlaintext(payload: Uint8Array | string) {
+    return decodePlaintext(payload);
+  }
+
+  deriveUidKeyA(uid: Uint8Array | string) {
+    return deriveUidKeyA(uid);
+  }
+
+  /** Full encode: plaintext fields → encrypted 48-byte sector payload. */
+  encode(
+    input: EncodePlaintextInput & { uid?: string },
+  ): CfsEncodeResult {
+    const { ascii, bytes, fields } = encodePlaintext(input);
+    const ciphertext = encryptPayload(bytes);
+    const result: CfsEncodeResult = {
+      format: "creality-cfs-v1",
+      plaintextAscii: ascii,
+      plaintextHex: toHex(bytes),
+      ciphertextHex: toHex(ciphertext),
+      blocksHex: {
+        block4: toHex(ciphertext.subarray(0, 16)),
+        block5: toHex(ciphertext.subarray(16, 32)),
+        block6: toHex(ciphertext.subarray(32, 48)),
+      },
+      fields,
+      notes: [
+        "CFS-compatible payload (community reverse engineering)",
+        `Sector ${CFS_SECTOR} blocks ${CFS_DATA_BLOCKS.join(",")}`,
+        "Simulate path does not require NFC hardware",
       ],
     };
+    if (input.uid) {
+      result.uidKeyAHex = toHex(deriveUidKeyA(input.uid));
+    }
+    return result;
   }
-}
 
-function padAscii(input: string, len: number): Uint8Array {
-  const cleaned = (input ?? "").toUpperCase().replace(/[^\x20-\x7E]/g, "");
-  const truncated = cleaned.slice(0, len);
-  const out = new Uint8Array(len);
-  out.fill(0x20);
-  for (let i = 0; i < truncated.length; i++) {
-    out[i] = truncated.charCodeAt(i);
+  /** Decrypt ciphertext hex/bytes and parse plaintext fields. */
+  verify(ciphertext: Uint8Array | string): {
+    ok: true;
+    plaintextAscii: string;
+    fields: ReturnType<typeof decodePlaintext>;
+  } {
+    const bytes =
+      typeof ciphertext === "string" ? fromHex(ciphertext) : ciphertext;
+    const plain = decryptPayload(bytes);
+    const fields = decodePlaintext(plain);
+    return { ok: true, plaintextAscii: fields.ascii, fields };
   }
-  return out;
-}
 
-function asciiFrom(bytes: Uint8Array): string {
-  return String.fromCharCode(...bytes);
-}
-
-function toHex(bytes: Uint8Array): string {
-  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function fromHex(hex: string): Uint8Array {
-  const clean = hex.replace(/\s+/g, "").toLowerCase();
-  if (clean.length % 2 !== 0) {
-    throw new Error("Hex string must have even length");
+  /** In-memory write → read → decrypt verify (no hardware). */
+  simulateWrite(
+    input: EncodePlaintextInput & { uid?: string },
+  ): ReturnType<MemoryTagTransport["writeAndVerify"]> & CfsEncodeResult {
+    const encoded = this.encode(input);
+    const transport = new MemoryTagTransport(input.uid ?? "35B94A19");
+    const verified = transport.writeAndVerify(
+      fromHex(encoded.plaintextHex),
+      fromHex(encoded.ciphertextHex),
+    );
+    return { ...encoded, ...verified, uidKeyAHex: verified.keyAHex };
   }
-  const out = new Uint8Array(clean.length / 2);
-  for (let i = 0; i < out.length; i++) {
-    out[i] = Number.parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+
+  getConstants() {
+    return {
+      payloadLength: CFS_PAYLOAD_LENGTH,
+      dataKeyHex: CFS_DATA_KEY_HEX,
+      uidKeyHex: CFS_UID_KEY_HEX,
+      sector: CFS_SECTOR,
+      dataBlocks: [...CFS_DATA_BLOCKS],
+      materials: MATERIAL_CATALOG,
+      weightLengthCodes: { ...WEIGHT_LENGTH_CODES },
+    };
   }
-  return out;
 }

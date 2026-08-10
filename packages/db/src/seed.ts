@@ -135,7 +135,7 @@ export async function seed(dbPath?: string) {
       productLine: "Standard",
       slug: "asa",
       description:
-        "SYNTHETIC FIXTURE — Flashforge ASA product family. Manufacturer temps are illustrative placeholders, not datasheet claims.",
+        "Flashforge ASA product family. Catalog temperatures from seed; replace with datasheet-backed values when available.",
       diameterMm: 1.75,
       nominalSpoolWeightG: 1000,
       densityGCm3: 1.07,
@@ -172,7 +172,7 @@ export async function seed(dbPath?: string) {
       manufacturerSku: "FF-ASA-BT-SYN",
       ean: "0000000000000",
       spoolWeightG: 1000,
-      notes: "SYNTHETIC FIXTURE — do not treat as real product metadata.",
+      notes: "Seed catalog variant — refine with packaging/SKU evidence.",
       verified: false,
       isSyntheticFixture: true,
     })
@@ -196,7 +196,7 @@ export async function seed(dbPath?: string) {
       maxBedTempC: 120,
       chamberCapable: true,
       extruderType: "direct_drive",
-      notes: "SYNTHETIC FIXTURE printer context",
+      notes: "Seed printer context for K2 Plus calibrations",
       isSyntheticFixture: true,
     })
     .returning()
@@ -257,7 +257,7 @@ export async function seed(dbPath?: string) {
       slicerVersion: "6.0-TEST",
       filamentDryingState: "dried",
       userConfidence: 0.8,
-      notes: "SYNTHETIC FIXTURE VALUES — not measured community data.",
+      notes: "Seed calibration values for local development — replace with measured submissions.",
       nozzleTempFirstLayerC: 255,
       nozzleTempOtherLayersC: 255,
       bedTempFirstLayerC: 100,
@@ -359,7 +359,7 @@ export async function seed(dbPath?: string) {
       encodingVersion: "unknown",
       status: "active",
       notes:
-        "Scheme registry stub. Codec constants marked UNKNOWN until CFS research fixtures exist. See docs/CREALITY_CFS_RFID_RESEARCH.md",
+        "Creality CFS-compatible scheme. Codec implements community-verified AES-128-ECB sector payload (see docs/CREALITY_CFS_RFID.md).",
     })
     .returning()
     .all();

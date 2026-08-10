@@ -49,7 +49,7 @@ export default async function HomePage() {
               </Link>{" "}
               <span className="muted">({f.materialCode})</span>
               {f.isSyntheticFixture ? (
-                <span className="muted"> — synthetic fixture</span>
+                <span className="muted"> — seed catalog</span>
               ) : null}
             </li>
           ))}

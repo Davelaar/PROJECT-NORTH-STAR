@@ -15,9 +15,10 @@ import {
   toCanonicalFromRevision,
   openFilamentProfileV1Schema,
 } from "@open-filament/canonical-profile";
-import { convertCanonicalToCrealityUserPreset } from "@open-filament/slicer-creality";
-import { convertCanonicalToOrcaFilamentPreset } from "@open-filament/slicer-orca";
+import { convertCanonicalToCrealityUserPreset, buildCrealityInfoFile, suggestCompatiblePrinter, suggestedCrealityFileName } from "@open-filament/slicer-creality";
+import { convertCanonicalToOrcaFilamentPreset, suggestedOrcaFileName } from "@open-filament/slicer-orca";
 import { CrealityCfsCodec } from "@open-filament/rfid-cfs";
+import { randomBytes } from "node:crypto";
 import {
   loginWithPassword,
   registerUser,
@@ -326,7 +327,7 @@ export async function registerRoutes(app: FastifyInstance) {
           .length,
         warning:
           revisions.some((r) => r.isSyntheticFixture)
-            ? "Includes SYNTHETIC fixture samples — not measured community data"
+            ? "Includes seed catalog samples — not measured community data"
             : null,
         recommendation: aggregation,
       };
@@ -558,44 +559,141 @@ export async function registerRoutes(app: FastifyInstance) {
 
   app.post("/api/v1/rfid/encode", async (req, reply) => {
     const bodySchema = z.object({
-      materialCode: z.string().min(1).max(8),
-      colorToken: z.string().min(1).max(7),
+      material: z.string().min(1).optional(),
+      materialCode: z.string().min(1).optional(),
+      color: z.string().min(1).optional(),
+      colorToken: z.string().min(1).optional(),
+      weightOrLength: z.union([z.string(), z.number()]).optional(),
+      serial: z.string().optional(),
+      batch: z.string().optional(),
+      date: z.string().optional(),
+      supplier: z.string().optional(),
+      uid: z.string().optional(),
     });
     const parsed = bodySchema.safeParse(req.body);
     if (!parsed.success) {
       return badRequest(reply, "Invalid body", parsed.error.flatten());
     }
-    const codec = new CrealityCfsCodec();
-    const encoded = codec.encode(parsed.data);
-    return {
-      format: "open-filament-cfs-research-stub-v1",
-      hex: encoded.hex,
-      payloadLength: encoded.payload.length,
-      warnings: encoded.warnings,
-      unknownConstants: codec.getUnknownConstants(),
-      note: "Research stub only — Phase 10 required for real CFS",
-    };
+    const material = parsed.data.material ?? parsed.data.materialCode;
+    const color = parsed.data.color ?? parsed.data.colorToken;
+    if (!material || !color) {
+      return badRequest(reply, "material (or materialCode) and color (or colorToken) are required");
+    }
+    try {
+      const codec = new CrealityCfsCodec();
+      const encoded = codec.encode({
+        material,
+        color,
+        weightOrLength: parsed.data.weightOrLength ?? "1kg",
+        serial: parsed.data.serial,
+        batch: parsed.data.batch,
+        date: parsed.data.date,
+        supplier: parsed.data.supplier,
+        uid: parsed.data.uid,
+      });
+      return {
+        format: encoded.format,
+        plaintextAscii: encoded.plaintextAscii,
+        plaintextHex: encoded.plaintextHex,
+        ciphertextHex: encoded.ciphertextHex,
+        blocksHex: encoded.blocksHex,
+        fields: encoded.fields,
+        uidKeyAHex: encoded.uidKeyAHex,
+        notes: encoded.notes,
+      };
+    } catch (err) {
+      return badRequest(
+        reply,
+        err instanceof Error ? err.message : "CFS encode failed",
+      );
+    }
+  });
+
+  app.post("/api/v1/rfid/verify", async (req, reply) => {
+    const bodySchema = z.object({
+      ciphertextHex: z.string().min(32),
+    });
+    const parsed = bodySchema.safeParse(req.body);
+    if (!parsed.success) {
+      return badRequest(reply, "Invalid body", parsed.error.flatten());
+    }
+    try {
+      const codec = new CrealityCfsCodec();
+      const verified = codec.verify(parsed.data.ciphertextHex);
+      return {
+        ok: verified.ok,
+        plaintextAscii: verified.plaintextAscii,
+        fields: verified.fields,
+      };
+    } catch (err) {
+      return badRequest(
+        reply,
+        err instanceof Error ? err.message : "CFS verify failed",
+      );
+    }
   });
 
   app.post("/api/v1/exports/creality", async (req, reply) => {
     const canonical = await resolveCanonical(db(), req.body);
     if (!canonical.ok) return badRequest(reply, canonical.message);
+    const optsBody = z
+      .object({
+        nozzleDiameterMm: z.number().optional(),
+        printerModel: z.string().optional(),
+        userId: z.string().optional(),
+      })
+      .safeParse(req.body ?? {});
+    const opts = optsBody.success ? optsBody.data : {};
+    const preset = convertCanonicalToCrealityUserPreset(canonical.profile, opts);
+    const suggestedFileName = suggestedCrealityFileName(canonical.profile, opts);
+    const inherits = String(preset.inherits);
+    const userId = opts.userId ?? "local";
+    const settingId = randomBytes(12).toString("hex");
+    const infoFile = buildCrealityInfoFile({
+      userId,
+      settingId,
+      baseId: String(preset.base_id ?? "GFSA04"),
+    });
+    const printer = suggestCompatiblePrinter(canonical.profile, opts);
     return {
       format: "creality-print-user-filament-preset",
-      preset: convertCanonicalToCrealityUserPreset(canonical.profile),
-      warnings: [
-        "User preset export — not a Creality system preset",
-        "CFS RFID fields marked UNKNOWN",
-      ],
+      preset,
+      suggestedFileName,
+      infoFile,
+      inherits,
+      suggestedPrinter: printer,
+      bridgeInstallPayload: {
+        slicer: "creality_print",
+        presetJson: preset,
+        infoText: infoFile,
+        fileName: suggestedFileName,
+        userId,
+      },
     };
   });
 
   app.post("/api/v1/exports/orca", async (req, reply) => {
     const canonical = await resolveCanonical(db(), req.body);
     if (!canonical.ok) return badRequest(reply, canonical.message);
+    const optsBody = z
+      .object({
+        nozzleDiameterMm: z.number().optional(),
+        printerModel: z.string().optional(),
+      })
+      .safeParse(req.body ?? {});
+    const opts = optsBody.success ? optsBody.data : {};
+    const preset = convertCanonicalToOrcaFilamentPreset(canonical.profile, opts);
+    const suggestedFileName = suggestedOrcaFileName(canonical.profile, opts);
     return {
       format: "orca-filament-user-preset",
-      preset: convertCanonicalToOrcaFilamentPreset(canonical.profile),
+      preset,
+      suggestedFileName,
+      inherits: String(preset.inherits),
+      bridgeInstallPayload: {
+        slicer: "orca",
+        presetJson: preset,
+        fileName: suggestedFileName,
+      },
     };
   });
 

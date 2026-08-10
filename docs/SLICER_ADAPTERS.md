@@ -6,14 +6,22 @@ Adapters convert **OpenFilamentProfile → slicer user preset JSON**. They never
 
 | Package | Function |
 |---------|----------|
-| `@open-filament/slicer-creality` | `convertCanonicalToCrealityUserPreset` |
+| `@open-filament/slicer-creality` | `convertCanonicalToCrealityUserPreset`, `buildCrealityInfoFile`, `suggestCompatiblePrinter` |
 | `@open-filament/slicer-orca` | `convertCanonicalToOrcaFilamentPreset` |
 
-## Rules
+## Creality Print user wrappers
 
-- Output `instantiation: "user"` — not system presets.
-- Unmapped vendor IDs / inherit chains → `"UNKNOWN"` or `null`.
-- Creality CFS RFID-related fields are **never invented**; marked `UNKNOWN`.
-- Synthetic sources noted in `filament_notes`.
+Observed Creality Print 7.0 user presets are **thin wrappers**: scalar `inherits` / `name` / `from` / `base_id`, plus **string-array** overrides.
 
-Install into slicer directories is a future **bridge** responsibility, not the web app.
+- Name: `{Vendor} {Product} {Variant} @Creality {Model} {nozzle} nozzle`
+- ASA inherits: `HP-ASA @Creality K2 Plus {nozzle} nozzle` when nozzle known; else 0.4 HP-ASA / Generic fallbacks for other materials
+- Companion `.info` via `buildCrealityInfoFile`
+- Omit unknown fields rather than inventing placeholders
+
+## OrcaSlicer
+
+User-style filament JSON with string arrays; inherits like `Generic ASA @K2 Plus-all`.
+
+## Install
+
+Use the **local bridge** `POST /v1/presets/install` (allowlisted filament dirs). API export endpoints return `bridgeInstallPayload` ready to POST.

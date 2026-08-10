@@ -5,7 +5,7 @@ export default function RfidPage() {
   return (
     <div>
       <h1>{messages.rfid.heading}</h1>
-      <div className="banner-warn">{messages.rfid.warning}</div>
+      <p className="muted">{messages.rfid.warning}</p>
       <RfidForm />
     </div>
   );

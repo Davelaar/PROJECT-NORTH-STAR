@@ -25,8 +25,9 @@ OpenAPI: `GET /openapi.json`
 | GET | `/printers`, `/printers/:uuid` | no |
 | GET | `/search?q=` | no |
 | GET | `/rfid/schemes` | no |
-| POST | `/rfid/encode` | no (returns stub + warnings) |
-| POST | `/exports/creality`, `/orca`, `/openfilamentprofile` | no |
+| POST | `/rfid/encode` | no (CFS plaintext + ciphertext) |
+| POST | `/rfid/verify` | no (decrypt + parse) |
+| POST | `/exports/creality`, `/orca`, `/openfilamentprofile` | no (creality/orca include `bridgeInstallPayload`) |
 | POST | `/auth/login`, `/auth/register` | no |
 
 CORS allows `WEB_ORIGIN` (default `http://127.0.0.1:3000`).

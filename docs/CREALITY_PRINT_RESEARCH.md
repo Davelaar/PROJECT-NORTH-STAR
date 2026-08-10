@@ -1,25 +1,26 @@
 # Creality Print research notes
 
-**Status:** Adapter is a **structural stub** resembling Orca/Bambu-style filament JSON user presets.
+**Status:** Adapter emits **installable Creality Print 7.0 user wrappers** matching local observed files (string-array overrides + `inherits` system preset).
 
-## KNOWN
+## KNOWN (this machine)
 
-- Creality Print shares lineage with Orca-style filament setting keys (`filament_type`, `nozzle_temperature`, `filament_flow_ratio`, etc.).
-- User presets are distinct from bundled system presets.
+Creality Print 7.0 user filament dir example:
 
-## OBSERVED
+`~/Library/Application Support/Creality/Creality Print/7.0/user/<userId>/filament/`
 
-- No pinned Creality Print version fixtures are checked into this repo yet.
-- Export marks `instantiation: "user"` and `from: "OpenFilament"`.
+Real wrapper traits:
 
-## INFERRED
+- `from: "User"`, `is_custom_defined: "0"`, `base_id` (commonly `GFSA04`)
+- `inherits` e.g. `HP-ASA @Creality K2 Plus 0.6 nozzle`
+- Calibration fields as **arrays of strings**
+- Companion `.info` with `user_id`, `setting_id`, `base_id`, `updated_time`
 
-- Many keys align with OrcaSlicer filament profiles; naming may diverge by Creality Print version.
+System inherit targets present for ASA 0.6: `HP-ASA @Creality K2 Plus 0.6 nozzle`.
 
-## UNKNOWN
+## Adapter
 
-- Exact system-preset `inherits` graph for a given Creality Print release
-- Official Creality filament IDs / CFS linkage fields inside presets
-- Stable install paths per OS (deferred to bridge path allowlists)
+`convertCanonicalToCrealityUserPreset(canonical, opts?)` produces that shape. Bridge install writes JSON + info into the detected (or override) filament directory.
 
-Adapter deliberately sets `inherits`, `creality_filament_id`, and CFS fields to `UNKNOWN` rather than guessing.
+## Remaining
+
+Cloud sync / Creality account `setting_id` semantics beyond local files are not claimed.

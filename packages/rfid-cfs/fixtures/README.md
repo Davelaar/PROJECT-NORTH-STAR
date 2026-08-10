@@ -1,5 +1,8 @@
-# RFID CFS fixtures
+# RFID fixtures
 
-These fixtures exercise the **Open Filament research stub** format only.
+Known vectors for the Creality CFS-compatible codec (`creality-cfs-v1`).
 
-They are **not** dumps from real Creality CFS tags and must not be presented as verified protocol samples.
+- `asa-burnt-titanium.json` — Open Filament ASA plaintext + AES-128-ECB ciphertext (data key)
+- Includes a nested community HyperPLA vector used to cross-check the data key
+
+These are protocol fixtures, not claims of affiliation with Creality.

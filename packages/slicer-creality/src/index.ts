@@ -1,1 +1,7 @@
-export { convertCanonicalToCrealityUserPreset } from "./convert.js";
+export {
+  convertCanonicalToCrealityUserPreset,
+  buildCrealityInfoFile,
+  suggestCompatiblePrinter,
+  suggestedCrealityFileName,
+  type CrealityConvertOpts,
+} from "./convert.js";

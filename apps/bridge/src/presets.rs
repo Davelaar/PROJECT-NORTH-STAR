@@ -1,0 +1,198 @@
+//! Preset install / list with backup under allowlisted filament dirs.
+
+use crate::slicers::{is_path_allowlisted, resolve_install_dir};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use std::fs;
+use std::path::{Path, PathBuf};
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InstallRequest {
+    pub slicer: String,
+    pub preset_json: Value,
+    pub info_text: Option<String>,
+    pub file_name: String,
+    pub user_id: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct InstallResponse {
+    pub ok: bool,
+    pub json_path: String,
+    pub info_path: Option<String>,
+    pub backup_dir: Option<String>,
+    pub filament_dir: String,
+}
+
+fn sanitize_file_name(name: &str) -> Result<String, String> {
+    let base = Path::new(name)
+        .file_name()
+        .and_then(|s| s.to_str())
+        .ok_or_else(|| "Invalid fileName".to_string())?;
+    if base.contains("..") || base.contains('/') || base.contains('\\') {
+        return Err("fileName must be a bare file name".into());
+    }
+    let with_ext = if base.to_ascii_lowercase().ends_with(".json") {
+        base.to_string()
+    } else {
+        format!("{base}.json")
+    };
+    Ok(with_ext)
+}
+
+fn backup_existing(target: &Path, filament_dir: &Path) -> Result<Option<PathBuf>, String> {
+    if !target.exists() {
+        return Ok(None);
+    }
+    let ts = chrono::Utc::now().format("%Y%m%dT%H%M%SZ");
+    let backup_root = filament_dir.join(".open-filament-backups").join(format!("of-{ts}"));
+    fs::create_dir_all(&backup_root).map_err(|e| e.to_string())?;
+    let dest = backup_root.join(target.file_name().unwrap());
+    fs::copy(target, &dest).map_err(|e| e.to_string())?;
+    let info = target.with_extension("info");
+    if info.exists() {
+        let _ = fs::copy(&info, backup_root.join(info.file_name().unwrap()));
+    }
+    Ok(Some(backup_root))
+}
+
+pub fn install_preset(req: InstallRequest) -> Result<InstallResponse, String> {
+    let slicer = match req.slicer.as_str() {
+        "creality_print" | "orca" => req.slicer.as_str(),
+        other => return Err(format!("slicer must be creality_print|orca, got {other}")),
+    };
+
+    let file_name = sanitize_file_name(&req.file_name)?;
+    let filament_dir = resolve_install_dir(slicer)?;
+    let json_path = filament_dir.join(&file_name);
+
+    if !is_path_allowlisted(&json_path, slicer)
+        && std::env::var_os("OF_BRIDGE_FILAMENT_ROOT_OVERRIDE").is_none()
+    {
+        return Err("Resolved path is outside allowlisted filament directories".into());
+    }
+
+    // Ensure parent exists (override may be fresh)
+    fs::create_dir_all(&filament_dir).map_err(|e| e.to_string())?;
+
+    let backup_dir = backup_existing(&json_path, &filament_dir)?;
+
+    let pretty = serde_json::to_string_pretty(&req.preset_json).map_err(|e| e.to_string())?;
+    fs::write(&json_path, &pretty).map_err(|e| e.to_string())?;
+
+    // Validate readable JSON
+    let written = fs::read_to_string(&json_path).map_err(|e| e.to_string())?;
+    let _: Value = serde_json::from_str(&written).map_err(|e| {
+        format!("Wrote file but failed to re-parse as JSON: {e}")
+    })?;
+
+    let mut info_path = None;
+    if let Some(info) = req.info_text {
+        let ip = json_path.with_extension("info");
+        fs::write(&ip, info).map_err(|e| e.to_string())?;
+        info_path = Some(ip.display().to_string());
+    } else if slicer == "creality_print" {
+        // Minimal companion .info when user_id provided
+        if let Some(uid) = req.user_id {
+            let setting_id = format!("{:x}", chrono::Utc::now().timestamp_millis());
+            let text = format!(
+                "sync_info = \nuser_id = {uid}\nsetting_id = {setting_id}\nbase_id = GFSA04\nupdated_time = {}\n",
+                chrono::Utc::now().timestamp()
+            );
+            let ip = json_path.with_extension("info");
+            fs::write(&ip, text).map_err(|e| e.to_string())?;
+            info_path = Some(ip.display().to_string());
+        }
+    }
+
+    Ok(InstallResponse {
+        ok: true,
+        json_path: json_path.display().to_string(),
+        info_path,
+        backup_dir: backup_dir.map(|p| p.display().to_string()),
+        filament_dir: filament_dir.display().to_string(),
+    })
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ListRequest {
+    pub slicer: String,
+    /// If true, only names containing "Open Filament" / starting with OF patterns; else all .json
+    pub of_only: Option<bool>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ListedPreset {
+    pub file_name: String,
+    pub path: String,
+    pub has_info: bool,
+}
+
+pub fn list_presets(req: ListRequest) -> Result<Vec<ListedPreset>, String> {
+    let slicer = match req.slicer.as_str() {
+        "creality_print" | "orca" => req.slicer.as_str(),
+        other => return Err(format!("slicer must be creality_print|orca, got {other}")),
+    };
+    let dir = resolve_install_dir(slicer)?;
+    let of_only = req.of_only.unwrap_or(false);
+    let mut out = Vec::new();
+    let entries = fs::read_dir(&dir).map_err(|e| e.to_string())?;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) != Some("json") {
+            continue;
+        }
+        let name = path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .unwrap_or_default()
+            .to_string();
+        if of_only {
+            let content = fs::read_to_string(&path).unwrap_or_default();
+            if !content.contains("Open Filament") && !name.contains("Open Filament") {
+                continue;
+            }
+        }
+        let has_info = path.with_extension("info").exists();
+        out.push(ListedPreset {
+            file_name: name,
+            path: path.display().to_string(),
+            has_info,
+        });
+    }
+    out.sort_by(|a, b| a.file_name.cmp(&b.file_name));
+    Ok(out)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn install_into_override_dir() {
+        let dir = tempfile::tempdir().unwrap();
+        std::env::set_var("OF_BRIDGE_FILAMENT_ROOT_OVERRIDE", dir.path());
+        let resp = install_preset(InstallRequest {
+            slicer: "creality_print".into(),
+            preset_json: json!({
+                "name": "Test ASA @Creality K2 Plus 0.6 nozzle",
+                "from": "User",
+                "inherits": "HP-ASA @Creality K2 Plus 0.6 nozzle",
+                "filament_notes": ["Open Filament user preset"]
+            }),
+            info_text: Some("sync_info = \nuser_id = 1\nsetting_id = abc\nbase_id = GFSA04\nupdated_time = 1\n".into()),
+            file_name: "Test ASA @Creality K2 Plus 0.6 nozzle.json".into(),
+            user_id: None,
+        })
+        .unwrap();
+        assert!(resp.ok);
+        assert!(Path::new(&resp.json_path).exists());
+        let parsed: Value =
+            serde_json::from_str(&fs::read_to_string(&resp.json_path).unwrap()).unwrap();
+        assert_eq!(parsed["from"], "User");
+        std::env::remove_var("OF_BRIDGE_FILAMENT_ROOT_OVERRIDE");
+    }
+}

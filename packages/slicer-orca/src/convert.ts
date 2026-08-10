@@ -1,76 +1,167 @@
 import type { OpenFilamentProfileV1 } from "@open-filament/canonical-profile";
 
-const UNKNOWN = "UNKNOWN";
+export type OrcaConvertOpts = {
+  nozzleDiameterMm?: number;
+  printerModel?: string;
+  inherits?: string;
+};
+
+function asStringArray(value: string | number | null | undefined): string[] | undefined {
+  if (value === null || value === undefined || value === "") return undefined;
+  return [String(value)];
+}
+
+function normalizeMaterial(code: string | null | undefined): string {
+  return (code ?? "PLA").trim().toUpperCase().replace(/\s+/g, "-");
+}
 
 /**
- * Convert canonical profile → OrcaSlicer-style filament user preset.
- * Unmapped fields are null or UNKNOWN; no invented vendor IDs.
+ * Orca Creality profiles use `@K2 Plus-all` style inherits (not per-nozzle).
  */
-export function convertCanonicalToOrcaFilamentPreset(
+function pickOrcaInherits(material: string, printerModel: string): string {
+  const model = printerModel.replace(/^Creality\s+/i, "");
+  const suffix = model.toLowerCase().includes("k2")
+    ? `${model}-all`
+    : `${model}-all`;
+  const m = material.toUpperCase();
+
+  if (m === "ASA" || m.startsWith("ASA-")) {
+    return `Generic ASA @${suffix}`;
+  }
+  if (m === "PLA" || m === "PLA-SILK") {
+    return `Generic PLA @${suffix}`;
+  }
+  if (m === "PLA-CF") {
+    return `Generic PLA-CF @${suffix}`;
+  }
+  if (m === "PETG" || m.startsWith("PETG")) {
+    return `Generic PETG @${suffix}`;
+  }
+  if (m === "ABS") {
+    return `Generic ABS @${suffix}`;
+  }
+  if (m === "TPU") {
+    return `Generic TPU @${suffix}`;
+  }
+  return `Generic ${material} @${suffix}`;
+}
+
+function buildName(
   canonical: OpenFilamentProfileV1,
-): Record<string, unknown> {
-  const nameParts = [
+  printerModel: string,
+): string {
+  const parts = [
     canonical.filament.manufacturerName,
     canonical.filament.productName,
     canonical.filament.variantName,
   ].filter(Boolean);
-  const name =
-    nameParts.length > 0
-      ? `OF — ${nameParts.join(" ")}`
-      : `OF — ${canonical.title}`;
+  const head =
+    parts.length > 0 ? parts.join(" ") : canonical.title.replace(/^OF\s+/i, "");
+  return `${head} @${printerModel}`;
+}
 
-  const nozzle =
+/**
+ * Convert canonical profile → OrcaSlicer filament user preset JSON
+ * (string-array fields, inherits Generic * @K2 Plus-all style).
+ */
+export function convertCanonicalToOrcaFilamentPreset(
+  canonical: OpenFilamentProfileV1,
+  opts: OrcaConvertOpts = {},
+): Record<string, unknown> {
+  const printerModel =
+    opts.printerModel ??
+    canonical.context.printerModel?.replace(/^Creality\s+/i, "") ??
+    "K2 Plus";
+  const material = normalizeMaterial(canonical.filament.materialCode);
+  const inherits = opts.inherits ?? pickOrcaInherits(material, printerModel);
+  const name = buildName(canonical, printerModel);
+
+  const nozzleTemp =
     canonical.thermal.nozzleTempOtherLayersC ??
-    canonical.thermal.nozzleTempFirstLayerC ??
-    null;
-  const bed =
+    canonical.thermal.nozzleTempFirstLayerC;
+  const bedTemp =
     canonical.thermal.bedTempOtherLayersC ??
-    canonical.thermal.bedTempFirstLayerC ??
-    null;
+    canonical.thermal.bedTempFirstLayerC;
 
-  return {
+  const preset: Record<string, unknown> = {
     type: "filament",
     name,
-    from: "OpenFilament",
-    instantiation: "user",
-    inherits: UNKNOWN,
-    filament_settings_id: name,
-    filament_vendor: canonical.filament.manufacturerName ?? UNKNOWN,
-    filament_type: canonical.filament.materialCode ?? UNKNOWN,
-    filament_diameter: canonical.filament.diameterMm ?? null,
-    filament_density: canonical.filament.densityGCm3 ?? null,
-    default_filament_colour: canonical.filament.primaryColorHex ?? UNKNOWN,
-    nozzle_temperature: nozzle,
-    nozzle_temperature_initial_layer:
-      canonical.thermal.nozzleTempFirstLayerC ?? nozzle,
-    hot_plate_temp: bed,
-    hot_plate_temp_initial_layer: canonical.thermal.bedTempFirstLayerC ?? bed,
-    chamber_temperatures: canonical.thermal.chamberTempC ?? null,
-    filament_flow_ratio: canonical.extrusion.flowRatio ?? null,
-    filament_max_volumetric_speed: canonical.extrusion.maxVolumetricFlowMm3s ?? null,
-    pressure_advance: canonical.extrusion.pressureAdvance ?? null,
-    fan_min_speed: canonical.cooling.fanMinPercent ?? null,
-    fan_max_speed: canonical.cooling.fanMaxPercent ?? null,
-    bridge_fan_speed: canonical.cooling.bridgeFanPercent ?? null,
-    close_fan_the_first_x_layers: canonical.cooling.fanDisableFirstLayers ?? null,
-    filament_retraction_length: canonical.retraction.retractionDistanceMm ?? null,
-    filament_retraction_speed: canonical.retraction.retractionSpeedMms ?? null,
-    filament_deretraction_speed: canonical.retraction.deretractionSpeedMms ?? null,
-    filament_z_hop: canonical.retraction.zHopMm ?? null,
-    filament_notes: [
-      "Open Filament export — user preset, not a system preset",
-      canonical.provenance.isSyntheticFixture
-        ? "SYNTHETIC FIXTURE source"
-        : null,
-      canonical.provenance.sourceNotes,
-    ]
-      .filter(Boolean)
-      .join("\n"),
-    open_filament: {
-      schemaVersion: canonical.schemaVersion,
-      profileId: canonical.id ?? null,
-      synthetic: canonical.provenance.isSyntheticFixture,
-      unknownFields: ["inherits"],
-    },
+    from: "User",
+    instantiation: "true",
+    inherits,
   };
+
+  const settingsId = asStringArray(name);
+  if (settingsId) preset.filament_settings_id = settingsId;
+
+  const vendor = asStringArray(canonical.filament.manufacturerName);
+  if (vendor) preset.filament_vendor = vendor;
+
+  const filamentType = asStringArray(canonical.filament.materialCode);
+  if (filamentType) preset.filament_type = filamentType;
+
+  const colour = asStringArray(canonical.filament.primaryColorHex);
+  if (colour) preset.default_filament_colour = colour;
+
+  const density = asStringArray(canonical.filament.densityGCm3);
+  if (density) preset.filament_density = density;
+
+  const diameter = asStringArray(canonical.filament.diameterMm ?? 1.75);
+  if (diameter) preset.filament_diameter = diameter;
+
+  const maxVol = asStringArray(canonical.extrusion.maxVolumetricFlowMm3s);
+  if (maxVol) preset.filament_max_volumetric_speed = maxVol;
+
+  const flow = asStringArray(canonical.extrusion.flowRatio);
+  if (flow) preset.filament_flow_ratio = flow;
+
+  const pa = asStringArray(canonical.extrusion.pressureAdvance);
+  if (pa) preset.pressure_advance = pa;
+
+  if (nozzleTemp != null) {
+    preset.nozzle_temperature = asStringArray(nozzleTemp);
+  }
+  if (canonical.thermal.nozzleTempFirstLayerC != null) {
+    preset.nozzle_temperature_initial_layer = asStringArray(
+      canonical.thermal.nozzleTempFirstLayerC,
+    );
+  }
+  if (bedTemp != null) {
+    preset.hot_plate_temp = asStringArray(bedTemp);
+    preset.textured_plate_temp = asStringArray(bedTemp);
+  }
+  if (canonical.thermal.bedTempFirstLayerC != null) {
+    preset.hot_plate_temp_initial_layer = asStringArray(
+      canonical.thermal.bedTempFirstLayerC,
+    );
+  }
+
+  const fanMin = asStringArray(canonical.cooling.fanMinPercent);
+  if (fanMin) preset.fan_min_speed = fanMin;
+  const fanMax = asStringArray(canonical.cooling.fanMaxPercent);
+  if (fanMax) preset.fan_max_speed = fanMax;
+  const closeFan = asStringArray(canonical.cooling.fanDisableFirstLayers);
+  if (closeFan) preset.close_fan_the_first_x_layers = closeFan;
+
+  const retract = asStringArray(canonical.retraction.retractionDistanceMm);
+  if (retract) preset.filament_retraction_length = retract;
+
+  const notes: string[] = ["Open Filament user preset"];
+  if (canonical.provenance.isSyntheticFixture) {
+    notes.push("Source: seed catalog data");
+  }
+  if (canonical.provenance.sourceNotes) {
+    notes.push(canonical.provenance.sourceNotes);
+  }
+  preset.filament_notes = [notes.join(" — ")];
+
+  return preset;
+}
+
+export function suggestedOrcaFileName(
+  canonical: OpenFilamentProfileV1,
+  opts?: OrcaConvertOpts,
+): string {
+  const preset = convertCanonicalToOrcaFilamentPreset(canonical, opts);
+  return `${String(preset.name)}.json`;
 }

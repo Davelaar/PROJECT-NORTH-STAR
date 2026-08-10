@@ -15,7 +15,7 @@ export const messages = {
     searchPlaceholder: "Search filaments, manufacturers, printers…",
     searchButton: "Search",
     fixtureNote:
-      "Seed data includes SYNTHETIC fixtures (e.g. Flashforge ASA Burnt Titanium). Treat those values as demos, not measured facts.",
+      "Catalog may include seed catalog data (e.g. Flashforge ASA Burnt Titanium) for development — treat those rows as examples until community measurements replace them.",
   },
   search: {
     heading: "Search",
@@ -27,14 +27,17 @@ export const messages = {
     communityRecommendation: "Community recommendation",
     profiles: "Calibration profiles",
     syntheticBanner:
-      "SYNTHETIC FIXTURE — values are placeholders for development and demos.",
+      "Seed catalog data — placeholder values for development until measured profiles land.",
   },
   export: {
     heading: "Export profile",
-    body: "Export an OpenFilamentProfile or slicer user preset. Creality CFS RFID fields remain UNKNOWN.",
+    body: "Export an OpenFilamentProfile or installable slicer user preset. Creality Print / Orca exports include a local bridge install payload.",
     profileUuid: "Profile UUID",
     format: "Format",
     submit: "Export",
+    installBridge: "Install via local bridge",
+    installOk: "Installed via bridge",
+    installFail: "Bridge install failed — is open-filament-bridge running on :8788?",
     formats: {
       openfilamentprofile: "OpenFilamentProfile JSON",
       creality: "Creality Print user preset",
@@ -42,12 +45,16 @@ export const messages = {
     },
   },
   rfid: {
-    heading: "RFID encode (research stub)",
+    heading: "CFS RFID encode",
     warning:
-      "Creality CFS protocol is not verified. This UI encodes the Open Filament research stub format only. Do not write stub payloads to hardware expecting printer recognition. Real CFS requires Phase 10 research.",
-    materialCode: "Material code (ASCII, max 8)",
-    colorToken: "Color token (ASCII, max 7)",
-    submit: "Encode stub",
+      "Encodes Creality CFS-compatible payloads (community reverse engineering). Simulate write verifies encrypt→decrypt in memory. Real NFC/PC/SC hardware write is a separate next step.",
+    materialCode: "Material (e.g. ASA, PLA, PETG)",
+    colorToken: "Color (#RRGGBB)",
+    weight: "Weight / length code",
+    serial: "Serial (6 chars)",
+    uid: "Tag UID (hex, optional)",
+    submit: "Encode CFS payload",
+    simulate: "Simulate write+verify",
   },
   login: {
     heading: "Log in",

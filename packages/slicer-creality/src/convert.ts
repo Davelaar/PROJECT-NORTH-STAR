@@ -1,92 +1,248 @@
 import type { OpenFilamentProfileV1 } from "@open-filament/canonical-profile";
 
-const UNKNOWN = "UNKNOWN";
-const SYNTHETIC_MARK =
-  "SYNTHETIC_OR_UNVERIFIED — Open Filament adapter; not a Creality system preset";
+export type CrealityConvertOpts = {
+  /** e.g. 0.6 — defaults from canonical context or 0.4 */
+  nozzleDiameterMm?: number;
+  /** e.g. "K2 Plus" */
+  printerModel?: string;
+  /** Override inherits chain */
+  inherits?: string;
+  /** Creality base_id — defaults to GFSA04 (observed on real user wrappers) */
+  baseId?: string;
+  /** Creality Print version string */
+  version?: string;
+  /** Prefer HP-* system presets for ASA when true (default true) */
+  preferHpForAsa?: boolean;
+};
 
-/**
- * Convert a canonical OpenFilamentProfile into a Creality Print / Orca-style
- * *user* filament preset JSON object.
- *
- * Fields we cannot map honestly are set to null or string "UNKNOWN".
- * This does NOT invent CFS RFID binary constants.
- */
-export function convertCanonicalToCrealityUserPreset(
+function asStringArray(value: string | number | null | undefined): string[] | undefined {
+  if (value === null || value === undefined || value === "") return undefined;
+  return [String(value)];
+}
+
+function formatNozzle(mm: number): string {
+  const s = Number.isInteger(mm) ? String(mm) : String(mm);
+  // Prefer one decimal when needed: 0.6
+  if (s.includes(".")) return s;
+  return `${s}.0`;
+}
+
+function normalizeMaterial(code: string | null | undefined): string {
+  return (code ?? "PLA").trim().toUpperCase().replace(/\s+/g, "-");
+}
+
+function pickInherits(
+  material: string,
+  printerModel: string,
+  nozzle: string,
+  preferHpForAsa: boolean,
+  nozzleKnown: boolean,
+): string {
+  const host = `Creality ${printerModel} ${nozzle} nozzle`;
+  const m = material.toUpperCase();
+
+  if (m === "ASA" || m.startsWith("ASA-")) {
+    if (preferHpForAsa && nozzleKnown) {
+      return `HP-ASA @${host}`;
+    }
+    return `Generic ASA @Creality ${printerModel} 0.4 nozzle`;
+  }
+  if (m === "PLA" || m === "PLA-SILK") {
+    return `Generic PLA @${host}`;
+  }
+  if (m === "PLA-CF") {
+    return `Generic PLA-CF @Creality ${printerModel} 0.4 nozzle`;
+  }
+  if (m === "PETG" || m.startsWith("PETG")) {
+    return `Generic PETG @${host}`;
+  }
+  if (m === "ABS") {
+    return `Generic ABS @${host}`;
+  }
+  if (m === "TPU") {
+    return `Generic TPU @Creality ${printerModel} 0.4 nozzle`;
+  }
+  // Fallback: Generic + material @ host (may not exist for exotic types)
+  return `Generic ${material} @${host}`;
+}
+
+export function suggestCompatiblePrinter(
   canonical: OpenFilamentProfileV1,
-): Record<string, unknown> {
-  const nameParts = [
+  opts?: Pick<CrealityConvertOpts, "nozzleDiameterMm" | "printerModel">,
+): string {
+  const model =
+    opts?.printerModel ??
+    canonical.context.printerModel?.replace(/^Creality\s+/i, "") ??
+    "K2 Plus";
+  const nozzleMm =
+    opts?.nozzleDiameterMm ??
+    canonical.context.nozzleDiameterMm ??
+    0.4;
+  return `Creality ${model} ${formatNozzle(nozzleMm)} nozzle`;
+}
+
+export function buildCrealityInfoFile(input: {
+  userId: string;
+  settingId: string;
+  baseId?: string;
+  updatedTime?: number;
+}): string {
+  const updated = input.updatedTime ?? Math.floor(Date.now() / 1000);
+  return [
+    "sync_info = ",
+    `user_id = ${input.userId}`,
+    `setting_id = ${input.settingId}`,
+    `base_id = ${input.baseId ?? "GFSA04"}`,
+    `updated_time = ${updated}`,
+    "",
+  ].join("\n");
+}
+
+function buildPresetName(
+  canonical: OpenFilamentProfileV1,
+  printerHint: string,
+): string {
+  const parts = [
     canonical.filament.manufacturerName,
     canonical.filament.productName,
     canonical.filament.variantName,
   ].filter(Boolean);
-  const name =
-    nameParts.length > 0
-      ? `OF User — ${nameParts.join(" ")}`
-      : `OF User — ${canonical.title}`;
+  const head =
+    parts.length > 0 ? parts.join(" ") : canonical.title.replace(/^OF\s+/i, "");
+  return `${head} @${printerHint}`;
+}
 
-  const nozzle =
+/**
+ * Convert canonical profile → Creality Print **user wrapper** JSON
+ * (string-array overrides + inherits), matching observed Creality Print 7.0 files.
+ */
+export function convertCanonicalToCrealityUserPreset(
+  canonical: OpenFilamentProfileV1,
+  opts: CrealityConvertOpts = {},
+): Record<string, unknown> {
+  const printerModel =
+    opts.printerModel ??
+    canonical.context.printerModel?.replace(/^Creality\s+/i, "") ??
+    "K2 Plus";
+  const nozzleMm =
+    opts.nozzleDiameterMm ?? canonical.context.nozzleDiameterMm ?? 0.4;
+  const nozzleKnown =
+    opts.nozzleDiameterMm != null ||
+    canonical.context.nozzleDiameterMm != null;
+  const nozzle = formatNozzle(nozzleMm);
+  const printerHint = `Creality ${printerModel} ${nozzle} nozzle`;
+  const material = normalizeMaterial(canonical.filament.materialCode);
+  const preferHp = opts.preferHpForAsa !== false;
+  const inherits =
+    opts.inherits ??
+    pickInherits(material, printerModel, nozzle, preferHp, nozzleKnown);
+  const name = buildPresetName(canonical, printerHint);
+
+  const nozzleTemp =
     canonical.thermal.nozzleTempOtherLayersC ??
-    canonical.thermal.nozzleTempFirstLayerC ??
-    null;
-  const bed =
+    canonical.thermal.nozzleTempFirstLayerC;
+  const bedTemp =
     canonical.thermal.bedTempOtherLayersC ??
-    canonical.thermal.bedTempFirstLayerC ??
-    null;
+    canonical.thermal.bedTempFirstLayerC;
 
-  return {
-    type: "filament",
+  const preset: Record<string, unknown> = {
+    base_id: opts.baseId ?? "GFSA04",
+    from: "User",
+    inherits,
+    is_custom_defined: "0",
     name,
-    from: "OpenFilament",
-    instantiation: "user",
-    inherits: UNKNOWN,
-    filament_settings_id: name,
-    filament_vendor: canonical.filament.manufacturerName ?? UNKNOWN,
-    filament_type: canonical.filament.materialCode ?? UNKNOWN,
-    filament_diameter: canonical.filament.diameterMm ?? null,
-    filament_density: canonical.filament.densityGCm3 ?? null,
-    filament_colour: canonical.filament.primaryColorHex ?? UNKNOWN,
-    nozzle_temperature: nozzle,
-    nozzle_temperature_initial_layer:
-      canonical.thermal.nozzleTempFirstLayerC ?? nozzle,
-    hot_plate_temp: bed,
-    hot_plate_temp_initial_layer: canonical.thermal.bedTempFirstLayerC ?? bed,
-    chamber_temperature: canonical.thermal.chamberTempC ?? null,
-    filament_flow_ratio: canonical.extrusion.flowRatio ?? null,
-    filament_max_volumetric_speed: canonical.extrusion.maxVolumetricFlowMm3s ?? null,
-    pressure_advance: canonical.extrusion.pressureAdvance ?? null,
-    fan_min_speed: canonical.cooling.fanMinPercent ?? null,
-    fan_max_speed: canonical.cooling.fanMaxPercent ?? null,
-    bridge_fan_speed: canonical.cooling.bridgeFanPercent ?? null,
-    close_fan_the_first_x_layers: canonical.cooling.fanDisableFirstLayers ?? null,
-    filament_retraction_length: canonical.retraction.retractionDistanceMm ?? null,
-    filament_retraction_speed: canonical.retraction.retractionSpeedMms ?? null,
-    filament_deretraction_speed: canonical.retraction.deretractionSpeedMms ?? null,
-    filament_z_hop: canonical.retraction.zHopMm ?? null,
-    filament_notes: [
-      SYNTHETIC_MARK,
-      canonical.provenance.isSyntheticFixture
-        ? "Source profile marked isSyntheticFixture=true"
-        : null,
-      canonical.provenance.sourceNotes,
-    ]
-      .filter(Boolean)
-      .join("\n"),
-    // Explicitly not claimed as real Creality system / CFS fields:
-    creality_filament_id: UNKNOWN,
-    cfs_material_id: UNKNOWN,
-    cfs_color_id: UNKNOWN,
-    rfid_payload_hex: UNKNOWN,
-    open_filament: {
-      schemaVersion: canonical.schemaVersion,
-      profileId: canonical.id ?? null,
-      synthetic: canonical.provenance.isSyntheticFixture,
-      unknownFields: [
-        "inherits",
-        "creality_filament_id",
-        "cfs_material_id",
-        "cfs_color_id",
-        "rfid_payload_hex",
-      ],
-    },
+    version: opts.version ?? "26.7.1.21",
   };
+
+  const filamentSettingsId = asStringArray(name);
+  if (filamentSettingsId) preset.filament_settings_id = filamentSettingsId;
+
+  const vendor = asStringArray(canonical.filament.manufacturerName);
+  if (vendor) preset.filament_vendor = vendor;
+
+  const filamentType = asStringArray(canonical.filament.materialCode);
+  if (filamentType) preset.filament_type = filamentType;
+
+  const colour = asStringArray(canonical.filament.primaryColorHex);
+  if (colour) preset.default_filament_colour = colour;
+
+  const density = asStringArray(canonical.filament.densityGCm3);
+  if (density) preset.filament_density = density;
+
+  const diameter = asStringArray(canonical.filament.diameterMm);
+  if (diameter) preset.filament_diameter = diameter;
+
+  const maxVol = asStringArray(canonical.extrusion.maxVolumetricFlowMm3s);
+  if (maxVol) preset.filament_max_volumetric_speed = maxVol;
+
+  const flow = asStringArray(canonical.extrusion.flowRatio);
+  if (flow) preset.filament_flow_ratio = flow;
+
+  const pa = asStringArray(canonical.extrusion.pressureAdvance);
+  if (pa) preset.pressure_advance = pa;
+
+  if (nozzleTemp != null) {
+    preset.nozzle_temperature = asStringArray(nozzleTemp);
+  }
+  if (canonical.thermal.nozzleTempFirstLayerC != null) {
+    preset.nozzle_temperature_initial_layer = asStringArray(
+      canonical.thermal.nozzleTempFirstLayerC,
+    );
+  }
+  if (canonical.thermal.nozzleTempMaxC != null) {
+    preset.nozzle_temperature_range_high = asStringArray(
+      canonical.thermal.nozzleTempMaxC,
+    );
+  }
+  if (canonical.thermal.nozzleTempMinC != null) {
+    preset.nozzle_temperature_range_low = asStringArray(
+      canonical.thermal.nozzleTempMinC,
+    );
+  }
+
+  if (bedTemp != null) {
+    preset.textured_plate_temp = asStringArray(bedTemp);
+    preset.hot_plate_temp = asStringArray(bedTemp);
+  }
+  if (canonical.thermal.bedTempFirstLayerC != null) {
+    preset.textured_plate_temp_initial_layer = asStringArray(
+      canonical.thermal.bedTempFirstLayerC,
+    );
+    preset.hot_plate_temp_initial_layer = asStringArray(
+      canonical.thermal.bedTempFirstLayerC,
+    );
+  }
+
+  const fanMin = asStringArray(canonical.cooling.fanMinPercent);
+  if (fanMin) preset.fan_min_speed = fanMin;
+  const fanMax = asStringArray(canonical.cooling.fanMaxPercent);
+  if (fanMax) preset.fan_max_speed = fanMax;
+  const bridgeFan = asStringArray(canonical.cooling.bridgeFanPercent);
+  if (bridgeFan) preset.bridge_fan_speed = bridgeFan;
+  const closeFan = asStringArray(canonical.cooling.fanDisableFirstLayers);
+  if (closeFan) preset.close_fan_the_first_x_layers = closeFan;
+
+  const retract = asStringArray(canonical.retraction.retractionDistanceMm);
+  if (retract) preset.filament_retraction_length = retract;
+  const retractSpeed = asStringArray(canonical.retraction.retractionSpeedMms);
+  if (retractSpeed) preset.filament_retraction_speed = retractSpeed;
+
+  const notes: string[] = ["Open Filament user preset"];
+  if (canonical.provenance.isSyntheticFixture) {
+    notes.push("Source: seed catalog data");
+  }
+  if (canonical.provenance.sourceNotes) {
+    notes.push(canonical.provenance.sourceNotes);
+  }
+  preset.filament_notes = [notes.join(" — ")];
+
+  return preset;
+}
+
+export function suggestedCrealityFileName(
+  canonical: OpenFilamentProfileV1,
+  opts?: CrealityConvertOpts,
+): string {
+  const preset = convertCanonicalToCrealityUserPreset(canonical, opts);
+  return `${String(preset.name)}.json`;
 }

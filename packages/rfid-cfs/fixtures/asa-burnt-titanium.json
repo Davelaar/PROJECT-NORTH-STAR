@@ -1,0 +1,31 @@
+{
+  "description": "CFS-compatible ASA payload (community AES-128-ECB format)",
+  "format": "creality-cfs-v1",
+  "material": "ASA",
+  "materialCode": "100007",
+  "color": "#A52A2A",
+  "plaintextAscii": "OF1241200A2100007#A52A2A033000000100000000000000",
+  "ciphertextHex": "570700bc6689d0e4dbc0840f249691dcb1050d9143427d5906342c43383f1a02fac8f07509292df943d4cdf64cba06a1",
+  "blocksHex": {
+    "block4": "570700bc6689d0e4dbc0840f249691dc",
+    "block5": "b1050d9143427d5906342c43383f1a02",
+    "block6": "fac8f07509292df943d4cdf64cba06a1"
+  },
+  "fields": {
+    "batch": "OF1",
+    "date": "24120",
+    "supplier": "0A2",
+    "material": "100007",
+    "color": "#A52A2A",
+    "length": "0330",
+    "serial": "000001",
+    "reserve": "00000000000000"
+  },
+  "knownCommunityVector": {
+    "note": "HyperPLA plaintext from flamebarke README — same data key",
+    "plaintextAscii": "1A5241201B3D010010000000033000000100000000000000",
+    "ciphertextHex": "07881a468b7d754a76a07c9ebb452b63e07623e57aa4dfc8f23bb22f645dc64bfac8f07509292df943d4cdf64cba06a1",
+    "uid": "35B94A19",
+    "keyAHex": "239e7fe23653"
+  }
+}

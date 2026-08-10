@@ -7,8 +7,8 @@ Web (Next.js) ──HTTP──► API (Fastify) ──► SQLite (Drizzle)
                               │
                               ├── canonical-profile
                               ├── slicer-creality / slicer-orca
-                              └── rfid-cfs (research stub)
-Local Bridge (Rust, loopback) ── privileged OS / NFC later
+                              └── rfid-cfs (CFS-compatible codec)
+Local Bridge (Rust, loopback) ── slicer install + RFID simulate
 ```
 
 ## Invariants
@@ -17,8 +17,8 @@ Local Bridge (Rust, loopback) ── privileged OS / NFC later
 2. Slicer JSON and RFID bytes are derived adapters.
 3. Unknown numbers are `null`, never sentinel `0`.
 4. Manufacturer claims ≠ community calibrations.
-5. Synthetic fixtures are always flagged.
-6. Web never talks to NFC or arbitrary filesystem paths; bridge owns that later.
+5. Seed / synthetic fixtures are always flagged.
+6. Web never talks to arbitrary filesystem paths; bridge owns allowlisted installs and RFID simulate.
 
 ## Monorepo layout
 
@@ -31,4 +31,4 @@ Local Bridge (Rust, loopback) ── privileged OS / NFC later
 
 - Public read APIs are unauthenticated.
 - Profile create / confirm / failure require Bearer tokens (hashed in `api_tokens`).
-- Bridge binds loopback only; current stub is not a security boundary (see SECURITY.md).
+- Bridge binds loopback only with shared-secret token + filament path allowlist (see SECURITY.md).
