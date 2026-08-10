@@ -184,7 +184,7 @@ export const messages: Messages = {
       "已有相同喷嘴尺寸但来自另一台打印机的设置。温度、流量和喷嘴尺寸仍然是有用的起点；正式依赖前请验证你的打印机特性。",
     generatedStarterProfile: "生成的入门配置文件",
     generatedStarterProfileBody:
-      "目前还没有实测或相近配置文件。OpenFilament 可以根据目录/厂家参数和该打印机类别的通用打印机模板生成 Creality Print 入门预设。这些数值是计算得出且未测试的；用于正式打印前请先校准。",
+      "目前还没有精确匹配的配置文件。OpenFilament 可以根据目录/厂家参数和该打印机类别的通用打印机模板，为所选导出格式组合一个入门配置文件。这些数值是计算得出且未测试的；用于正式打印前请先校准。",
     downloadStarterProfile: "下载入门配置文件",
     defaultNozzleNote: "在你选择喷嘴之前，默认显示 0.4 mm。",
     highConfidence: "高可信度",

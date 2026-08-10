@@ -217,11 +217,24 @@ export default async function VariantPage({
     measured[0]?.uuid ??
     profiles[0]?.uuid ??
     null;
-  const starterExportParams = new URLSearchParams({
-    nozzleDiameterMm: String(selectedNozzle),
-  });
-  if (selectedPrinter) starterExportParams.set("printerUuid", selectedPrinter);
-  const starterExportHref = `/api/v1/variants/${variant.uuid}/exports/creality-starter?${starterExportParams.toString()}`;
+  function starterExportHref(format: string) {
+    const params = new URLSearchParams({
+      format,
+      nozzleDiameterMm: String(selectedNozzle),
+    });
+    if (selectedPrinter) params.set("printerUuid", selectedPrinter);
+    return `/api/v1/variants/${variant.uuid}/exports/starter?${params.toString()}`;
+  }
+  const starterFormats = [
+    { format: "creality", label: messages.export.formats.creality },
+    { format: "orca", label: messages.export.formats.orca },
+    { format: "prusaslicer", label: messages.export.formats.prusaslicer },
+    { format: "bambu", label: messages.export.formats.bambu },
+    {
+      format: "openfilamentprofile",
+      label: messages.export.formats.openfilamentprofile,
+    },
+  ];
 
   function yesNo(v: boolean | undefined): string {
     if (v == null) return "—";
@@ -375,7 +388,7 @@ export default async function VariantPage({
               {messages.export.downloadForSlicer}
             </Link>
           ) : (
-            <a className="button secondary" href={starterExportHref}>
+            <a className="button secondary" href="#starter-profile">
               {m.downloadStarterProfile}
             </a>
           )}
@@ -569,14 +582,20 @@ export default async function VariantPage({
       {renderProfileGroup(m.catalogProfiles, catalogish)}
       {renderProfileGroup(m.starterProfiles, starter)}
       {!firstExportUuid ? (
-        <section className="profile-group panel">
+        <section className="profile-group panel" id="starter-profile">
           <h3>{m.generatedStarterProfile}</h3>
           <p className="banner-warn">{m.generatedStarterProfileBody}</p>
-          <p>
-            <a className="button" href={starterExportHref}>
-              {m.downloadStarterProfile}
-            </a>
-          </p>
+          <div className="home-cta-links">
+            {starterFormats.map((item) => (
+              <a
+                key={item.format}
+                className="button secondary"
+                href={starterExportHref(item.format)}
+              >
+                {m.downloadStarterProfile} — {item.label}
+              </a>
+            ))}
+          </div>
         </section>
       ) : null}
 

@@ -181,7 +181,7 @@ export const messages: Messages = {
       "Hay ajustes disponibles para el mismo tamaño de boquilla en otra impresora. Temperatura, flujo y tamaño de boquilla siguen siendo buenos puntos de partida; verifica el comportamiento específico de tu impresora antes de confiar en ellos.",
     generatedStarterProfile: "Perfil inicial generado",
     generatedStarterProfileBody:
-      "Aún no existe un perfil medido ni comparable. OpenFilament puede generar un preset inicial de Creality Print con valores del catálogo/fabricante y una plantilla genérica de impresora para esta clase de impresora. Los valores son calculados y no probados; calibra antes de usarlo en impresiones de producción.",
+      "Aún no existe un perfil exacto. OpenFilament puede componer un perfil inicial para el formato de exportación elegido con valores del catálogo/fabricante y una plantilla genérica de impresora para esta clase de impresora. Los valores son calculados y no probados; calibra antes de usarlo en impresiones de producción.",
     downloadStarterProfile: "Descargar perfil inicial",
     defaultNozzleNote: "Mostrando 0,4 mm por defecto hasta que elijas una boquilla.",
     highConfidence: "Confianza alta",

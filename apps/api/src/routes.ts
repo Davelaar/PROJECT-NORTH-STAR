@@ -61,6 +61,18 @@ declare module "fastify" {
   }
 }
 
+const starterFormatIds = [
+  "creality",
+  "orca",
+  "prusaslicer",
+  "bambu",
+  "openfilamentprofile",
+] as const;
+type StarterFormatId = (typeof starterFormatIds)[number];
+function isStarterFormatId(value: string): value is StarterFormatId {
+  return starterFormatIds.includes(value as StarterFormatId);
+}
+
 async function requireAuth(request: {
   headers: { authorization?: string; cookie?: string };
   server: FastifyInstance;
@@ -774,10 +786,19 @@ export async function registerRoutes(app: FastifyInstance) {
 
   app.get<{
     Params: { uuid: string };
-    Querystring: { printerUuid?: string; nozzleDiameterMm?: string };
+    Querystring: {
+      printerUuid?: string;
+      nozzleDiameterMm?: string;
+      format?: string;
+    };
   }>(
-    "/api/v1/variants/:uuid/exports/creality-starter",
+    "/api/v1/variants/:uuid/exports/starter",
     async (req, reply) => {
+      const requestedFormat = req.query.format ?? "openfilamentprofile";
+      if (!isStarterFormatId(requestedFormat)) {
+        return badRequest(reply, "Unsupported starter export format");
+      }
+      const format = requestedFormat;
       const nozzleDiameterMm = Number(req.query.nozzleDiameterMm ?? "0.4");
       if (!Number.isFinite(nozzleDiameterMm) || nozzleDiameterMm <= 0) {
         return badRequest(reply, "nozzleDiameterMm must be a positive number");
@@ -790,22 +811,62 @@ export async function registerRoutes(app: FastifyInstance) {
       );
       if (!profile) return notFound(reply, "Variant or printer not found");
 
-      const preset = convertCanonicalToCrealityUserPreset(profile, {
-        nozzleDiameterMm,
-        printerModel: profile.context.printerModel ?? undefined,
-      });
-      const suggestedFileName = buildExportFilename({
-        formatId: "creality",
+      const filename = buildExportFilename({
+        formatId: format,
         manufacturerName: profile.filament.manufacturerName,
         productName: profile.filament.productName,
         variantName: profile.filament.variantName,
         printerModel: profile.context.printerModel,
         nozzleDiameterMm,
       });
-      reply
-        .header("Content-Disposition", `attachment; filename="${suggestedFileName}"`)
-        .type("application/json; charset=utf-8");
-      return JSON.stringify(preset, null, 2);
+      reply.header("Content-Disposition", `attachment; filename="${filename}"`);
+
+      if (format === "creality") {
+        const preset = convertCanonicalToCrealityUserPreset(profile, {
+          nozzleDiameterMm,
+          printerModel: profile.context.printerModel ?? undefined,
+        });
+        reply.type("application/json; charset=utf-8");
+        return JSON.stringify(preset, null, 2);
+      }
+      if (format === "orca") {
+        const preset = convertCanonicalToOrcaFilamentPreset(profile, {
+          nozzleDiameterMm,
+          printerModel: profile.context.printerModel ?? undefined,
+        });
+        reply.type("application/json; charset=utf-8");
+        return JSON.stringify(preset, null, 2);
+      }
+      if (format === "prusaslicer") {
+        reply.type("text/plain; charset=utf-8");
+        return convertCanonicalToPrusaConfigBundle(profile);
+      }
+      if (format === "bambu") {
+        const preset = convertCanonicalToBambuFilamentPreset(profile);
+        reply.type("application/json; charset=utf-8");
+        return JSON.stringify(preset, null, 2);
+      }
+      if (format === "openfilamentprofile") {
+        reply.type("application/json; charset=utf-8");
+        return JSON.stringify(profile, null, 2);
+      }
+    },
+  );
+
+  app.get<{
+    Params: { uuid: string };
+    Querystring: { printerUuid?: string; nozzleDiameterMm?: string };
+  }>(
+    "/api/v1/variants/:uuid/exports/creality-starter",
+    async (req, reply) => {
+      const qs = new URLSearchParams({
+        format: "creality",
+        nozzleDiameterMm: req.query.nozzleDiameterMm ?? "0.4",
+      });
+      if (req.query.printerUuid) qs.set("printerUuid", req.query.printerUuid);
+      return reply.redirect(
+        `/api/v1/variants/${req.params.uuid}/exports/starter?${qs.toString()}`,
+      );
     },
   );
 
