@@ -34,7 +34,14 @@ Remove the old MX pointing at `openfilament.nl.` and the old SPF that mentions `
 v=DKIM1; h=sha256; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn3iXt3ibd3L4iuQP1sIo2n3TuRVv51aioS+vZx8G8raoEbgmLnqX2pev6gMWfoNcfGRQj3K2N1uLbWUr/KVd5ZcXivJrf9J7lRAvUyXrJzUPj8H7KOtBjQh0WgSvEyyUgo1pADcTJrm3udBaJM4k+IFnGscIZJp1kiH2yomkZaXmWUCCNENjVlnItFHLTtLgHgq46BhATsJG5CCR6pPTvPpyrfg5oS4AEz4uLYrrz8bikjiOFhni2EN3hGvckUjEBuEs01YZsnhLBX1ffN9PtyoiWhjQiQ2Dy1Df6rCipfq3x6k5bnJznbzc1vOD/nNbgZYIOc7D9wH+ByPH+6VujwIDAQAB
 ```
 
-After DNS propagates, issue a TLS cert for `mail.openfilament.nl` and point Postfix/Dovecot at it (currently mail TLS still uses the kapitaalbot cert until that step).
+### Common TransIP mistake
+
+`default._domainkey` must be the **DKIM** string (`v=DKIM1; … p=…`), **not** the DMARC policy.  
+If `dig TXT default._domainkey.openfilament.nl` returns `v=DMARC1…`, the DKIM record is wrong and signatures will fail.
+
+### Mail TLS
+
+`mail.openfilament.nl` uses a Let’s Encrypt cert managed by Caddy, synced to Postfix/Dovecot via `/usr/local/sbin/of-sync-mail-cert.sh`.
 
 ## Server files
 
