@@ -296,7 +296,7 @@ export const messages: Messages = {
   rfid: {
     heading: "RFID 识别",
     warning:
-      "Creality CFS：先在服务器编码，再在浏览器写入并校验（内存测试，或 OF1 Web Serial / USB）。OpenPrintTag 是另一套 NFC 方案——字段映射已可用，完整二进制编码规划中。二维码与搜索仍是同等可选方式。",
+      "Creality CFS：先在服务器编码，再在浏览器写入并校验（内存测试，或 OF1 Web Serial / USB）。OpenPrintTag 是另一套 NFC 格式，已提供 NDEF/CBOR 编码，并在受支持环境中提供 Web NFC 写入路径。二维码与搜索仍是同等可选方式。",
     materialCode: "材料（ASA、PLA、PETG…）",
     colorToken: "颜色（#RRGGBB）",
     weight: "料盘重量或长度代码",
@@ -307,7 +307,7 @@ export const messages: Messages = {
     browserBanner:
       "先通过 API 编码，再在浏览器用内存演示或 OF1 串口/USB 读写器写入并回读校验。只有回读密文且 API 校验通过后，才视为成功。",
     openPrintTagNote:
-      "OpenPrintTag（ISO 15693 + NDEF）与 CFS 不是同一套方案。二进制编码仍在规划中。",
+      "OpenPrintTag（ISO 15693 + NDEF）与 CFS 不是同一套方案。NDEF/CBOR 编码已可用；实体写入取决于浏览器和标签支持。",
     alternativesPrefix: "同等替代方式：",
     altScanQr: "扫描二维码",
     altPrintQr: "打印二维码标签",
@@ -446,7 +446,7 @@ export const messages: Messages = {
       "CFS 标签使用 MIFARE Classic。编码与校验在 API 完成；浏览器写入通过 OF1 Web Serial 或 USB，也可使用可选 PC/SC 助手。",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag 是另一套开放 NFC 格式（NDEF + CBOR），不是 CFS。字段预览已可用；完整二进制编码规划中。",
+      "OpenPrintTag 是另一套开放 NFC 格式（NDEF + CBOR），不是 CFS。字段预览、二进制编码和 Web NFC 写入路径已可用，但需要浏览器和标签支持。",
   },
   printers: {
     addHeading: "添加打印机",
@@ -583,6 +583,12 @@ export const messages: Messages = {
     extendHint: "再购买 12 个月会从当前到期日起延长访问。",
     loginRequired: "请登录以购买或管理 My Spools Cloud。",
     checkoutUnavailable: "结账尚不可用（配置待完成）。",
+    checkoutTestMode:
+      "结账当前运行在 Stripe 测试模式。真实付款尚未启用。",
+    checkoutLiveBlocked:
+      "Stripe live 密钥已配置，但真实付款仍被生产安全开关阻止。",
+    checkoutMissingConfig:
+      "结账尚不可用，因为 Stripe 配置不完整。",
     termsLink: "条款",
     privacyLink: "隐私",
     retentionHint: "到期后您仍有宽限期，然后是只读导出窗口，之后删除 Cloud 库存。My Spools Local 仍可完全使用。",

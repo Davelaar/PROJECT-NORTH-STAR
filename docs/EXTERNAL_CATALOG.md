@@ -36,7 +36,15 @@ pnpm db:reset                    # fixtures + OFD import when dataset is present
 
 After catalog import, `pnpm db:import-ofd-starters` creates **exportable starter profiles** for Generic FFF at nozzle diameters **0.2, 0.25, 0.4, 0.6, 0.8, and 1.0 mm**, using manufacturer mid-range nozzle/bed temps. These are labeled `ofd-starter:…` — **not** community-measured calibrations. Default nozzle when unspecified is **0.4 mm**.
 
-OFD UUIDs are preserved. No slicer calibrations or shrinkage are invented beyond those mid-range starters.
+Runtime can also generate an on-demand **calculated starter profile** for a selected variant, printer and nozzle:
+
+```http
+GET /api/v1/variants/{uuid}/exports/starter?format={openfilamentprofile|orca|creality|prusaslicer|bambu}&printerUuid={uuid}&nozzleDiameterMm=0.4
+```
+
+That runtime profile combines catalog/manufacturer filament values with the printer metadata and generic printer-template heuristics documented in [`PRINTERS.md`](PRINTERS.md). It is explicitly marked as calculated, untested and not measured.
+
+OFD UUIDs are preserved. No measured slicer calibrations or shrinkage are invented by the importer; generated starters remain starter templates, not community measurements.
 
 Attribution is appreciated by upstream; see their README.
 

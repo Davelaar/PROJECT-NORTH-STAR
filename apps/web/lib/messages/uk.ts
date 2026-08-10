@@ -295,7 +295,7 @@ export const messages: Messages = {
   rfid: {
     heading: "Ідентифікація RFID",
     warning:
-      "Creality CFS: кодування на сервері, запис і перевірка в браузері (тест пам'яті або OF1 Web Serial / USB). OpenPrintTag — окремий NFC-формат: поля вже є, повне кодування в планах. QR і пошук залишаються рівноцінними.",
+      "Creality CFS: кодування на сервері, запис і перевірка в браузері (тест пам'яті або OF1 Web Serial / USB). OpenPrintTag — окремий NFC-формат із кодуванням NDEF/CBOR і записом через Web NFC там, де це підтримується. QR і пошук залишаються рівноцінними.",
     materialCode: "Матеріал (ASA, PLA, PETG…)",
     colorToken: "Колір (#RRGGBB)",
     weight: "Вага котушки або код довжини",
@@ -304,7 +304,7 @@ export const messages: Messages = {
     submit: "Закодувати CFS",
     simulate: "Симуляція запису й перевірки (опційний helper)",
     browserBanner: "Кодуйте через API, потім записуйте й перевіряйте зворотним читанням у браузері через PoC у пам'яті або обладнання OF1 Serial/USB. Успіх фіксується лише після зворотного читання й перевірки API.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) — окрема схема від CFS. Бінарне кодування заплановане.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) — окрема схема від CFS. Кодування NDEF/CBOR доступне; фізичний запис залежить від браузера й мітки.",
     alternativesPrefix: "Рівноцінні альтернативи:",
     altScanQr: "сканувати QR",
     altPrintQr: "надрукувати QR-мітку",
@@ -439,7 +439,7 @@ export const messages: Messages = {
       "Мітки CFS — це MIFARE Classic. Кодування й перевірка на API; запис у браузері через OF1 Web Serial або USB, або опційний PC/SC-helper.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag — окремий відкритий NFC-формат (NDEF + CBOR), не CFS. Попередній перегляд полів уже є; повне бінарне кодування планується.",
+      "OpenPrintTag — окремий відкритий NFC-формат (NDEF + CBOR), не CFS. Попередній перегляд полів, бінарне кодування та шлях запису Web NFC доступні там, де це підтримують браузер і мітка.",
   },
   printers: {
     addHeading: "Додати принтер",
@@ -579,6 +579,12 @@ export const messages: Messages = {
     extendHint: "Купівля ще 12 місяців продовжує доступ від поточної дати закінчення.",
     loginRequired: "Увійдіть, щоб купити або керувати My Spools Cloud.",
     checkoutUnavailable: "Оплата ще недоступна (очікується налаштування).",
+    checkoutTestMode:
+      "Оплата працює в тестовому режимі Stripe. Реальні платежі ще не ввімкнено.",
+    checkoutLiveBlocked:
+      "Live-ключі Stripe налаштовані, але live-платежі ще заблоковані виробничим захисним прапорцем.",
+    checkoutMissingConfig:
+      "Оплата ще недоступна, бо конфігурація Stripe неповна.",
     termsLink: "Умови",
     privacyLink: "Конфіденційність",
     retentionHint:

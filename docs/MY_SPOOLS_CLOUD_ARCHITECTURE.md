@@ -16,6 +16,16 @@ Current implementation: `StripeOneTimeCloudProvider` with **Checkout `mode: paym
 
 Authorization for Cloud writes uses **internal entitlements/grants**, never a live Stripe call on each request.
 
+## Stripe mode and live-payment gate
+
+The offer endpoint reports `stripeMode`, `livePaymentsEnabled` and `checkoutAvailable` so the UI can distinguish:
+
+- Stripe test mode: real payments are not enabled.
+- Live keys present but `MY_SPOOLS_CLOUD_LIVE_PAYMENTS` is not `true`: checkout remains blocked by the production safety flag.
+- Missing price/key configuration: checkout is unavailable until Stripe config is completed.
+
+This is surfaced on `/my-spools/cloud`; the generic “configuration pending” message is only a fallback.
+
 ## Entitlement model
 
 - `cloud_payments` — one row per Checkout attempt / payment

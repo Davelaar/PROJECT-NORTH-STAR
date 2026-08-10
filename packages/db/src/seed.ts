@@ -398,10 +398,10 @@ async function seedFixtures(dbPath?: string) {
       tagTechnology: "ISO15693",
       tagCapacityBytes: null,
       requiresAuthentication: false,
-      encodingVersion: "planned-ndef-cbor",
+      encodingVersion: "ndef-cbor-v1",
       status: "active",
       notes:
-        "OpenPrintTag (ISO 15693 + NDEF application/vnd.openprinttag + CBOR). UUID/field mapping ships; binary encode planned (experimental). Spec: https://specs.openprinttag.org/ Catalog: https://openfilamentdatabase.org — see docs/OPENPRINTTAG.md. Not CFS.",
+        "OpenPrintTag (ISO 15693 + NDEF application/vnd.openprinttag + CBOR). UUID/field mapping and NDEF/CBOR encode ship in software; physical writes depend on browser and tag support. Spec: https://specs.openprinttag.org/ Catalog: https://openfilamentdatabase.org — see docs/OPENPRINTTAG.md. Not CFS.",
     })
     .run();
 

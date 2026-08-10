@@ -677,6 +677,9 @@ export type Messages = {
     extendHint: string;
     loginRequired: string;
     checkoutUnavailable: string;
+    checkoutTestMode: string;
+    checkoutLiveBlocked: string;
+    checkoutMissingConfig: string;
     termsLink: string;
     privacyLink: string;
     retentionHint: string;

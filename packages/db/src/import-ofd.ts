@@ -675,7 +675,17 @@ function ensureOpenPrintTagScheme(db: AppDb) {
     .from(schema.rfidSchemes)
     .where(eq(schema.rfidSchemes.uuid, OPENPRINTTAG_SCHEME_UUID))
     .get();
-  if (existing) return;
+  if (existing) {
+    db.update(schema.rfidSchemes)
+      .set({
+        encodingVersion: "ndef-cbor-v1",
+        notes:
+          "OpenPrintTag (ISO 15693 + NDEF application/vnd.openprinttag + CBOR). UUID/field mapping and NDEF/CBOR encode ship in software; physical writes depend on browser and tag support. Spec: https://specs.openprinttag.org/ Catalog: https://openfilamentdatabase.org — see docs/OPENPRINTTAG.md. Not CFS.",
+      })
+      .where(eq(schema.rfidSchemes.uuid, OPENPRINTTAG_SCHEME_UUID))
+      .run();
+    return;
+  }
   db.insert(schema.rfidSchemes)
     .values({
       uuid: OPENPRINTTAG_SCHEME_UUID,
@@ -685,10 +695,10 @@ function ensureOpenPrintTagScheme(db: AppDb) {
       tagTechnology: "ISO15693",
       tagCapacityBytes: null,
       requiresAuthentication: false,
-      encodingVersion: "planned-ndef-cbor",
+      encodingVersion: "ndef-cbor-v1",
       status: "active",
       notes:
-        "OpenPrintTag (ISO 15693 + NDEF application/vnd.openprinttag + CBOR). UUID/field mapping ships; binary encode planned. Spec: https://specs.openprinttag.org/ Catalog: https://openfilamentdatabase.org — see docs/OPENPRINTTAG.md. Not CFS.",
+        "OpenPrintTag (ISO 15693 + NDEF application/vnd.openprinttag + CBOR). UUID/field mapping and NDEF/CBOR encode ship in software; physical writes depend on browser and tag support. Spec: https://specs.openprinttag.org/ Catalog: https://openfilamentdatabase.org — see docs/OPENPRINTTAG.md. Not CFS.",
     })
     .run();
 }

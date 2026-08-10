@@ -275,6 +275,12 @@ export const cloudEn = {
     "Purchasing another 12 months extends access from the current expiry date.",
   loginRequired: "Sign in to buy or manage My Spools Cloud.",
   checkoutUnavailable: "Checkout is not available yet (configuration pending).",
+  checkoutTestMode:
+    "Checkout is running in Stripe test mode. Real payments are not enabled yet.",
+  checkoutLiveBlocked:
+    "Live Stripe keys are configured, but live payments are still blocked by the production safety flag.",
+  checkoutMissingConfig:
+    "Checkout is not available yet because Stripe configuration is incomplete.",
   termsLink: "Terms",
   privacyLink: "Privacy",
   retentionHint:

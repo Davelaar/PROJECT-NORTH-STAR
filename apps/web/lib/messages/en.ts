@@ -296,7 +296,7 @@ export const messages: Messages = {
   rfid: {
     heading: "RFID identification",
     warning:
-      "Creality CFS: encode on the server, then write and verify in the browser (memory test or OF1 Web Serial / USB). OpenPrintTag is a separate NFC format — field mapping is ready; full encode is planned. QR and search stay equal options.",
+      "Creality CFS: encode on the server, then write and verify in the browser (memory test or OF1 Web Serial / USB). OpenPrintTag is a separate NFC format with NDEF/CBOR encode and Web NFC write path where supported. QR and search stay equal options.",
     materialCode: "Material (ASA, PLA, PETG…)",
     colorToken: "Colour (#RRGGBB)",
     weight: "Spool weight or length code",
@@ -305,7 +305,7 @@ export const messages: Messages = {
     submit: "Encode CFS payload",
     simulate: "Simulate write and verify (optional helper)",
     browserBanner: "Encode on the API, then write and read-back verify in the browser via memory PoC or OF1 Serial/USB hardware. Success is reported only after ciphertext read-back and API verify.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) is a separate scheme from CFS. Binary encode is planned.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) is a separate scheme from CFS. NDEF/CBOR encode is available; physical writing depends on browser and tag support.",
     alternativesPrefix: "Equal alternatives:",
     altScanQr: "scan QR",
     altPrintQr: "print a QR label",
@@ -440,7 +440,7 @@ export const messages: Messages = {
       "CFS tags use MIFARE Classic. Encode and verify run on the API; browser write uses OF1 Web Serial or USB, or an optional PC/SC helper.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag is a separate open NFC format (NDEF + CBOR), not CFS. Field preview is available; full binary encode is planned.",
+      "OpenPrintTag is a separate open NFC format (NDEF + CBOR), not CFS. Field preview, binary encode and a Web NFC write path are available where browser and tag support allow it.",
   },
   printers: {
     addHeading: "Add a printer",

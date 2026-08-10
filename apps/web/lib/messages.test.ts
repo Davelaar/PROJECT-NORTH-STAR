@@ -14,7 +14,9 @@ describe("web-first product copy", () => {
   it("export primary path is download, helper is optional", () => {
     expect(en.export.installBridge.toLowerCase()).toMatch(/optional/);
     expect(en.export.noInstallClaim.toLowerCase()).toMatch(/not installed/);
-    expect(en.rfid.warning.toLowerCase()).toMatch(/planned|optional/);
+    expect(en.rfid.warning.toLowerCase()).toMatch(/ndef\/cbor/);
+    expect(en.rfid.warning.toLowerCase()).toMatch(/web nfc/);
+    expect(en.rfid.warning.toLowerCase()).toMatch(/qr and search stay equal/);
   });
 
   it("mentions default nozzle guidance on the homepage", () => {

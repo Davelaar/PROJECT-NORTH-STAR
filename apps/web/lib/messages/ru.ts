@@ -295,7 +295,7 @@ export const messages: Messages = {
   rfid: {
     heading: "Идентификация RFID",
     warning:
-      "Creality CFS: кодирование на сервере, запись и проверка в браузере (тест памяти или OF1 Web Serial / USB). OpenPrintTag — отдельный NFC-формат: поля уже есть, полная кодировка в планах. QR и поиск остаются равноценными.",
+      "Creality CFS: кодирование на сервере, запись и проверка в браузере (тест памяти или OF1 Web Serial / USB). OpenPrintTag — отдельный NFC-формат с кодированием NDEF/CBOR и записью через Web NFC там, где это поддерживается. QR и поиск остаются равноценными.",
     materialCode: "Материал (ASA, PLA, PETG…)",
     colorToken: "Цвет (#RRGGBB)",
     weight: "Вес катушки или код длины",
@@ -304,7 +304,7 @@ export const messages: Messages = {
     submit: "Закодировать CFS",
     simulate: "Симуляция записи и проверки (опциональный helper)",
     browserBanner: "Кодируйте через API, затем запишите и проверьте обратным чтением в браузере через PoC в памяти или оборудование OF1 Serial/USB. Успех фиксируется только после обратного чтения и проверки API.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) — отдельная схема от CFS. Бинарное кодирование запланировано.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) — отдельная схема от CFS. Кодирование NDEF/CBOR доступно; физическая запись зависит от браузера и метки.",
     alternativesPrefix: "Равноценные альтернативы:",
     altScanQr: "сканировать QR",
     altPrintQr: "напечатать QR-метку",
@@ -439,7 +439,7 @@ export const messages: Messages = {
       "Метки CFS — это MIFARE Classic. Кодирование и проверка на API; запись в браузере через OF1 Web Serial или USB, либо опциональный PC/SC-helper.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag — отдельный открытый NFC-формат (NDEF + CBOR), не CFS. Предпросмотр полей уже есть; полная бинарная кодировка планируется.",
+      "OpenPrintTag — отдельный открытый NFC-формат (NDEF + CBOR), не CFS. Предпросмотр полей, бинарное кодирование и путь записи Web NFC доступны там, где это поддерживают браузер и метка.",
   },
   printers: {
     addHeading: "Добавить принтер",
@@ -580,6 +580,12 @@ export const messages: Messages = {
     extendHint: "Покупка ещё 12 месяцев продлевает доступ с текущей даты окончания.",
     loginRequired: "Войдите, чтобы купить или управлять My Spools Cloud.",
     checkoutUnavailable: "Оплата пока недоступна (ожидается настройка).",
+    checkoutTestMode:
+      "Оплата работает в тестовом режиме Stripe. Реальные платежи пока не включены.",
+    checkoutLiveBlocked:
+      "Live-ключи Stripe настроены, но live-платежи всё ещё заблокированы производственным защитным флагом.",
+    checkoutMissingConfig:
+      "Оплата пока недоступна, потому что конфигурация Stripe неполная.",
     termsLink: "Условия",
     privacyLink: "Конфиденциальность",
     retentionHint:

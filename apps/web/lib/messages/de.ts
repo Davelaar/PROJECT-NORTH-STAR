@@ -295,7 +295,7 @@ export const messages: Messages = {
   rfid: {
     heading: "RFID-Identifikation",
     warning:
-      "Creality CFS: auf dem Server kodieren, dann im Browser schreiben und prüfen (Speichertest oder OF1 Web Serial / USB). OpenPrintTag ist ein eigenes NFC-Format — Feldmapping steht; volle Kodierung ist geplant. QR und Suche bleiben gleichwertig.",
+      "Creality CFS: auf dem Server kodieren, dann im Browser schreiben und prüfen (Speichertest oder OF1 Web Serial / USB). OpenPrintTag ist ein eigenes NFC-Format mit NDEF/CBOR-Kodierung und Web-NFC-Schreibpfad, wo unterstützt. QR und Suche bleiben gleichwertig.",
     materialCode: "Material (ASA, PLA, PETG…)",
     colorToken: "Farbe (#RRGGBB)",
     weight: "Spulengewicht oder Längencode",
@@ -304,7 +304,7 @@ export const messages: Messages = {
     submit: "CFS-Payload kodieren",
     simulate: "Schreiben und Prüfen simulieren (optionaler Helper)",
     browserBanner: "Über die API kodieren, dann im Browser per Speicher-PoC oder OF1 Serial/USB-Hardware schreiben und rücklesen-prüfen. Erfolg wird erst nach Rücklesen und API-Prüfung gemeldet.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) ist ein separates Schema von CFS. Binärkodierung ist geplant.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) ist ein separates Schema von CFS. NDEF/CBOR-Kodierung ist verfügbar; physisches Schreiben hängt von Browser- und Tag-Unterstützung ab.",
     alternativesPrefix: "Gleichwertige Alternativen:",
     altScanQr: "QR scannen",
     altPrintQr: "QR-Label drucken",
@@ -439,7 +439,7 @@ export const messages: Messages = {
       "CFS-Tags nutzen MIFARE Classic. Kodieren und Prüfen auf der API; Schreiben im Browser per OF1 Web Serial/USB oder optionalem PC/SC-Helper.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag ist ein separates offenes NFC-Format (NDEF + CBOR), nicht CFS. Feldvorschau ist da; vollständige Binärkodierung ist geplant.",
+      "OpenPrintTag ist ein separates offenes NFC-Format (NDEF + CBOR), nicht CFS. Feldvorschau, Binärkodierung und ein Web-NFC-Schreibpfad sind verfügbar, wo Browser und Tags dies unterstützen.",
   },
   printers: {
     addHeading: "Drucker hinzufügen",
@@ -581,6 +581,12 @@ export const messages: Messages = {
       "Ein weiterer Kauf von 12 Monaten verlängert den Zugang ab dem aktuellen Ablaufdatum.",
     loginRequired: "Melde dich an, um My Spools Cloud zu kaufen oder zu verwalten.",
     checkoutUnavailable: "Checkout ist noch nicht verfügbar (Konfiguration ausstehend).",
+    checkoutTestMode:
+      "Checkout läuft im Stripe-Testmodus. Echte Zahlungen sind noch nicht aktiviert.",
+    checkoutLiveBlocked:
+      "Live-Stripe-Schlüssel sind konfiguriert, aber Live-Zahlungen werden noch durch die Produktions-Sicherheitsflag blockiert.",
+    checkoutMissingConfig:
+      "Checkout ist noch nicht verfügbar, weil die Stripe-Konfiguration unvollständig ist.",
     termsLink: "AGB",
     privacyLink: "Datenschutz",
     retentionHint:

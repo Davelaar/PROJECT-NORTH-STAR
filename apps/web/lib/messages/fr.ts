@@ -295,7 +295,7 @@ export const messages: Messages = {
   rfid: {
     heading: "Identification RFID",
     warning:
-      "Creality CFS : encodez sur le serveur, puis écrivez et vérifiez dans le navigateur (test mémoire ou OF1 Web Serial / USB). OpenPrintTag est un format NFC distinct — le mapping est prêt ; l'encodage complet est prévu. QR et recherche restent équivalents.",
+      "Creality CFS : encodez sur le serveur, puis écrivez et vérifiez dans le navigateur (test mémoire ou OF1 Web Serial / USB). OpenPrintTag est un format NFC distinct avec encodage NDEF/CBOR et écriture Web NFC lorsque c’est pris en charge. QR et recherche restent équivalents.",
     materialCode: "Matière (ASA, PLA, PETG…)",
     colorToken: "Couleur (#RRGGBB)",
     weight: "Poids de bobine ou code de longueur",
@@ -304,7 +304,7 @@ export const messages: Messages = {
     submit: "Encoder la charge CFS",
     simulate: "Simuler écriture et vérification (helper optionnel)",
     browserBanner: "Encodez via l'API, puis écrivez et vérifiez la relecture dans le navigateur via le PoC mémoire ou le matériel OF1 Serial/USB. Le succès n'est signalé qu'après relecture et vérification API.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) est un schéma distinct du CFS. L'encodage binaire est prévu.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) est un schéma distinct du CFS. L’encodage NDEF/CBOR est disponible ; l’écriture physique dépend du navigateur et du tag.",
     alternativesPrefix: "Alternatives équivalentes :",
     altScanQr: "scanner un QR",
     altPrintQr: "imprimer une étiquette QR",
@@ -439,7 +439,7 @@ export const messages: Messages = {
       "Les tags CFS sont en MIFARE Classic. Encodage et vérif côté API ; écriture navigateur via OF1 Web Serial ou USB, ou helper PC/SC optionnel.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag est un format NFC ouvert distinct (NDEF + CBOR), pas le CFS. L'aperçu des champs est prêt ; l'encodage binaire complet est prévu.",
+      "OpenPrintTag est un format NFC ouvert distinct (NDEF + CBOR), pas le CFS. L’aperçu des champs, l’encodage binaire et un chemin d’écriture Web NFC sont disponibles lorsque le navigateur et le tag le permettent.",
   },
   printers: {
     addHeading: "Ajouter une imprimante",
@@ -581,6 +581,12 @@ export const messages: Messages = {
       "Acheter 12 mois de plus prolonge l’accès à partir de la date d’expiration actuelle.",
     loginRequired: "Connecte-toi pour acheter ou gérer My Spools Cloud.",
     checkoutUnavailable: "Le paiement n’est pas encore disponible (configuration en attente).",
+    checkoutTestMode:
+      "Le paiement fonctionne en mode test Stripe. Les paiements réels ne sont pas encore activés.",
+    checkoutLiveBlocked:
+      "Les clés Stripe live sont configurées, mais les paiements live restent bloqués par le drapeau de sécurité de production.",
+    checkoutMissingConfig:
+      "Le paiement n’est pas encore disponible car la configuration Stripe est incomplète.",
     termsLink: "Conditions",
     privacyLink: "Confidentialité",
     retentionHint:

@@ -1,6 +1,7 @@
 {
   "name": "@open-filament/rfid-openprinttag",
   "version": "0.1.0",
+  "description": "OpenPrintTag UUID mapping plus NDEF/CBOR encode helpers for OpenFilament",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",

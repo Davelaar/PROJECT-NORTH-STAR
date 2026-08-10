@@ -295,7 +295,7 @@ export const messages: Messages = {
   rfid: {
     heading: "Identificación RFID",
     warning:
-      "Creality CFS: codifica en el servidor, luego escribe y verifica en el navegador (prueba de memoria u OF1 Web Serial / USB). OpenPrintTag es un NFC aparte — el mapeo está listo; la codificación completa está planificada. QR y búsqueda siguen siendo equivalentes.",
+      "Creality CFS: codifica en el servidor, luego escribe y verifica en el navegador (prueba de memoria u OF1 Web Serial / USB). OpenPrintTag es un formato NFC aparte con codificación NDEF/CBOR y escritura Web NFC donde esté soportado. QR y búsqueda siguen siendo equivalentes.",
     materialCode: "Material (ASA, PLA, PETG…)",
     colorToken: "Color (#RRGGBB)",
     weight: "Peso de bobina o código de longitud",
@@ -304,7 +304,7 @@ export const messages: Messages = {
     submit: "Codificar carga CFS",
     simulate: "Simular escritura y verificación (helper opcional)",
     browserBanner: "Codifica en la API, luego escribe y verifica la relectura en el navegador mediante el PoC de memoria o hardware OF1 Serial/USB. El éxito se informa solo tras la relectura y verificación API.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) es un esquema separado de CFS. La codificación binaria está planificada.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) es un esquema separado de CFS. La codificación NDEF/CBOR está disponible; la escritura física depende del navegador y del tag.",
     alternativesPrefix: "Alternativas equivalentes:",
     altScanQr: "escanear QR",
     altPrintQr: "imprimir etiqueta QR",
@@ -439,7 +439,7 @@ export const messages: Messages = {
       "Los tags CFS usan MIFARE Classic. Codificación y verificación en la API; escritura en el navegador con OF1 Web Serial o USB, o helper PC/SC opcional.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag es un formato NFC abierto aparte (NDEF + CBOR), no CFS. La vista previa de campos está lista; la codificación binaria completa está planificada.",
+      "OpenPrintTag es un formato NFC abierto aparte (NDEF + CBOR), no CFS. La vista previa de campos, la codificación binaria y una ruta de escritura Web NFC están disponibles donde el navegador y el tag lo permitan.",
   },
   printers: {
     addHeading: "Añadir una impresora",
@@ -580,6 +580,12 @@ export const messages: Messages = {
       "Comprar otros 12 meses amplía el acceso desde la fecha de caducidad actual.",
     loginRequired: "Inicia sesión para comprar o gestionar My Spools Cloud.",
     checkoutUnavailable: "El pago aún no está disponible (configuración pendiente).",
+    checkoutTestMode:
+      "El pago está funcionando en modo de prueba de Stripe. Los pagos reales aún no están activados.",
+    checkoutLiveBlocked:
+      "Las claves live de Stripe están configuradas, pero los pagos live siguen bloqueados por la bandera de seguridad de producción.",
+    checkoutMissingConfig:
+      "El pago aún no está disponible porque la configuración de Stripe está incompleta.",
     termsLink: "Términos",
     privacyLink: "Privacidad",
     retentionHint:

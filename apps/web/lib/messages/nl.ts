@@ -295,7 +295,7 @@ export const messages: Messages = {
   rfid: {
     heading: "RFID-identificatie",
     warning:
-      "Creality CFS: encodeer op de server, schrijf en controleer daarna in de browser (geheugentest of OF1 Web Serial / USB). OpenPrintTag is een apart NFC-formaat — veldmapping is klaar; volledige encode volgt. QR en zoeken blijven gelijkwaardig.",
+      "Creality CFS: encodeer op de server, schrijf en controleer daarna in de browser (geheugentest of OF1 Web Serial / USB). OpenPrintTag is een apart NFC-formaat met NDEF/CBOR-encode en Web NFC-schrijfpad waar ondersteund. QR en zoeken blijven gelijkwaardig.",
     materialCode: "Materiaal (ASA, PLA, PETG…)",
     colorToken: "Kleur (#RRGGBB)",
     weight: "Spoelgewicht of lengtecode",
@@ -304,7 +304,7 @@ export const messages: Messages = {
     submit: "CFS-payload encoderen",
     simulate: "Schrijven en controleren simuleren (optionele helper)",
     browserBanner: "Encodeer via de API, schrijf en lees-terug-verificeer in de browser via geheugen-PoC of OF1 Serial/USB-hardware. Succes wordt pas gemeld na teruggelezen en API-verificatie.",
-    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) is een apart schema van CFS. Binaire codering staat gepland.",
+    openPrintTagNote: "OpenPrintTag (ISO 15693 + NDEF) is een apart schema van CFS. NDEF/CBOR-encode is beschikbaar; fysiek schrijven hangt af van browser- en tagondersteuning.",
     alternativesPrefix: "Gelijkwaardige alternatieven:",
     altScanQr: "QR scannen",
     altPrintQr: "QR-label printen",
@@ -439,7 +439,7 @@ export const messages: Messages = {
       "CFS-tags gebruiken MIFARE Classic. Encoderen en controleren gebeurt op de API; schrijven in de browser via OF1 Web Serial of USB, of een optionele PC/SC-helper.",
     optHeading: "OpenPrintTag / ISO 15693",
     optBody:
-      "OpenPrintTag is een apart open NFC-formaat (NDEF + CBOR), geen CFS. Voorbeeldvelden zijn beschikbaar; volledige binaire encode staat gepland.",
+      "OpenPrintTag is een apart open NFC-formaat (NDEF + CBOR), geen CFS. Veldvoorbeeld, binaire encode en een Web NFC-schrijfpad zijn beschikbaar waar browser en tag dit ondersteunen.",
   },
   printers: {
     addHeading: "Printer toevoegen",
@@ -581,6 +581,12 @@ export const messages: Messages = {
       "Nog 12 maanden kopen verlengt de toegang vanaf de huidige einddatum.",
     loginRequired: "Log in om My Spools Cloud te kopen of te beheren.",
     checkoutUnavailable: "Afrekenen is nog niet beschikbaar (configuratie ontbreekt).",
+    checkoutTestMode:
+      "Afrekenen draait in Stripe-testmodus. Echte betalingen zijn nog niet ingeschakeld.",
+    checkoutLiveBlocked:
+      "Live Stripe-sleutels zijn ingesteld, maar live betalingen worden nog geblokkeerd door de productiebeveiligingsflag.",
+    checkoutMissingConfig:
+      "Afrekenen is nog niet beschikbaar omdat de Stripe-configuratie niet compleet is.",
     termsLink: "Voorwaarden",
     privacyLink: "Privacy",
     retentionHint:

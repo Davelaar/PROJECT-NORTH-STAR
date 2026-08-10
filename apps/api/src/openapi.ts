@@ -115,7 +115,14 @@ export function buildOpenApiDocument(baseUrl: string) {
       "/api/v1/variants/{uuid}/openprinttag": {
         get: {
           summary:
-            "Map variant catalog fields to OpenPrintTag main payload (encode planned)",
+            "Map variant catalog fields to OpenPrintTag main payload",
+          responses: ok,
+        },
+      },
+      "/api/v1/variants/{uuid}/openprinttag/encode": {
+        post: {
+          summary:
+            "Encode OpenPrintTag NDEF/CBOR payload for a variant",
           responses: ok,
         },
       },
@@ -178,6 +185,13 @@ export function buildOpenApiDocument(baseUrl: string) {
     components: {
       securitySchemes: {
         bearerAuth: { type: "http", scheme: "bearer" },
+        sessionCookie: {
+          type: "apiKey",
+          in: "cookie",
+          name: "of_session",
+          description:
+            "Browser session cookie set by login/register. Mutating browser requests also send X-CSRF-Token matching the of_csrf cookie.",
+        },
       },
     },
   };

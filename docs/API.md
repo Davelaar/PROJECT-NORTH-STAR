@@ -8,7 +8,9 @@ OpenAPI: `GET /openapi.json`
 
 - Prefix: `/api/v1/`
 - Errors: `{ "error": { "code", "message", "details?" } }`
-- Auth: `Authorization: Bearer <token>` from `/auth/login` or `/auth/register` (token hashed in DB)
+- Auth:
+  - Browser web app: httpOnly `of_session` cookie from `/auth/login` or `/auth/register`; mutating requests include `X-CSRF-Token` matching the readable `of_csrf` cookie.
+  - API/script clients: `Authorization: Bearer <token>` remains supported; raw tokens are hashed in DB.
 - Rate limit: `@fastify/rate-limit` (default enabled)
 - Scopes: `read:filaments`, `write:profiles`, `write:calibrations`, `write:rfid`, `moderate`
 
@@ -28,9 +30,12 @@ OpenAPI: `GET /openapi.json`
 | GET | `/search?q=` | no |
 | GET | `/rfid/schemes`, `/rfid/resolve` | no |
 | POST | `/rfid/encode`, `/verify`, `/resolve-and-export` | encode/verify public |
+| GET | `/variants/:uuid/openprinttag` | no |
+| POST | `/variants/:uuid/openprinttag/encode` | no |
 | POST | `/exports/{creality,orca,prusaslicer,bambu,openfilamentprofile}` | no |
+| GET | `/variants/:uuid/exports/starter?format=...` | no |
 | POST | `/imports/{creality,openfilamentprofile}` | yes |
-| POST | `/auth/login`, `/auth/register` | no |
+| POST | `/auth/login`, `/auth/register`, `/auth/logout` | no / session for logout |
 | GET | `/me/contributions`, `/admin/summary` | yes |
 
 CORS allows `WEB_ORIGIN` (default `http://127.0.0.1:3000`).
