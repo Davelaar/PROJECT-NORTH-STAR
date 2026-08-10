@@ -57,4 +57,13 @@ describe("generic printer templates", () => {
       expect(template.tested).toBe(false);
     },
   );
+
+  it("does not let default false chamber metadata hide known enclosed printer families", () => {
+    const template = selectGenericPrinterTemplate({
+      manufacturerName: "Flashforge",
+      model: "Adventurer 5M Pro",
+      chamberCapable: false,
+    });
+    expect(template.id).toBe("high_speed_enclosed_corexy_direct");
+  });
 });

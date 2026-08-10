@@ -117,23 +117,22 @@ export function selectGenericPrinterTemplate(
   const bowden =
     includes(printer?.extruderType, "bowden") ||
     hasAny(signature, ["ender 3 v2", "ender 5", "cr-10", "neptune 3"]);
-  const chamberCapable =
-    printer?.chamberCapable ??
-    hasAny(signature, [
-      "p1s",
-      "x1",
-      "x1 carbon",
-      "x1e",
-      "h2d",
-      "k1",
-      "k2",
-      "adventurer 5m pro",
-      "guider 3",
-      "creator 4",
-      "qidi",
-      "core one",
-      "kobra s1",
-    ]);
+  const inferredChamberCapable = hasAny(signature, [
+    "p1s",
+    "x1",
+    "x1 carbon",
+    "x1e",
+    "h2d",
+    "k1",
+    "k2",
+    "adventurer 5m pro",
+    "guider 3",
+    "creator 4",
+    "qidi",
+    "core one",
+    "kobra s1",
+  ]);
+  const chamberCapable = Boolean(printer?.chamberCapable || inferredChamberCapable);
   const fast =
     (printer?.maxSpeedMmS ?? 0) >= 300 ||
     hasAny(signature, [
