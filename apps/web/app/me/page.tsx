@@ -21,7 +21,7 @@ export default function MePage() {
       setError("Not logged in");
       return;
     }
-    apiGet<typeof data>(`/api/v1/users/${auth.user.uuid}/contributions`, auth.token)
+    apiGet<typeof data>(`/api/v1/users/${auth.user.uuid}/contributions`)
       .then(setData)
       .catch((e) => setError(String(e)));
   }, []);

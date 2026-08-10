@@ -80,11 +80,18 @@ export const spoolsZh = {
   editSpool: "编辑线轴",
   cancel: "取消",
   showArchived: "显示已归档",
+  usageLabel: "打印后使用量（克）",
+  usagePlaceholder: "例如 42",
+  usageSubmit: "扣除用量",
+  usageSaved: "已记录用量并更新剩余量。",
+  usageError: "请输入正数克数。",
+  usageNeedsWeights: "填写初始和当前重量后即可跟踪打印用量。",
 };
 
 export const accountZh = {
   heading: "账户",
   sessions: "活跃会话",
+  revokeSession: "撤销",
   revokeOthers: "撤销其他会话",
   exportData: "导出我的数据",
   deleteAccount: "删除我的账户",
@@ -93,6 +100,7 @@ export const accountZh = {
   deleteConfirmLabel: "输入 DELETE 以确认",
   privacyPrefs: "隐私偏好",
   register: "创建账户",
+  logout: "退出登录",
 };
 
 export const legalPagesZh = {
@@ -103,4 +111,30 @@ export const legalPagesZh = {
   trustTitle: "Trust center",
   placeholderNotice: "此页包含明确标记的运营方占位符。替换前会阻止正式上线。",
   effective: "生效日期",
+  operator: "运营方",
+  privacyContact: "隐私联系人",
+  hosting: "托管",
+  contact: "联系",
+  openSourceRepository: "开源仓库",
+  cookieSettingsHint: "使用页脚中的 Cookie 设置",
+  sections: {
+    privacy: [
+      { heading: "我们处理的数据", items: ["账户、会话与安全日志。", "只有在你明确同步时，才处理 Cloud My Spools、私密备注和 QR/RFID 身份。", "本地 My Spools 保留在浏览器中。", "你选择公开的社区贡献和同意偏好。", "Google Analytics 4 仅在同意后启用。"] },
+      { heading: "法律依据与权利", paragraphs: ["处理基于合同/请求的服务、安全与防滥用的正当利益、分析统计同意以及必要的法律义务。你可以请求访问、更正、删除、限制、可携带、反对并撤回同意。"] },
+      { heading: "My Spools、保留与传输", paragraphs: ["Local 留在你的设备上，登录本身不会上传。Cloud 是可选的 12 个月预付费托管，不会自动续费。公开 QR 解析不会暴露备注、位置或账户 ID。", "保留规则见 docs/DATA_RETENTION.md。启用分析后，Google 可能在 EEA 外处理数据。重大变更可能重新请求同意。"] },
+    ],
+    terms: [
+      { heading: "社区平台", paragraphs: ["OpenFilament 提供开放目录、识别工具和社区校准；这些不是打印安全保证，你仍需在自己的打印机上验证设置。"] },
+      { heading: "账户、Cloud 与贡献", paragraphs: ["账户对浏览和下载是可选的。My Spools Local 免费。Cloud 通过 Stripe 一次性支付 19.99 欧元获得 12 个月访问，不会自动续费。Stripe 处理付款；OpenFilament 不保存银行卡号。", "提交校准即表示接受提交时显示的条款；贡献者邮箱保持私密。"] },
+      { heading: "可用性与责任", paragraphs: ["服务按现状提供，不保证持续可用；在法律允许范围内，免费社区工具的责任受到限制。"] },
+    ],
+    cookies: [
+      { heading: "浏览器存储", paragraphs: ["必要 Cookie/存储用于语言、同意、会话、CSRF、本地 My Spools 和 PWA 外壳。分析仅在同意后使用。"] },
+      { heading: "选择", paragraphs: ["拒绝分析不会禁用搜索、My Spools、账户、QR、RFID 或下载。不使用营销存储。"] },
+    ],
+    security: [
+      { heading: "保护内容", items: ["使用 scrypt 哈希的密码。", "哈希保存的会话令牌和 httpOnly Cookie。", "带所有权检查的私密 My Spools。", "不含私密字段的公开 QR 投影。"] },
+      { heading: "负责任披露", paragraphs: ["请私下向安全联系人报告漏洞，在合理修复时间前不要公开密钥、针对真实用户的利用或生产凭据。"] },
+    ],
+  },
 };

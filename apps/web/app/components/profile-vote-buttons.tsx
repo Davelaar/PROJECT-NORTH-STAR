@@ -40,11 +40,9 @@ export function ProfileVoteButtons({ profileUuid }: { profileUuid: string }) {
     setAuth(a);
     const fp = ensureVoterFingerprint();
     const qs = a ? "" : `?fingerprint=${encodeURIComponent(fp)}`;
-    const headers: HeadersInit = {};
-    if (a?.token) headers.authorization = `Bearer ${a.token}`;
     const res = await fetch(
       `${getApiBase()}/api/v1/profiles/${profileUuid}/votes${qs}`,
-      { headers },
+      { credentials: "include" },
     );
     if (!res.ok) return;
     setSummary((await res.json()) as VoteSummary);
@@ -64,7 +62,6 @@ export function ProfileVoteButtons({ profileUuid }: { profileUuid: string }) {
       const next = await apiPost<VoteSummary>(
         `/api/v1/profiles/${profileUuid}/votes`,
         body,
-        a?.token,
       );
       setSummary(next);
     } catch (e) {

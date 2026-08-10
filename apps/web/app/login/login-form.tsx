@@ -10,30 +10,28 @@ export function LoginForm() {
   const m = messages.login;
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("admin-change-me");
-  const [token, setToken] = useState("");
+  const [status, setStatus] = useState("");
   const [error, setError] = useState("");
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setToken("");
+    setStatus("");
     try {
       const res = await fetch(`${getApiBase()}/api/v1/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
       const data = (await res.json()) as {
-        token?: string;
         user?: { uuid: string; username: string; role: string };
         error?: { message: string };
       };
       if (!res.ok) throw new Error(data.error?.message ?? "Login failed");
-      setToken(data.token ?? "");
-      if (data.token && data.user) {
-        saveAuth({ token: data.token, user: data.user });
-      } else if (data.token) {
-        window.localStorage.setItem("of_token", data.token);
+      if (data.user) {
+        saveAuth({ user: data.user });
+        setStatus(m.signedIn);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : messages.common.error);
@@ -63,10 +61,9 @@ export function LoginForm() {
         <button type="submit">{m.submit}</button>
       </form>
       {error ? <div className="banner-warn">{error}</div> : null}
-      {token ? (
+      {status ? (
         <div className="panel">
-          <p>Bearer token stored in localStorage (`of_token`):</p>
-          <pre>{token}</pre>
+          <p>{status}</p>
         </div>
       ) : null}
     </div>

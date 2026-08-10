@@ -77,7 +77,6 @@ export default function MySpoolsCloudPage() {
       if (a) {
         const e = await apiGet<Entitlement>(
           "/api/v1/billing/cloud/entitlement",
-          a.token,
         );
         setEntitlement(e);
       }
@@ -98,7 +97,6 @@ export default function MySpoolsCloudPage() {
       const res = await apiPost<{ checkoutUrl: string }>(
         "/api/v1/billing/cloud/checkout",
         {},
-        auth.token,
       );
       trackEvent("cloud_checkout_started");
       window.location.href = res.checkoutUrl;
@@ -214,7 +212,7 @@ export default function MySpoolsCloudPage() {
               onClick={async () => {
                 if (!auth) return;
                 const blob = await fetch("/api/v1/billing/cloud/export", {
-                  headers: { Authorization: `Bearer ${auth.token}` },
+                  credentials: "include",
                 }).then((r) => r.blob());
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement("a");

@@ -44,7 +44,6 @@ export default function CloudCheckoutSuccessClient() {
       try {
         const p = await apiGet<PaymentView>(
           `/api/v1/billing/cloud/payments/${paymentUuid}`,
-          auth!.token,
         );
         if (cancelled) return;
         setPayment(p);

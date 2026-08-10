@@ -26,7 +26,7 @@ import {
   schema,
   type AppDb,
 } from "@open-filament/db";
-import { hasScope, resolveBearerUser, type AuthUser } from "./auth.js";
+import { hasScope, resolveRequestUser, type AuthUser } from "./auth.js";
 import { badRequest, forbidden, notFound, unauthorized } from "./errors.js";
 import {
   assertCheckoutAllowed,
@@ -44,13 +44,13 @@ function db(app: FastifyInstance): AppDb {
 }
 
 async function requireUser(
-  request: { headers: { authorization?: string }; server: FastifyInstance },
+  request: {
+    headers: { authorization?: string; cookie?: string };
+    server: FastifyInstance;
+  },
   reply: { status: (c: number) => { send: (b: unknown) => unknown } },
 ): Promise<AuthUser | null> {
-  const user = await resolveBearerUser(
-    request.server.db,
-    request.headers.authorization,
-  );
+  const user = await resolveRequestUser(request.server.db, request.headers);
   if (!user) {
     unauthorized(reply as never, "Authentication required");
     return null;
@@ -431,10 +431,7 @@ export async function registerCloudBillingRoutes(app: FastifyInstance) {
     handler: async (req, reply) => {
       const secret = process.env.CLOUD_CRON_SECRET?.trim();
       const header = req.headers["x-cron-secret"];
-      const user = await resolveBearerUser(
-        db(app),
-        req.headers.authorization,
-      );
+      const user = await resolveRequestUser(db(app), req.headers);
       const okCron = secret && header === secret;
       const okAdmin = user && hasScope(user, "moderate");
       if (!okCron && !okAdmin) return unauthorized(reply);

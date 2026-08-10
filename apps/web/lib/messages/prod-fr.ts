@@ -87,11 +87,18 @@ export const spoolsFr = {
   editSpool: "Modifier la bobine",
   cancel: "Annuler",
   showArchived: "Afficher les archives",
+  usageLabel: "Utilisé après impression (g)",
+  usagePlaceholder: "ex. 42",
+  usageSubmit: "Déduire l’usage",
+  usageSaved: "Utilisation enregistrée et quantité restante mise à jour.",
+  usageError: "Saisis une quantité positive de grammes utilisés.",
+  usageNeedsWeights: "Ajoute le poids initial et actuel pour suivre l’usage d’impression.",
 };
 
 export const accountFr = {
   heading: "Compte",
   sessions: "Sessions actives",
+  revokeSession: "Révoquer",
   revokeOthers: "Révoquer les autres sessions",
   exportData: "Exporter mes données",
   deleteAccount: "Supprimer mon compte",
@@ -100,6 +107,7 @@ export const accountFr = {
   deleteConfirmLabel: "Tape DELETE pour confirmer",
   privacyPrefs: "Préférences de confidentialité",
   register: "Créer un compte",
+  logout: "Se déconnecter",
 };
 
 export const legalPagesFr = {
@@ -111,4 +119,30 @@ export const legalPagesFr = {
   placeholderNotice:
     "Cette page contient des placeholders clairement marqués. Ils bloquent la mise en production jusqu’à remplacement.",
   effective: "Date d’entrée en vigueur",
+  operator: "Opérateur",
+  privacyContact: "Contact confidentialité",
+  hosting: "Hébergement",
+  contact: "Contact",
+  openSourceRepository: "Dépôt open source",
+  cookieSettingsHint: "Utilise les paramètres cookies dans le pied de page",
+  sections: {
+    privacy: [
+      { heading: "Données traitées", items: ["Compte, sessions et journaux de sécurité.", "Cloud My Spools, notes privées et identités QR/RFID uniquement après synchronisation explicite.", "My Spools local reste dans le navigateur.", "Contributions publiques et préférences de consentement.", "Google Analytics 4 seulement après consentement."] },
+      { heading: "Bases légales et droits", paragraphs: ["Le traitement couvre le contrat/service demandé, l’intérêt légitime de sécurité, le consentement pour l’analytics et les obligations légales. Tu peux demander accès, rectification, suppression, limitation, portabilité, opposition et retrait du consentement."] },
+      { heading: "My Spools, conservation et transferts", paragraphs: ["Local reste sur ton appareil et la connexion ne l’envoie pas. Cloud est un hébergement prépayé optionnel de 12 mois sans renouvellement automatique. La résolution QR publique n’expose pas notes, lieux ou identifiants de compte.", "La conservation suit docs/DATA_RETENTION.md. Si l’analytics est activé, Google peut traiter hors EEE. Les changements importants peuvent redemander le consentement."] },
+    ],
+    terms: [
+      { heading: "Plateforme communautaire", paragraphs: ["OpenFilament fournit catalogue, identification et calibrations communautaires sans garantie de sécurité d’impression ; tu valides les réglages sur ton imprimante."] },
+      { heading: "Comptes, Cloud et contributions", paragraphs: ["Les comptes sont optionnels. My Spools Local est gratuit. Cloud coûte 19,99 € pour 12 mois via paiement Stripe unique, sans renouvellement automatique. Stripe traite les paiements ; OpenFilament ne stocke pas les numéros de carte.", "En soumettant des calibrations, tu acceptes les conditions affichées ; les e-mails contributeurs restent privés."] },
+      { heading: "Disponibilité et responsabilité", paragraphs: ["Le service est fourni tel quel, sans garantie de disponibilité continue ; la responsabilité des outils communautaires gratuits est limitée dans la mesure permise par la loi."] },
+    ],
+    cookies: [
+      { heading: "Stockage navigateur", paragraphs: ["Les cookies/stockages nécessaires servent à la langue, au consentement, aux sessions, à la protection CSRF, à My Spools local et au shell PWA. Analytics seulement après consentement."] },
+      { heading: "Choix", paragraphs: ["Refuser l’analytics ne désactive pas recherche, My Spools, comptes, QR, RFID ou téléchargements. Aucun stockage marketing n’est utilisé."] },
+    ],
+    security: [
+      { heading: "Protection", items: ["Mots de passe hachés avec scrypt.", "Tokens de session hachés et cookies httpOnly.", "My Spools privé avec contrôles de propriété.", "Projections QR publiques sans champs privés."] },
+      { heading: "Responsible disclosure", paragraphs: ["Signale les vulnérabilités en privé au contact sécurité et ne publie pas secrets, exploits contre des utilisateurs réels ou accès production avant un délai raisonnable de correction."] },
+    ],
+  },
 };

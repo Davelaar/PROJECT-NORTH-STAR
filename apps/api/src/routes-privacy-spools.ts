@@ -21,7 +21,7 @@ import {
   verifyPassword,
   type AppDb,
 } from "@open-filament/db";
-import { resolveBearerUser, type AuthUser } from "./auth.js";
+import { resolveRequestUser, type AuthUser } from "./auth.js";
 import { badRequest, notFound, unauthorized } from "./errors.js";
 import { assertCloudWriteAccess } from "./payments/access.js";
 
@@ -30,13 +30,13 @@ function db(app: FastifyInstance): AppDb {
 }
 
 async function requireUser(
-  request: { headers: { authorization?: string }; server: FastifyInstance },
+  request: {
+    headers: { authorization?: string; cookie?: string };
+    server: FastifyInstance;
+  },
   reply: { status: (c: number) => { send: (b: unknown) => unknown } },
 ): Promise<AuthUser | null> {
-  const user = await resolveBearerUser(
-    request.server.db,
-    request.headers.authorization,
-  );
+  const user = await resolveRequestUser(request.server.db, request.headers);
   if (!user) {
     unauthorized(reply as never, "Authentication required");
     return null;
@@ -355,7 +355,7 @@ export async function registerPrivacySpoolRoutes(app: FastifyInstance) {
   });
 
   app.post("/api/v1/contributions/terms", async (req, reply) => {
-    const user = await resolveBearerUser(db(app), req.headers.authorization);
+    const user = await resolveRequestUser(db(app), req.headers);
     const body = z
       .object({
         termsVersion: z.string().min(1),

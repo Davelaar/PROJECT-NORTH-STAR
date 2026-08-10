@@ -1,6 +1,6 @@
 # CURRENT STATE
 
-**Updated:** 2026-08-10 (HTTPS openfilament.nl · richer OFD params · hardware page)
+**Updated:** 2026-08-10 (HTTPS openfilament.nl · My Spools Cloud · AVG/privacy · richer OFD params · hardware page)
 
 Open Filament lives at `/Users/raymonddavelaar/Projects/open-filament` (Apache-2.0). Production site: **https://openfilament.nl**.
 
@@ -21,7 +21,7 @@ Open Filament lives at `/Users/raymonddavelaar/Projects/open-filament` (Apache-2
 | Source | Status |
 |--------|--------|
 | Open Filament Database ([openfilamentdatabase.org](https://openfilamentdatabase.org), MIT) | **Imported** — temps, drying, chamber, diameter from sizes, traits, datasheets, slicer hints (~156 brands / ~2k products / ~14k variants) |
-| OpenPrintTag ([specs.openprinttag.org](https://specs.openprinttag.org/)) | **Partial** — UUID + field mapping; NDEF encode/write planned (not CFS) |
+| OpenPrintTag ([specs.openprinttag.org](https://specs.openprinttag.org/)) | **Partial** — UUID + field mapping + NDEF/CBOR encode + Web NFC write path; hardware/browser compatibility still must be verified (not CFS) |
 | Shrinkage (XY/Z) | **Schema + export ready** — rarely present in OFD; community submit/API can fill |
 | SKU / EAN / GTIN + buy links | **Imported from OFD sizes/stores** — shown on variant pages; searchable |
 | Variant preview | **Color swatch SVG** always; optional `preview_image_url` for photos |
@@ -35,6 +35,11 @@ See [`docs/EXTERNAL_CATALOG.md`](EXTERNAL_CATALOG.md), [`docs/FILAMENT_PARAMETER
 | Area | Status |
 |------|--------|
 | Web foundation (search, profiles, accounts, catalog) | **Done** |
+| Account privacy (sessions, export, delete, privacy prefs) | **Done** |
+| Cookie consent + consent-gated GA4 | **Done** |
+| My Spools local inventory | **Done** (IndexedDB; user-controlled import/export) |
+| My Spools Cloud sync | **Done** (optional paid backup/sync; explicit user confirmation before upload) |
+| My Spools Cloud billing | **Done** (Stripe one-time 12 months; test mode by default; live checkout gated by `MY_SPOOLS_CLOUD_LIVE_PAYMENTS`) |
 | Download/import slicer export (Orca, Creality, Prusa, Bambu) | **Done** |
 | File System Access optional save | **Done** (Chrome/Edge when available) |
 | PWA manifest + shell service worker + offline page | **Done** |
@@ -48,8 +53,9 @@ See [`docs/EXTERNAL_CATALOG.md`](EXTERNAL_CATALOG.md), [`docs/FILAMENT_PARAMETER
 | PC/SC physical write via optional helper | **Implemented behind flag** |
 | CFS→printer recognition on device | **Blocked on hardware / firmware** |
 | OpenPrintTag UUID derivation + catalog field map | **Done** (`@open-filament/rfid-openprinttag`, `GET /variants/{uuid}/openprinttag`) |
-| OpenPrintTag NDEF/CBOR encode + Web NFC write | **Planned** |
+| OpenPrintTag NDEF/CBOR encode + Web NFC write | **Done in software** (`POST /variants/{uuid}/openprinttag/encode`, `/rfid`) — physical tag compatibility depends on browser/tag hardware |
 | HTTPS production (Caddy + HSTS) for openfilament.nl | **Configured in-repo** (`deploy/Caddyfile`, `docs/DEPLOYMENT.md`) |
+| Browser auth hardening | **Done** (httpOnly session cookie + CSRF for web; Bearer still supported for API clients) |
 | RFID/QR hardware page | **Done** (`/hardware`) |
 | Default nozzle size | **0.4 mm** |
 
@@ -63,12 +69,14 @@ Software acceptance: `./scripts/acceptance-software.sh` → `ACCEPTANCE_SOFTWARE
 - QR label downloads + camera/manual scan
 - CFS encode / browser memory write+verify / resolve
 - Auth, publish/revise/fork, evidence upload
+- My Spools local + Cloud sync and account privacy export/delete
+- Cookie consent with analytics only after consent
 - OpenAPI at `/openapi.json`
 - PWA shell assets
 
 ## Stack
 
-pnpm monorepo · SQLite/Drizzle · Fastify · Next.js 15 (PWA) · optional Rust helper · CFS AES codec · OpenPrintTag UUID helpers
+pnpm monorepo · SQLite/Drizzle · Fastify · Next.js 15 (PWA) · optional Rust helper · Stripe Checkout · CFS AES codec · OpenPrintTag UUID helpers
 
 ## Docs
 

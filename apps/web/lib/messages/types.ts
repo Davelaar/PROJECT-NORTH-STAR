@@ -330,6 +330,11 @@ export type Messages = {
     capsWebHid: string;
     capsWebNfc: string;
     capsNone: string;
+    openPrintTagWriteHeading: string;
+    openPrintTagWriteIntro: string;
+    openPrintTagVariant: string;
+    openPrintTagWrite: string;
+    openPrintTagNoWebNfc: string;
   };
   login: {
     heading: string;
@@ -337,6 +342,7 @@ export type Messages = {
     password: string;
     submit: string;
     seedHint: string;
+    signedIn: string;
   };
   docsApi: {
     heading: string;
@@ -579,10 +585,17 @@ export type Messages = {
     editSpool: string;
     cancel: string;
     showArchived: string;
+    usageLabel: string;
+    usagePlaceholder: string;
+    usageSubmit: string;
+    usageSaved: string;
+    usageError: string;
+    usageNeedsWeights: string;
   };
   account: {
     heading: string;
     sessions: string;
+    revokeSession: string;
     revokeOthers: string;
     exportData: string;
     deleteAccount: string;
@@ -590,6 +603,7 @@ export type Messages = {
     deleteConfirmLabel: string;
     privacyPrefs: string;
     register: string;
+    logout: string;
   };
   legalPages: {
     privacyTitle: string;
@@ -599,6 +613,18 @@ export type Messages = {
     trustTitle: string;
     placeholderNotice: string;
     effective: string;
+    operator: string;
+    privacyContact: string;
+    hosting: string;
+    contact: string;
+    openSourceRepository: string;
+    cookieSettingsHint: string;
+    sections: {
+      privacy: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
+      terms: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
+      cookies: Array<{ heading: string; paragraphs?: string[] }>;
+      security: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
+    };
   };
   cloud: {
     navLink: string;

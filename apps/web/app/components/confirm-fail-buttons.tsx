@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { getApiBase } from "@/lib/api";
-import { authToken } from "@/lib/auth";
+import { apiPost } from "@/lib/api";
+import { loadAuth } from "@/lib/auth";
 
 export function ConfirmFailButtons({ profileUuid }: { profileUuid: string }) {
   const [msg, setMsg] = useState("");
@@ -11,25 +11,16 @@ export function ConfirmFailButtons({ profileUuid }: { profileUuid: string }) {
   async function post(path: string, body: unknown) {
     setMsg("");
     setErr("");
-    const token = authToken();
-    if (!token) {
+    if (!loadAuth()) {
       setErr("Login required");
       return;
     }
-    const res = await fetch(`${getApiBase()}${path}`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    });
-    const text = await res.text();
-    if (!res.ok) {
-      setErr(text);
-      return;
+    try {
+      const result = await apiPost<unknown>(path, body);
+      setMsg(JSON.stringify(result, null, 2));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e));
     }
-    setMsg(text);
   }
 
   return (

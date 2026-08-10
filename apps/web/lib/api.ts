@@ -15,10 +15,21 @@ export function getApiBase(): string {
   return "";
 }
 
+function cookieValue(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const prefix = `${name}=`;
+  return document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix))
+    ?.slice(prefix.length);
+}
+
 export async function apiGet<T>(path: string, token?: string): Promise<T> {
   const res = await fetch(`${getApiBase()}${path}`, {
     next: { revalidate: 0 },
     cache: "no-store",
+    credentials: "include",
     headers: token ? { authorization: `Bearer ${token}` } : undefined,
   });
   if (!res.ok) {
@@ -33,10 +44,13 @@ export async function apiPost<T>(
   body: unknown,
   token?: string,
 ): Promise<T> {
+  const csrf = cookieValue("of_csrf");
   const res = await fetch(`${getApiBase()}${path}`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "content-type": "application/json",
+      ...(csrf ? { "x-csrf-token": decodeURIComponent(csrf) } : {}),
       ...(token ? { authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(body),

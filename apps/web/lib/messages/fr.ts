@@ -320,6 +320,12 @@ export const messages: Messages = {
     capsWebHid: "WebHID disponible (profil HID OF1 pas encore livré)",
     capsWebNfc: "Web NFC présent — non utilisé pour les tags MIFARE Classic CFS",
     capsNone: "Pas de WebUSB/Serial/HID — utilisez le PoC mémoire, le QR ou le helper PC/SC optionnel",
+    openPrintTagWriteHeading: "OpenPrintTag Web NFC",
+    openPrintTagWriteIntro:
+      "Encode une charge NDEF/CBOR OpenPrintTag pour une variante et écris-la sur les appareils NFC Android Chrome compatibles. Séparé de Creality CFS.",
+    openPrintTagVariant: "UUID de variante",
+    openPrintTagWrite: "Écrire OpenPrintTag",
+    openPrintTagNoWebNfc: "Web NFC n’est pas disponible dans ce navigateur.",
   },
   login: {
     heading: "Connexion opérateur",
@@ -327,6 +333,7 @@ export const messages: Messages = {
     password: "Mot de passe",
     submit: "Se connecter",
     seedHint: "Comptes locaux : admin / admin-change-me",
+    signedIn: "Connecté. Ta session est stockée dans un cookie httpOnly.",
   },
   docsApi: {
     heading: "Documentation API",

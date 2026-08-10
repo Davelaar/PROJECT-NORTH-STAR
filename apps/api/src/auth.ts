@@ -26,6 +26,10 @@ export type AuthUser = {
   scopes: string[];
 };
 
+export const SESSION_COOKIE = "of_session";
+export const CSRF_COOKIE = "of_csrf";
+export const CSRF_HEADER = "x-csrf-token";
+
 export function scopesForRole(role: string): AuthScope[] {
   const base: AuthScope[] = [
     "read:filaments",
@@ -68,6 +72,39 @@ export async function resolveBearerUser(
 ): Promise<AuthUser | null> {
   if (!authorizationHeader?.startsWith("Bearer ")) return null;
   const token = authorizationHeader.slice("Bearer ".length).trim();
+  return resolveTokenUser(db, token);
+}
+
+function parseCookies(cookieHeader?: string): Record<string, string> {
+  if (!cookieHeader) return {};
+  const cookies: Record<string, string> = {};
+  for (const part of cookieHeader.split(";")) {
+    const [rawKey, ...rawValue] = part.trim().split("=");
+    if (!rawKey || rawValue.length === 0) continue;
+    try {
+      cookies[rawKey] = decodeURIComponent(rawValue.join("="));
+    } catch {
+      cookies[rawKey] = rawValue.join("=");
+    }
+  }
+  return cookies;
+}
+
+export function getCookieValue(cookieHeader: string | undefined, name: string): string | null {
+  return parseCookies(cookieHeader)[name] ?? null;
+}
+
+export async function resolveRequestUser(
+  db: AppDb,
+  headers: { authorization?: string; cookie?: string },
+): Promise<AuthUser | null> {
+  const bearer = await resolveBearerUser(db, headers.authorization);
+  if (bearer) return bearer;
+  const token = getCookieValue(headers.cookie, SESSION_COOKIE);
+  return resolveTokenUser(db, token ?? "");
+}
+
+async function resolveTokenUser(db: AppDb, token: string): Promise<AuthUser | null> {
   if (!token) return null;
   const tokenHash = hashToken(token);
   const row = db
@@ -114,6 +151,17 @@ export async function resolveBearerUser(
     trustScore: row.trustScore,
     scopes: parseScopes(row.scopes),
   };
+}
+
+export function revokeRawToken(db: AppDb, token: string): boolean {
+  if (!token) return false;
+  const tokenHash = hashToken(token);
+  const result = db
+    .update(schema.apiTokens)
+    .set({ revokedAt: new Date().toISOString() })
+    .where(eq(schema.apiTokens.tokenHash, tokenHash))
+    .run();
+  return result.changes > 0;
 }
 
 function issueToken(db: AppDb, user: typeof schema.users.$inferSelect): string {

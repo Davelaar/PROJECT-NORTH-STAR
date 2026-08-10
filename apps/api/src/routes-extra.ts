@@ -9,7 +9,7 @@ import { convertCanonicalToCrealityUserPreset, buildCrealityInfoFile, suggestedC
 import { toCanonicalFromRevision } from "@open-filament/canonical-profile";
 import {
   hasScope,
-  resolveBearerUser,
+  resolveRequestUser,
   type AuthUser,
 } from "./auth.js";
 import { badRequest, notFound, sendError, unauthorized } from "./errors.js";
@@ -19,9 +19,12 @@ function db(app: FastifyInstance): AppDb {
 }
 
 async function auth(
-  request: { headers: { authorization?: string }; server: FastifyInstance },
+  request: {
+    headers: { authorization?: string; cookie?: string };
+    server: FastifyInstance;
+  },
 ): Promise<AuthUser | null> {
-  return resolveBearerUser(request.server.db, request.headers.authorization);
+  return resolveRequestUser(request.server.db, request.headers);
 }
 
 function forbid(reply: { status: (c: number) => { send: (b: unknown) => unknown } }, msg = "Missing scope") {

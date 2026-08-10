@@ -32,6 +32,22 @@ const ALLOW_IDENTICAL_TO_EN = new Set([
   "common.loading",
 ]);
 
+function assertNonEmptyStrings(value: unknown, label: string) {
+  if (Array.isArray(value)) {
+    expect(value.length, label).toBeGreaterThan(0);
+    value.forEach((item, index) => assertNonEmptyStrings(item, `${label}[${index}]`));
+    return;
+  }
+  if (value !== null && typeof value === "object") {
+    for (const [key, nested] of Object.entries(value as Record<string, unknown>)) {
+      assertNonEmptyStrings(nested, `${label}.${key}`);
+    }
+    return;
+  }
+  expect(typeof value, label).toBe("string");
+  expect(String(value).trim().length, label).toBeGreaterThan(0);
+}
+
 describe("locale key parity", () => {
   const enKeys = collectKeys(en).sort();
 
@@ -51,8 +67,7 @@ describe("locale key parity", () => {
         for (const p of parts) {
           cur = (cur as Record<string, unknown>)[p];
         }
-        expect(typeof cur, `${locale}:${key}`).toBe("string");
-        expect(String(cur).trim().length, `${locale}:${key}`).toBeGreaterThan(0);
+        assertNonEmptyStrings(cur, `${locale}:${key}`);
       }
     }
   });

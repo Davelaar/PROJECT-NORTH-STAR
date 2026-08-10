@@ -57,12 +57,15 @@ export function RfidForm() {
   const [hasSerial, setHasSerial] = useState(false);
   const [hasUsb, setHasUsb] = useState(false);
   const [hasHid, setHasHid] = useState(false);
+  const [hasWebNfc, setHasWebNfc] = useState(false);
+  const [openPrintTagVariantUuid, setOpenPrintTagVariantUuid] = useState("");
 
   useEffect(() => {
     const caps = detectBrowserCapabilities();
     setHasSerial(caps.webSerial);
     setHasUsb(caps.webUsb);
     setHasHid(caps.webHid);
+    setHasWebNfc(caps.webNfc);
     const bits: string[] = [];
     if (caps.webUsb) bits.push(m.capsWebUsb);
     if (caps.webSerial) bits.push(m.capsWebSerial);
@@ -75,6 +78,62 @@ export function RfidForm() {
     }
     setCapsLabel(bits.join(" · "));
   }, []);
+
+  function base64ToBytes(value: string): Uint8Array {
+    const binary = atob(value);
+    return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  }
+
+  async function writeOpenPrintTag() {
+    setBusy(true);
+    setError("");
+    setResult("");
+    try {
+      const NDEFReaderCtor = (
+        window as unknown as {
+          NDEFReader?: new () => {
+            write: (message: {
+              records: Array<{
+                recordType: "mime";
+                mediaType: string;
+                data: Uint8Array;
+              }>;
+            }) => Promise<void>;
+          };
+        }
+      ).NDEFReader;
+      if (!NDEFReaderCtor) throw new Error(m.openPrintTagNoWebNfc);
+      const uuid = openPrintTagVariantUuid.trim();
+      if (!uuid) throw new Error(m.openPrintTagVariant);
+      const encoded = await fetch(
+        `${getApiBase()}/api/v1/variants/${encodeURIComponent(uuid)}/openprinttag/encode`,
+        { method: "POST" },
+      ).then(async (res) => {
+        const text = await res.text();
+        if (!res.ok) throw new Error(text);
+        return JSON.parse(text) as {
+          mimeType: string;
+          payloadBase64: string;
+          ndefHex: string;
+          fields: unknown;
+        };
+      });
+      await new NDEFReaderCtor().write({
+        records: [
+          {
+            recordType: "mime",
+            mediaType: encoded.mimeType,
+            data: base64ToBytes(encoded.payloadBase64),
+          },
+        ],
+      });
+      setResult(JSON.stringify({ ok: true, ...encoded }, null, 2));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : messages.common.error);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   const payload = () => ({
     material: materialCode,
@@ -365,6 +424,28 @@ export function RfidForm() {
         {hasHid ? (
           <p className="muted">{m.hidNote}</p>
         ) : null}
+      </div>
+
+      <div className="stack panel">
+        <h3>{m.openPrintTagWriteHeading}</h3>
+        <p className="muted">{m.openPrintTagWriteIntro}</p>
+        <label>
+          {m.openPrintTagVariant}
+          <input
+            value={openPrintTagVariantUuid}
+            onChange={(e) => setOpenPrintTagVariantUuid(e.target.value)}
+            placeholder="33333333-3333-4333-8333-333333333333"
+          />
+        </label>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          disabled={busy || !hasWebNfc}
+          onClick={() => void writeOpenPrintTag()}
+        >
+          {m.openPrintTagWrite}
+        </button>
+        {!hasWebNfc ? <p className="muted">{m.openPrintTagNoWebNfc}</p> : null}
       </div>
 
       <button

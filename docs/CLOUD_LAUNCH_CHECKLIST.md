@@ -26,3 +26,12 @@
 
 Use `STRIPE_MODE=test` and test cards. Webhook forwarding: Stripe CLI
 `stripe listen --forward-to localhost:8787/api/v1/billing/webhooks/stripe`
+
+## Production readiness note
+
+Last checked 2026-08-10: production still uses Stripe test keys
+(`STRIPE_MODE=test`, `sk_test_`, `pk_test_`). Live charging is blocked until
+live keys, live price, webhook secret, seller/tax/contact fields, and the legal
+checklist above are complete. Do not treat `MY_SPOOLS_CLOUD_LIVE_PAYMENTS=true`
+as sufficient by itself; `STRIPE_MODE=live` with `sk_live_` / `pk_live_` is
+required before customers can be charged.

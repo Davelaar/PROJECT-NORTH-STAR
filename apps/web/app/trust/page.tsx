@@ -24,7 +24,7 @@ export default async function TrustPage() {
     { href: "/account", label: m.account.deleteAccount },
     { href: "/docs/slicers", label: m.export.supportedSlicersLink },
     { href: "/docs/api", label: m.nav.docsApi },
-    { href: GITHUB_REPO_URL, label: "Open-source repository", external: true },
+    { href: GITHUB_REPO_URL, label: m.legalPages.openSourceRepository, external: true },
   ];
   return (
     <article className="prose">
@@ -44,7 +44,7 @@ export default async function TrustPage() {
       </ul>
       <p>
         <button type="button" className="btn btn-secondary" disabled>
-          {m.footer.cookieSettings} (use footer Cookie settings)
+          {m.footer.cookieSettings} ({m.legalPages.cookieSettingsHint})
         </button>
       </p>
     </article>

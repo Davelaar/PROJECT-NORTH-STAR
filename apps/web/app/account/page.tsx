@@ -21,7 +21,7 @@ export default function AccountPage() {
     const a = loadAuth();
     setAuth(a);
     if (!a) return;
-    apiGet<{ sessions: typeof sessions }>("/api/v1/me/sessions", a.token)
+    apiGet<{ sessions: typeof sessions }>("/api/v1/me/sessions")
       .then((r) => setSessions(r.sessions))
       .catch(() => setStatus("Could not load sessions"));
   }, []);
@@ -54,11 +54,11 @@ export default function AccountPage() {
                 type="button"
                 className="btn btn-secondary"
                 onClick={async () => {
-                  await apiPost(`/api/v1/me/sessions/${s.uuid}/revoke`, {}, auth.token);
+                  await apiPost(`/api/v1/me/sessions/${s.uuid}/revoke`, {});
                   setSessions((prev) => prev.filter((x) => x.uuid !== s.uuid));
                 }}
               >
-                Revoke
+                {m.account.revokeSession}
               </button>
             </li>
           ))}
@@ -67,7 +67,7 @@ export default function AccountPage() {
           type="button"
           className="btn btn-secondary"
           onClick={async () => {
-            await apiPost("/api/v1/me/sessions/revoke-others", {}, auth.token);
+            await apiPost("/api/v1/me/sessions/revoke-others", {});
             setStatus(m.account.revokeOthers);
           }}
         >
@@ -81,7 +81,7 @@ export default function AccountPage() {
           type="button"
           className="btn"
           onClick={async () => {
-            const data = await apiGet<unknown>("/api/v1/me/export", auth.token);
+            const data = await apiGet<unknown>("/api/v1/me/export");
             const blob = new Blob([JSON.stringify(data, null, 2)], {
               type: "application/json",
             });
@@ -112,7 +112,7 @@ export default function AccountPage() {
           <input value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)} />
         </label>
         <label>
-          Password
+          {m.login.password}
           <input
             type="password"
             value={password}
@@ -127,7 +127,6 @@ export default function AccountPage() {
             await apiPost(
               "/api/v1/me/delete",
               { confirm: "DELETE", password },
-              auth.token,
             );
             clearAuth();
             window.location.href = "/";
@@ -139,6 +138,17 @@ export default function AccountPage() {
 
       {status ? <p role="status">{status}</p> : null}
       <p>
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={async () => {
+            await apiPost("/api/v1/auth/logout", {});
+            clearAuth();
+            window.location.href = "/";
+          }}
+        >
+          {m.account.logout}
+        </button>{" "}
         <Link href="/my-spools">{m.nav.mySpools}</Link> ·{" "}
         <Link href="/me">{m.nav.me}</Link>
       </p>

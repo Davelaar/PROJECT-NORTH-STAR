@@ -3,6 +3,26 @@ import { getLocaleMessages } from "@/lib/messages";
 import { getLegalConfig, legalHasPlaceholders } from "@/lib/legal/config";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
+function LegalSections({
+  sections,
+}: {
+  sections: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
+}) {
+  return sections.map((section) => (
+    <section key={section.heading}>
+      <h2>{section.heading}</h2>
+      {section.paragraphs?.map((p) => <p key={p}>{p}</p>)}
+      {section.items ? (
+        <ul>
+          {section.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  ));
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const { messages: m } = await getLocaleMessages();
   return buildPageMetadata({
@@ -30,81 +50,16 @@ export default async function PrivacyPage() {
         {m.legalPages.effective}: {legal.effectiveDate}
       </p>
 
-      <h2>Who operates OpenFilament</h2>
+      <h2>{m.legalPages.operator}</h2>
       <p>
-        Operator: <strong>{legal.ownerName}</strong>
+        {m.legalPages.operator}: <strong>{legal.ownerName}</strong>
         <br />
-        Privacy contact: <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>
+        {m.legalPages.privacyContact}:{" "}
+        <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>
         <br />
-        Hosting: {legal.hostingProvider} ({legal.hostingRegion})
+        {m.legalPages.hosting}: {legal.hostingProvider} ({legal.hostingRegion})
       </p>
-
-      <h2>What we process</h2>
-      <ul>
-        <li>Account data (email, username, display name, password hash) when you register.</li>
-        <li>Authentication sessions (hashed API tokens).</li>
-        <li>Cloud My Spools and related private notes when you sync.</li>
-        <li>Local My Spools stored only in your browser IndexedDB until you sync.</li>
-        <li>Public community contributions (profiles/calibrations) you choose to publish.</li>
-        <li>QR / RFID identifiers you attach to spools.</li>
-        <li>Consent preferences (categories, version, timestamp, locale).</li>
-        <li>Server and security logs (see retention policy).</li>
-        <li>Optional Google Analytics 4 after analytics consent only.</li>
-      </ul>
-
-      <h2>Legal bases</h2>
-      <ul>
-        <li>Contract / requested service — accounts, cloud My Spools, exports.</li>
-        <li>Legitimate interests — security, abuse prevention, service integrity.</li>
-        <li>Consent — analytics cookies/storage; withdraw anytime via Cookie settings.</li>
-        <li>Legal obligation — where applicable for security incident records.</li>
-      </ul>
-
-      <h2>Local-only My Spools</h2>
-      <p>
-        Local My Spools stay on your device. Clearing site data, losing the device, or
-        switching browsers can remove them. We do not upload local spools when you merely
-        sign in.
-      </p>
-
-      <h2>Cloud My Spools</h2>
-      <p>
-        My Spools Cloud is optional prepaid hosting (€19.99 for 12 months, one-time
-        Stripe Checkout in payment mode). It does not renew automatically and OpenFilament
-        cannot charge you again unless you start a new payment. Sync requires an account,
-        active (or grace) entitlement, and an explicit confirmation step. Ownership checks
-        apply to every read and write. Private notes, storage locations and identities are
-        not exposed via public QR resolution. Stripe processes payment details; we do not
-        store card numbers. After expiry: grace, then read-only export, then Cloud inventory
-        deletion per retention settings. Payment/accounting records may remain after inventory
-        deletion.
-      </p>
-
-      <h2>Your rights</h2>
-      <p>
-        You may request access, correction, deletion, restriction, portability and
-        objection, and withdraw consent. Use Account → Export / Delete, Cookie settings,
-        or email {legal.privacyEmail}. You may complain to {legal.supervisoryAuthority}
-        ({legal.supervisoryAuthorityUrl}).
-      </p>
-
-      <h2>International transfers</h2>
-      <p>
-        If analytics is enabled, Google may process data outside the EEA under its own
-        terms and safeguards. Hosting region: {legal.hostingRegion}. Exact processor
-        agreements must be confirmed by the operator — see docs/SUBPROCESSORS.md.
-      </p>
-
-      <h2>Retention</h2>
-      <p>
-        See docs/DATA_RETENTION.md. Soft-deleted spools are purged on a schedule.
-        Backups may retain deleted data until backup expiry — not instantaneous.
-      </p>
-
-      <h2>Policy changes</h2>
-      <p>
-        Material changes update the consent version and may re-prompt for consent.
-      </p>
+      <LegalSections sections={m.legalPages.sections.privacy} />
     </article>
   );
 }

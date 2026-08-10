@@ -17,7 +17,7 @@ export default function AdminPage() {
       setError("Login required");
       return;
     }
-    apiGet<Record<string, number>>("/api/v1/admin/summary", auth.token)
+    apiGet<Record<string, number>>("/api/v1/admin/summary")
       .then(setSummary)
       .catch((e) => setError(String(e)));
   }, []);

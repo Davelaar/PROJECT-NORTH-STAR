@@ -4,6 +4,26 @@ import { getLocaleMessages } from "@/lib/messages";
 import { getLegalConfig, legalHasPlaceholders } from "@/lib/legal/config";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 
+function LegalSections({
+  sections,
+}: {
+  sections: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
+}) {
+  return sections.map((section) => (
+    <section key={section.heading}>
+      <h2>{section.heading}</h2>
+      {section.paragraphs?.map((p) => <p key={p}>{p}</p>)}
+      {section.items ? (
+        <ul>
+          {section.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  ));
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const { messages: m } = await getLocaleMessages();
   return buildPageMetadata({
@@ -23,40 +43,11 @@ export default async function TermsPage() {
         <p className="legal-placeholder-warn">{m.legalPages.placeholderNotice}</p>
       ) : null}
       <p>
-        Operator: {legal.ownerName}. Effective: {legal.effectiveDate}.
+        {m.legalPages.operator}: {legal.ownerName}. {m.legalPages.effective}:{" "}
+        {legal.effectiveDate}.
       </p>
-      <h2>Community platform</h2>
-      <p>
-        OpenFilament provides an open catalog, identification tools and community
-        calibrations. Profiles are community or catalog-derived; they are not a print-safety
-        guarantee. You remain responsible for validating settings on your printer.
-      </p>
-      <h2>Accounts and My Spools</h2>
-      <p>
-        Accounts are optional for browsing and downloads. My Spools Local is free and
-        stored in your browser. My Spools Cloud is an optional prepaid service:
-        €19.99 for 12 months as a one-time Stripe payment. There is no automatic
-        renewal, no stored payment mandate for future charges, and no charge without
-        you starting a new Checkout. After expiry, a grace period and read-only export
-        window apply before Cloud inventory deletion; Local My Spools remains usable.
-      </p>
-      <p>
-        Refunds and disputes are handled according to the Cloud refund policy. Payment
-        records may be retained for accounting after Cloud inventory is deleted.
-        Stripe processes payment data; OpenFilament does not store card numbers.
-      </p>
-      <h2>Contributions</h2>
-      <p>
-        By submitting calibrations you accept the contribution terms shown at submit time
-        and license the contribution for public display under the project’s open terms.
-        Contributor emails stay private.
-      </p>
-      <h2>Availability and liability</h2>
-      <p>
-        The service is provided as-is without warranty of uninterrupted availability.
-        To the extent permitted by law, liability is limited for free community tooling.
-      </p>
-      <h2>Contact</h2>
+      <LegalSections sections={m.legalPages.sections.terms} />
+      <h2>{m.legalPages.contact}</h2>
       <p>
         <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a> ·{" "}
         <Link href="/privacy">Privacy</Link> · <Link href="/security">Security</Link>

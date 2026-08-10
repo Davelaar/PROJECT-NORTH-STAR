@@ -20,9 +20,12 @@ OpenPrintTag is an **open NFC filament-tag format** (ISO/IEC 15693 / NFC-V + NDE
 
 - **Done:** UUIDv5 namespace constants + derivation (`brand` / `material` / `package` / `instance`)
 - **Done:** Catalog → OpenPrintTag main-field mapping helper
-- **Planned:** full NDEF + CBOR binary encode/write and browser Web NFC path for ISO 15693
+- **Done:** NDEF MIME `application/vnd.openprinttag` + CBOR main payload encode
+- **Done:** Browser Web NFC write path in `/rfid` where `NDEFReader` is available
+- **Still hardware/browser dependent:** ISO 15693 tag support and Web NFC availability (mostly Android Chrome; not iOS Safari)
 
-API preview: `GET /api/v1/variants/{uuid}/openprinttag` returns mapped fields with `status: fields_ready_encode_planned`.
+API preview: `GET /api/v1/variants/{uuid}/openprinttag` returns mapped fields with `status: encode_ready`.
+Binary encode: `POST /api/v1/variants/{uuid}/openprinttag/encode` returns CBOR payload and NDEF record as hex/base64.
 
 ## UUID namespaces (from the spec)
 
@@ -38,11 +41,12 @@ Derivation concatenates **binary** UUID bytes (not hyphenated strings) with UTF-
 ## Browser notes
 
 - Web NFC is more relevant for OpenPrintTag (NDEF) than for CFS.
+- Web NFC is browser/platform dependent. Treat successful writes as hardware acceptance tests, not guaranteed cross-device support.
 - Do **not** use Web NFC for MIFARE Classic CFS writes.
 - CFS and OpenPrintTag remain separate schemes in `rfid_schemes`.
 
 ## Honesty checklist
 
-- Do not claim OpenPrintTag binary encode/write is shipped until NDEF/CBOR encode lands.
+- Do not claim universal OpenPrintTag hardware compatibility; NDEF/CBOR encode is shipped, but physical tag write depends on browser and tag support.
 - Do not equate CFS ciphertext with OpenPrintTag payloads.
 - Attribute OFD data to [Open Filament Database](https://openfilamentdatabase.org) (MIT).

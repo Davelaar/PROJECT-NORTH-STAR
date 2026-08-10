@@ -11,6 +11,8 @@ import {
   clearAllLocalSpools,
   deleteLocalSpool,
   duplicateLocalSpool,
+  applySpoolUsage,
+  deriveRemainingPercent,
   exportLocalSpoolsJson,
   importLocalSpoolsJson,
   listLocalSpools,
@@ -43,6 +45,7 @@ export default function MySpoolsPage() {
   const [message, setMessage] = useState("");
   const [formError, setFormError] = useState("");
   const [showArchived, setShowArchived] = useState(false);
+  const [usageBySpool, setUsageBySpool] = useState<Record<string, string>>({});
 
   const refresh = useCallback(async () => {
     setSpools(await listLocalSpools({ includeArchived: showArchived }));
@@ -110,12 +113,39 @@ export default function MySpoolsPage() {
     await refresh();
   }
 
+  function setEditingAmount(
+    key: "initialNetWeightG" | "currentWeightG" | "tareWeightG",
+    value: string,
+  ) {
+    const nextValue = value ? Number(value) : null;
+    setEditing((s) => {
+      const next = { ...s, [key]: nextValue };
+      return {
+        ...next,
+        remainingPercent: deriveRemainingPercent(next) ?? next.remainingPercent ?? null,
+      };
+    });
+  }
+
+  async function logUsage(spool: LocalSpool) {
+    const raw = usageBySpool[spool.uuid] ?? "";
+    const usedG = Number(raw);
+    if (!Number.isFinite(usedG) || usedG <= 0) {
+      setMessage(m.spools.usageError);
+      return;
+    }
+    const next = applySpoolUsage(spool, usedG);
+    await saveLocalSpool({ ...spool, ...next });
+    setUsageBySpool((prev) => ({ ...prev, [spool.uuid]: "" }));
+    setMessage(m.spools.usageSaved);
+    await refresh();
+  }
+
   async function runSync(removeLocal: boolean) {
     if (!auth || !syncPreview) return;
     await apiPost(
       "/api/v1/spools/sync",
       { spools: syncPreview },
-      auth.token,
     );
     trackEvent("cloud_sync_enabled");
     if (removeLocal) {
@@ -312,12 +342,7 @@ export default function MySpoolsPage() {
             <input
               type="number"
               value={editing.initialNetWeightG ?? ""}
-              onChange={(e) =>
-                setEditing((s) => ({
-                  ...s,
-                  initialNetWeightG: e.target.value ? Number(e.target.value) : null,
-                }))
-              }
+              onChange={(e) => setEditingAmount("initialNetWeightG", e.target.value)}
             />
           </label>
           <label>
@@ -325,12 +350,7 @@ export default function MySpoolsPage() {
             <input
               type="number"
               value={editing.currentWeightG ?? ""}
-              onChange={(e) =>
-                setEditing((s) => ({
-                  ...s,
-                  currentWeightG: e.target.value ? Number(e.target.value) : null,
-                }))
-              }
+              onChange={(e) => setEditingAmount("currentWeightG", e.target.value)}
             />
           </label>
           <label>
@@ -338,12 +358,7 @@ export default function MySpoolsPage() {
             <input
               type="number"
               value={editing.tareWeightG ?? ""}
-              onChange={(e) =>
-                setEditing((s) => ({
-                  ...s,
-                  tareWeightG: e.target.value ? Number(e.target.value) : null,
-                }))
-              }
+              onChange={(e) => setEditingAmount("tareWeightG", e.target.value)}
             />
           </label>
           <label>
@@ -462,6 +477,35 @@ export default function MySpoolsPage() {
                 {s.remainingPercent != null ? ` · ${s.remainingPercent}%` : ""}
                 {s.currentWeightG != null ? ` · ${s.currentWeightG}g` : ""}
               </p>
+              {s.initialNetWeightG != null && s.currentWeightG != null ? (
+                <div className="row gap spool-usage-log">
+                  <label>
+                    {m.spools.usageLabel}
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.1"
+                      value={usageBySpool[s.uuid] ?? ""}
+                      placeholder={m.spools.usagePlaceholder}
+                      onChange={(e) =>
+                        setUsageBySpool((prev) => ({
+                          ...prev,
+                          [s.uuid]: e.target.value,
+                        }))
+                      }
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void logUsage(s)}
+                  >
+                    {m.spools.usageSubmit}
+                  </button>
+                </div>
+              ) : (
+                <p className="muted">{m.spools.usageNeedsWeights}</p>
+              )}
               <p className="muted mono">{s.uuid}</p>
               <div className="row gap">
                 <button

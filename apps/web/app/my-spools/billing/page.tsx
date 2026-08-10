@@ -51,7 +51,6 @@ export default function CloudBillingPage() {
     }
     apiGet<{ payments: PaymentRow[] }>(
       "/api/v1/billing/cloud/payments",
-      auth.token,
     )
       .then((r) => setRows(r.payments))
       .catch((e) => setError(String(e)));

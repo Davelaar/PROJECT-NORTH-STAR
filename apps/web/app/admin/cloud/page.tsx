@@ -20,10 +20,9 @@ export default function AdminCloudPage() {
       return;
     }
     Promise.all([
-      apiGet<{ payments: unknown[] }>("/api/v1/admin/cloud/payments", auth.token),
+      apiGet<{ payments: unknown[] }>("/api/v1/admin/cloud/payments"),
       apiGet<{ entitlements: unknown[] }>(
         "/api/v1/admin/cloud/entitlements",
-        auth.token,
       ),
     ])
       .then(([p, e]) => {
@@ -43,7 +42,6 @@ export default function AdminCloudPage() {
         months: grantMonths,
         reason: grantReason,
       },
-      auth.token,
     );
     window.location.reload();
   }

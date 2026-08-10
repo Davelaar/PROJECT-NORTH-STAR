@@ -19,13 +19,13 @@ export type OpenPrintTagMainFields = {
   nominal_netto_full_weight?: number | null;
   mime_type: "application/vnd.openprinttag";
   tag_technology: "ISO15693";
-  status: "fields_ready_encode_planned";
+  status: "encode_ready";
   notes: string[];
 };
 
 /**
  * Map OpenFilament (+ optional OFD) catalog rows to OpenPrintTag main-region fields.
- * Full NDEF/CBOR encode is planned — this produces the semantic payload first.
+ * Full NDEF/CBOR encode is available via encodeOpenPrintTagNdef.
  */
 export function mapCatalogToOpenPrintTagMain(input: {
   brandName: string;
@@ -68,11 +68,11 @@ export function mapCatalogToOpenPrintTagMain(input: {
     nominal_netto_full_weight: input.spoolWeightG ?? null,
     mime_type: "application/vnd.openprinttag",
     tag_technology: "ISO15693",
-    status: "fields_ready_encode_planned",
+    status: "encode_ready",
     notes: [
       "OpenPrintTag uses ISO/IEC 15693 + NDEF + CBOR (not MIFARE Classic / CFS).",
       "Web NFC may apply for NDEF on supported phones; CFS remains a separate adapter.",
-      "Full binary encode/write is planned — see docs/OPENPRINTTAG.md.",
+      "Binary NDEF/CBOR encode is available via OpenFilament; Web NFC support depends on browser and tag hardware.",
       "Spec: https://specs.openprinttag.org/",
       "Catalog: https://openfilamentdatabase.org",
     ],

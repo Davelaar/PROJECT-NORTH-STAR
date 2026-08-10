@@ -69,6 +69,45 @@ export type LocalSpool = {
   updatedAt: string;
 };
 
+function finiteNumber(value: number | null | undefined): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+export function deriveRemainingPercent(input: {
+  initialNetWeightG?: number | null;
+  currentWeightG?: number | null;
+  tareWeightG?: number | null;
+}): number | null {
+  const initial = finiteNumber(input.initialNetWeightG);
+  const current = finiteNumber(input.currentWeightG);
+  if (initial == null || initial <= 0 || current == null) return null;
+  const tare = finiteNumber(input.tareWeightG) ?? 0;
+  const remainingFilament = Math.max(0, current - tare);
+  const percent = Math.min(100, Math.max(0, (remainingFilament / initial) * 100));
+  return Math.round(percent);
+}
+
+export function applySpoolUsage(
+  spool: Pick<
+    LocalSpool,
+    "initialNetWeightG" | "currentWeightG" | "tareWeightG" | "remainingPercent"
+  >,
+  usedG: number,
+): Pick<LocalSpool, "currentWeightG" | "remainingPercent"> {
+  const current = finiteNumber(spool.currentWeightG);
+  if (current == null || !Number.isFinite(usedG) || usedG <= 0) {
+    return {
+      currentWeightG: spool.currentWeightG ?? null,
+      remainingPercent: spool.remainingPercent ?? null,
+    };
+  }
+  const currentWeightG = Math.max(finiteNumber(spool.tareWeightG) ?? 0, current - usedG);
+  return {
+    currentWeightG,
+    remainingPercent: deriveRemainingPercent({ ...spool, currentWeightG }),
+  };
+}
+
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(SPOOL_DB_NAME, SPOOL_DB_VERSION);
@@ -132,6 +171,12 @@ export async function saveLocalSpool(
   const db = await openDb();
   const now = new Date().toISOString();
   const existing = input.uuid ? await getLocalSpool(input.uuid) : null;
+  const amounts = {
+    initialNetWeightG: input.initialNetWeightG ?? existing?.initialNetWeightG ?? null,
+    currentWeightG: input.currentWeightG ?? existing?.currentWeightG ?? null,
+    tareWeightG: input.tareWeightG ?? existing?.tareWeightG ?? null,
+  };
+  const derivedRemaining = deriveRemainingPercent(amounts);
   const spool: LocalSpool = {
     uuid: input.uuid ?? uuid(),
     clientId: input.clientId ?? existing?.clientId ?? uuid(),
@@ -143,10 +188,8 @@ export async function saveLocalSpool(
     variantName: input.variantName ?? existing?.variantName ?? null,
     colorHex: input.colorHex ?? existing?.colorHex ?? null,
     materialCode: input.materialCode ?? existing?.materialCode ?? null,
-    initialNetWeightG: input.initialNetWeightG ?? existing?.initialNetWeightG ?? null,
-    currentWeightG: input.currentWeightG ?? existing?.currentWeightG ?? null,
-    tareWeightG: input.tareWeightG ?? existing?.tareWeightG ?? null,
-    remainingPercent: input.remainingPercent ?? existing?.remainingPercent ?? null,
+    ...amounts,
+    remainingPercent: input.remainingPercent ?? derivedRemaining ?? existing?.remainingPercent ?? null,
     purchaseDate: input.purchaseDate ?? existing?.purchaseDate ?? null,
     openedDate: input.openedDate ?? existing?.openedDate ?? null,
     batchLot: input.batchLot ?? existing?.batchLot ?? null,

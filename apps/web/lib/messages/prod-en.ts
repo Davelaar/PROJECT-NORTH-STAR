@@ -86,11 +86,18 @@ export const spoolsEn = {
   editSpool: "Edit spool",
   cancel: "Cancel",
   showArchived: "Show archived",
+  usageLabel: "Used after print (g)",
+  usagePlaceholder: "e.g. 42",
+  usageSubmit: "Subtract usage",
+  usageSaved: "Usage logged and remaining amount updated.",
+  usageError: "Enter a positive amount of grams used.",
+  usageNeedsWeights: "Add initial and current weight to track print usage.",
 };
 
 export const accountEn = {
   heading: "Account",
   sessions: "Active sessions",
+  revokeSession: "Revoke",
   revokeOthers: "Revoke other sessions",
   exportData: "Export my data",
   deleteAccount: "Delete my account",
@@ -99,6 +106,7 @@ export const accountEn = {
   deleteConfirmLabel: 'Type DELETE to confirm',
   privacyPrefs: "Privacy preferences",
   register: "Create account",
+  logout: "Log out",
 };
 
 export const legalPagesEn = {
@@ -110,6 +118,113 @@ export const legalPagesEn = {
   placeholderNotice:
     "This page includes owner placeholders marked clearly. They are release blockers until replaced.",
   effective: "Effective date",
+  operator: "Operator",
+  privacyContact: "Privacy contact",
+  hosting: "Hosting",
+  contact: "Contact",
+  openSourceRepository: "Open-source repository",
+  cookieSettingsHint: "Use footer Cookie settings",
+  sections: {
+    privacy: [
+      {
+        heading: "What we process",
+        items: [
+          "Account data, authentication sessions and security logs.",
+          "Cloud My Spools, private notes and QR/RFID identities when you explicitly sync.",
+          "Local My Spools remains in your browser until you sync or export it.",
+          "Public community contributions you choose to publish.",
+          "Consent preferences and optional Google Analytics 4 after consent only.",
+        ],
+      },
+      {
+        heading: "Legal bases",
+        items: [
+          "Contract or requested service for accounts, Cloud, exports and downloads.",
+          "Legitimate interest for security, abuse prevention and service integrity.",
+          "Consent for analytics cookies/storage, withdrawable via Cookie settings.",
+          "Legal obligation where security or accounting records must be retained.",
+        ],
+      },
+      {
+        heading: "My Spools",
+        paragraphs: [
+          "Local My Spools stays on your device. Clearing site data, losing the device or switching browsers can remove it. Signing in never uploads local spools by itself.",
+          "My Spools Cloud is optional prepaid hosting for 12 months via one-time Stripe Checkout. It does not renew automatically. Sync requires an account, active entitlement and explicit confirmation. Public QR resolution does not expose private notes, locations or account identifiers.",
+        ],
+      },
+      {
+        heading: "Your rights and retention",
+        paragraphs: [
+          "You can request access, correction, deletion, restriction, portability and objection, and withdraw consent. Use Account export/delete, Cookie settings or email the privacy contact. You may complain to the configured supervisory authority.",
+          "Retention follows docs/DATA_RETENTION.md. Soft-deleted spools are purged on a schedule. Backups may retain deleted data until backup expiry.",
+        ],
+      },
+      {
+        heading: "International transfers and changes",
+        paragraphs: [
+          "If analytics is enabled, Google may process data outside the EEA under its safeguards. Hosting region is shown above. Material policy changes update the consent version and may re-prompt for consent.",
+        ],
+      },
+    ],
+    terms: [
+      {
+        heading: "Community platform",
+        paragraphs: [
+          "OpenFilament provides an open catalog, identification tools and community calibrations. Profiles are community or catalog-derived and are not a print-safety guarantee. You remain responsible for validating settings on your printer.",
+        ],
+      },
+      {
+        heading: "Accounts and My Spools",
+        paragraphs: [
+          "Accounts are optional for browsing and downloads. My Spools Local is free and stored in your browser. My Spools Cloud is an optional prepaid service: €19.99 for 12 months as a one-time Stripe payment, with no automatic renewal or future charge unless you start a new Checkout.",
+          "After expiry, a grace period and read-only export window apply before Cloud inventory deletion. Refunds and disputes follow the Cloud refund policy. Stripe processes payment data; OpenFilament does not store card numbers.",
+        ],
+      },
+      {
+        heading: "Contributions",
+        paragraphs: [
+          "By submitting calibrations you accept the contribution terms shown at submit time and license the contribution for public display under the project’s open terms. Contributor emails stay private.",
+        ],
+      },
+      {
+        heading: "Availability and liability",
+        paragraphs: [
+          "The service is provided as-is without warranty of uninterrupted availability. To the extent permitted by law, liability is limited for free community tooling.",
+        ],
+      },
+    ],
+    cookies: [
+      {
+        heading: "Browser storage",
+        paragraphs: [
+          "OpenFilament uses necessary cookies and browser storage for language, consent, sessions, CSRF protection, local My Spools and the PWA shell. Analytics storage is only used after consent.",
+        ],
+      },
+      {
+        heading: "Choice",
+        paragraphs: [
+          "Rejecting analytics does not disable search, My Spools, accounts, QR, RFID or downloads. Marketing storage is not used.",
+        ],
+      },
+    ],
+    security: [
+      {
+        heading: "What we protect",
+        items: [
+          "Account credentials with scrypt password hashes.",
+          "Session tokens hashed at rest and sent to the browser as httpOnly cookies.",
+          "Private My Spools with server-side ownership checks.",
+          "Public QR projections that omit notes, locations and account identifiers.",
+        ],
+      },
+      {
+        heading: "Responsible disclosure",
+        paragraphs: [
+          "Report vulnerabilities privately to the configured security contact. Do not publicly disclose secrets, exploits against live users or production credentials. Allow reasonable time for remediation before public discussion.",
+        ],
+      },
+    ],
+  },
 };
 
 export const cloudEn = {

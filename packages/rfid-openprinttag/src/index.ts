@@ -10,3 +10,9 @@ export {
   mapCatalogToOpenPrintTagMain,
   type OpenPrintTagMainFields,
 } from "./map.js";
+export {
+  OPENPRINTTAG_MIME,
+  buildOpenPrintTagNdefRecord,
+  encodeOpenPrintTagNdef,
+  encodeOpenPrintTagPayload,
+} from "./encode.js";

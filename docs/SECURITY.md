@@ -2,7 +2,7 @@
 
 ## Production posture (openfilament.nl)
 
-- **HTTPS only** in production via Caddy (`deploy/Caddyfile`) with Let’s Encrypt, HTTP→HTTPS redirect, and HSTS.
+- **HTTPS only** in production via Caddy (`deploy/Caddyfile`) with Let’s Encrypt, HTTP→HTTPS redirect, and HSTS. This protects transport. It is separate from `httpOnly`, which is a cookie flag used to keep session tokens out of browser JavaScript.
 - Headers: `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` (camera/usb/serial/hid self for QR/RFID).
 - CORS limited to `WEB_ORIGIN`.
 - API not published publicly — reached via Next `/api` rewrites.
@@ -14,7 +14,7 @@
 - Passwords: scrypt (`packages/db/src/password.ts`); never plaintext.
 - API tokens: SHA-256 hashed at rest; sessions listed/revoked under `/account`.
 - Deleted/suspended users cannot authenticate.
-- Bearer tokens currently live in **localStorage** (XSS residual risk). Prefer future httpOnly cookie sessions.
+- Browser sessions use httpOnly cookies plus CSRF tokens. Bearer tokens remain accepted for API/script clients, but the web UI must not persist raw tokens in `localStorage`.
 - Account export: `GET /api/v1/me/export`. Account delete: `POST /api/v1/me/delete` with confirmation (+ password when provided).
 - Public contributions may be **anonymized** on account deletion rather than hard-deleted.
 
@@ -35,7 +35,6 @@ Report privately to the security contact configured as `NEXT_PUBLIC_LEGAL_SECURI
 
 ## Deferred / residual
 
-- httpOnly cookie sessions + CSRF tokens
 - Email magic links / passkeys (no email provider yet)
 - Stronger CSP without `'unsafe-inline'`/`'unsafe-eval'` once Next nonce strategy lands
 - Automated dependency scanning in CI

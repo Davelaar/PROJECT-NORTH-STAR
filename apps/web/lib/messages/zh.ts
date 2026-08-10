@@ -326,6 +326,12 @@ export const messages: Messages = {
     capsWebHid: "支持 WebHID（OF1 HID 方案尚未发布）",
     capsWebNfc: "存在 Web NFC——但不用于 MIFARE Classic CFS 标签",
     capsNone: "无 WebUSB/Serial/HID——请用内存演示、二维码，或可选 PC/SC 助手",
+    openPrintTagWriteHeading: "OpenPrintTag Web NFC",
+    openPrintTagWriteIntro:
+      "为某个变体编码 OpenPrintTag NDEF/CBOR 载荷，并在支持的 Android Chrome NFC 设备上写入。这与 Creality CFS 分离。",
+    openPrintTagVariant: "变体 UUID",
+    openPrintTagWrite: "写入 OpenPrintTag",
+    openPrintTagNoWebNfc: "此浏览器不支持 Web NFC。",
   },
   login: {
     heading: "运维登录",
@@ -333,6 +339,7 @@ export const messages: Messages = {
     password: "密码",
     submit: "登录",
     seedHint: "本地种子账号：admin / admin-change-me",
+    signedIn: "已登录。你的会话保存在 httpOnly Cookie 中。",
   },
   docsApi: {
     heading: "API 文档",

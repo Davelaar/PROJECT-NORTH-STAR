@@ -34,13 +34,19 @@ import { convertCanonicalToOrcaFilamentPreset } from "@open-filament/slicer-orca
 import { convertCanonicalToPrusaConfigBundle } from "@open-filament/slicer-prusa";
 import { convertCanonicalToBambuFilamentPreset } from "@open-filament/slicer-bambu";
 import { CrealityCfsCodec } from "@open-filament/rfid-cfs";
-import { mapCatalogToOpenPrintTagMain } from "@open-filament/rfid-openprinttag";
+import {
+  encodeOpenPrintTagNdef,
+  mapCatalogToOpenPrintTagMain,
+} from "@open-filament/rfid-openprinttag";
 import { applyAmazonAffiliateToPurchaseLinks } from "@open-filament/domain";
 import { randomBytes } from "node:crypto";
 import {
+  CSRF_COOKIE,
+  SESSION_COOKIE,
   loginWithPassword,
   registerUser,
-  resolveBearerUser,
+  resolveRequestUser,
+  revokeRawToken,
   type AuthUser,
 } from "./auth.js";
 import { badRequest, notFound, sendError, unauthorized } from "./errors.js";
@@ -53,10 +59,10 @@ declare module "fastify" {
 }
 
 async function requireAuth(request: {
-  headers: { authorization?: string };
+  headers: { authorization?: string; cookie?: string };
   server: FastifyInstance;
 }): Promise<AuthUser | null> {
-  return resolveBearerUser(request.server.db, request.headers.authorization);
+  return resolveRequestUser(request.server.db, request.headers);
 }
 
 function publicUser(u: AuthUser) {
@@ -66,6 +72,35 @@ function publicUser(u: AuthUser) {
     role: u.role,
     trustScore: u.trustScore,
   };
+}
+
+function cookieOptions(maxAgeSeconds: number): string {
+  const secure = process.env.NODE_ENV === "production" ? "; Secure" : "";
+  return `Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${secure}`;
+}
+
+function setSessionCookies(
+  reply: { header: (name: string, value: string | string[]) => unknown },
+  token: string,
+) {
+  const csrf = randomBytes(24).toString("hex");
+  reply.header("Set-Cookie", [
+    `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; ${cookieOptions(
+      60 * 60 * 24 * 30,
+    )}`,
+    `${CSRF_COOKIE}=${encodeURIComponent(csrf)}; ${cookieOptions(
+      60 * 60 * 24 * 30,
+    )}`,
+  ]);
+}
+
+function clearSessionCookies(
+  reply: { header: (name: string, value: string | string[]) => unknown },
+) {
+  reply.header("Set-Cookie", [
+    `${SESSION_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`,
+    `${CSRF_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`,
+  ]);
 }
 
 export async function registerRoutes(app: FastifyInstance) {
@@ -585,6 +620,79 @@ export async function registerRoutes(app: FastifyInstance) {
         spec: "https://specs.openprinttag.org/",
         catalog: "https://openfilamentdatabase.org",
         fields,
+      };
+    },
+  );
+
+  app.post<{ Params: { uuid: string } }>(
+    "/api/v1/variants/:uuid/openprinttag/encode",
+    async (req, reply) => {
+      const row = db()
+        .select({
+          variant: schema.filamentVariants,
+          productUuid: schema.filamentProducts.uuid,
+          productName: schema.filamentProducts.productName,
+          productSourceType: schema.filamentProducts.sourceType,
+          diameterMm: schema.filamentProducts.diameterMm,
+          manufacturerUuid: schema.manufacturers.uuid,
+          manufacturerName: schema.manufacturers.name,
+          materialCode: schema.materialFamilies.code,
+          mfrNozzleTempMinC: schema.filamentProducts.mfrNozzleTempMinC,
+          mfrNozzleTempMaxC: schema.filamentProducts.mfrNozzleTempMaxC,
+          mfrBedTempMinC: schema.filamentProducts.mfrBedTempMinC,
+          mfrBedTempMaxC: schema.filamentProducts.mfrBedTempMaxC,
+        })
+        .from(schema.filamentVariants)
+        .innerJoin(
+          schema.filamentProducts,
+          eq(
+            schema.filamentVariants.filamentProductId,
+            schema.filamentProducts.id,
+          ),
+        )
+        .innerJoin(
+          schema.manufacturers,
+          eq(schema.filamentProducts.manufacturerId, schema.manufacturers.id),
+        )
+        .innerJoin(
+          schema.materialFamilies,
+          eq(
+            schema.filamentProducts.materialFamilyId,
+            schema.materialFamilies.id,
+          ),
+        )
+        .where(eq(schema.filamentVariants.uuid, req.params.uuid))
+        .get();
+      if (!row) return notFound(reply, "Variant not found");
+
+      const fromOfd = row.productSourceType === "open_filament_database";
+      const materialDisplayName = `${row.productName} ${row.variant.variantName}`.trim();
+      const fields = mapCatalogToOpenPrintTagMain({
+        brandName: row.manufacturerName,
+        brandUuid: fromOfd ? row.manufacturerUuid : null,
+        materialCode: row.materialCode,
+        materialDisplayName,
+        materialUuid: fromOfd ? row.productUuid : null,
+        variantUuid: row.variant.uuid,
+        colorHex: row.variant.primaryColorHex,
+        nozzleMinC: row.mfrNozzleTempMinC,
+        nozzleMaxC: row.mfrNozzleTempMaxC,
+        bedMinC: row.mfrBedTempMinC,
+        bedMaxC: row.mfrBedTempMaxC,
+        diameterMm: row.diameterMm,
+        ofdVariantUuid: fromOfd ? row.variant.uuid : null,
+      });
+      const encoded = encodeOpenPrintTagNdef(fields);
+      return {
+        variantUuid: row.variant.uuid,
+        scheme: "OpenPrintTag",
+        spec: "https://specs.openprinttag.org/",
+        fields,
+        mimeType: encoded.mimeType,
+        payloadHex: encoded.payloadHex,
+        payloadBase64: encoded.payloadBase64,
+        ndefHex: encoded.ndefHex,
+        ndefBase64: encoded.ndefBase64,
       };
     },
   );
@@ -1588,7 +1696,8 @@ export async function registerRoutes(app: FastifyInstance) {
       parsed.data.password,
     );
     if (!result) return unauthorized(reply, "Invalid credentials");
-    return { token: result.token, user: publicUser(result.user) };
+    setSessionCookies(reply, result.token);
+    return { user: publicUser(result.user) };
     },
   });
 
@@ -1607,8 +1716,8 @@ export async function registerRoutes(app: FastifyInstance) {
     }
     try {
       const result = await registerUser(db(), parsed.data);
+      setSessionCookies(reply, result.token);
       return reply.status(201).send({
-        token: result.token,
         user: publicUser(result.user),
       });
     } catch (err) {
@@ -1617,6 +1726,21 @@ export async function registerRoutes(app: FastifyInstance) {
       });
     }
     },
+  });
+
+  app.post("/api/v1/auth/logout", async (req, reply) => {
+    const tokenHeader = req.headers.authorization?.startsWith("Bearer ")
+      ? req.headers.authorization.slice("Bearer ".length).trim()
+      : null;
+    const tokenCookie = req.headers.cookie
+      ?.split(";")
+      .map((s) => s.trim())
+      .find((s) => s.startsWith(`${SESSION_COOKIE}=`))
+      ?.slice(SESSION_COOKIE.length + 1);
+    const token = tokenHeader ?? (tokenCookie ? decodeURIComponent(tokenCookie) : "");
+    if (token) revokeRawToken(db(), token);
+    clearSessionCookies(reply);
+    return { ok: true };
   });
 }
 

@@ -5,6 +5,26 @@ import { getLegalConfig, legalHasPlaceholders } from "@/lib/legal/config";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { GITHUB_REPO_URL } from "@/lib/github";
 
+function LegalSections({
+  sections,
+}: {
+  sections: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
+}) {
+  return sections.map((section) => (
+    <section key={section.heading}>
+      <h2>{section.heading}</h2>
+      {section.paragraphs?.map((p) => <p key={p}>{p}</p>)}
+      {section.items ? (
+        <ul>
+          {section.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  ));
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const { messages: m } = await getLocaleMessages();
   return buildPageMetadata({
@@ -23,21 +43,11 @@ export default async function SecurityPage() {
       {legalHasPlaceholders() ? (
         <p className="legal-placeholder-warn">{m.legalPages.placeholderNotice}</p>
       ) : null}
-      <h2>What we protect</h2>
-      <ul>
-        <li>Account credentials (scrypt password hashes; never plaintext).</li>
-        <li>Session tokens hashed at rest.</li>
-        <li>Private My Spools with server-side ownership checks.</li>
-        <li>Public QR projections that omit notes, locations and account identifiers.</li>
-      </ul>
-      <h2>Responsible disclosure</h2>
+      <LegalSections sections={m.legalPages.sections.security} />
       <p>
-        Report vulnerabilities privately to{" "}
-        <a href={`mailto:${legal.securityEmail}`}>{legal.securityEmail}</a>. Do not publicly
-        disclose secrets, exploits against live users, or production credentials. Allow a
-        reasonable time for remediation before public discussion.
+        <a href={`mailto:${legal.securityEmail}`}>{legal.securityEmail}</a>
       </p>
-      <h2>Open source</h2>
+      <h2>{m.legalPages.openSourceRepository}</h2>
       <p>
         Source: <a href={GITHUB_REPO_URL}>{GITHUB_REPO_URL}</a>
       </p>

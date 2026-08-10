@@ -12,6 +12,7 @@ import {
   seed,
   type AppDb,
 } from "@open-filament/db";
+import { CSRF_COOKIE, CSRF_HEADER, getCookieValue, SESSION_COOKIE } from "./auth.js";
 import { registerRoutes } from "./routes.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -72,6 +73,33 @@ export async function buildServer(options?: { dbPath?: string }) {
   await app.register(cors, {
     origin: webOrigin.split(",").map((s) => s.trim()),
     credentials: true,
+  });
+
+  app.addHook("preHandler", async (req, reply) => {
+    const method = req.method.toUpperCase();
+    if (method === "GET" || method === "HEAD" || method === "OPTIONS") return;
+    const url = req.url.split("?")[0] ?? req.url;
+    if (
+      url === "/api/v1/auth/login" ||
+      url === "/api/v1/auth/register" ||
+      url === "/api/v1/billing/webhooks/stripe"
+    ) {
+      return;
+    }
+    // API clients using Bearer tokens are not protected by cookies and do not need CSRF.
+    if (String(req.headers.authorization ?? "").startsWith("Bearer ")) return;
+    const session = getCookieValue(req.headers.cookie, SESSION_COOKIE);
+    if (!session) return;
+    const cookieToken = getCookieValue(req.headers.cookie, CSRF_COOKIE);
+    const headerToken = String(req.headers[CSRF_HEADER] ?? "");
+    if (!cookieToken || !headerToken || cookieToken !== headerToken) {
+      return reply.status(403).send({
+        error: {
+          code: "csrf_required",
+          message: "CSRF token is required for cookie-authenticated writes",
+        },
+      });
+    }
   });
 
   await app.register(import("@fastify/rate-limit"), {

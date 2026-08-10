@@ -87,11 +87,18 @@ export const spoolsPt = {
   editSpool: "Editar bobina",
   cancel: "Cancelar",
   showArchived: "Mostrar arquivadas",
+  usageLabel: "Usado após impressão (g)",
+  usagePlaceholder: "ex. 42",
+  usageSubmit: "Subtrair uso",
+  usageSaved: "Uso registado e quantidade restante atualizada.",
+  usageError: "Introduza uma quantidade positiva de gramas usadas.",
+  usageNeedsWeights: "Adicione peso inicial e atual para acompanhar o uso de impressão.",
 };
 
 export const accountPt = {
   heading: "Conta",
   sessions: "Sessões ativas",
+  revokeSession: "Revogar",
   revokeOthers: "Revogar outras sessões",
   exportData: "Exportar os meus dados",
   deleteAccount: "Eliminar a minha conta",
@@ -100,6 +107,7 @@ export const accountPt = {
   deleteConfirmLabel: "Escreve DELETE para confirmar",
   privacyPrefs: "Preferências de privacidade",
   register: "Criar conta",
+  logout: "Terminar sessão",
 };
 
 export const legalPagesPt = {
@@ -111,4 +119,30 @@ export const legalPagesPt = {
   placeholderNotice:
     "Esta página inclui placeholders do operador claramente assinalados. Bloqueiam o lançamento até serem substituídos.",
   effective: "Data de entrada em vigor",
+  operator: "Operador",
+  privacyContact: "Contacto de privacidade",
+  hosting: "Alojamento",
+  contact: "Contacto",
+  openSourceRepository: "Repositório open source",
+  cookieSettingsHint: "Use as definições de cookies no rodapé",
+  sections: {
+    privacy: [
+      { heading: "Dados tratados", items: ["Conta, sessões e registos de segurança.", "Cloud My Spools, notas privadas e identidades QR/RFID só após sincronização explícita.", "My Spools local permanece no navegador.", "Contribuições públicas e preferências de consentimento.", "Google Analytics 4 apenas após consentimento."] },
+      { heading: "Bases legais e direitos", paragraphs: ["Tratamos dados para contrato/serviço pedido, interesse legítimo de segurança, consentimento para analytics e obrigações legais. Pode pedir acesso, correção, eliminação, limitação, portabilidade, oposição e retirar consentimento."] },
+      { heading: "My Spools, retenção e transferências", paragraphs: ["Local permanece no dispositivo e iniciar sessão não o envia. Cloud é alojamento pré-pago opcional de 12 meses sem renovação automática. A resolução QR pública não expõe notas, locais ou IDs de conta.", "A retenção segue docs/DATA_RETENTION.md. Com analytics ativo, a Google pode tratar dados fora do EEE. Alterações materiais podem voltar a pedir consentimento."] },
+    ],
+    terms: [
+      { heading: "Plataforma comunitária", paragraphs: ["OpenFilament fornece catálogo, identificação e calibrações comunitárias sem garantia de segurança de impressão; valida as definições na sua impressora."] },
+      { heading: "Contas, Cloud e contribuições", paragraphs: ["Contas são opcionais. My Spools Local é gratuito. Cloud custa 19,99 € por 12 meses por pagamento Stripe único, sem renovação automática. A Stripe trata pagamentos; OpenFilament não guarda cartões.", "Ao enviar calibrações aceita os termos apresentados; emails de contribuidores ficam privados."] },
+      { heading: "Disponibilidade e responsabilidade", paragraphs: ["O serviço é fornecido tal como está, sem garantia de disponibilidade contínua; a responsabilidade por ferramentas comunitárias gratuitas é limitada até ao permitido por lei."] },
+    ],
+    cookies: [
+      { heading: "Armazenamento do navegador", paragraphs: ["Cookies/armazenamento necessários servem idioma, consentimento, sessões, CSRF, My Spools local e shell PWA. Analytics apenas com consentimento."] },
+      { heading: "Escolha", paragraphs: ["Rejeitar analytics não desativa pesquisa, My Spools, contas, QR, RFID ou downloads. Não usamos armazenamento de marketing."] },
+    ],
+    security: [
+      { heading: "Proteção", items: ["Palavras-passe com hash scrypt.", "Tokens de sessão com hash e cookies httpOnly.", "My Spools privado com verificações de propriedade.", "Projeções QR públicas sem campos privados."] },
+      { heading: "Divulgação responsável", paragraphs: ["Reporte vulnerabilidades em privado ao contacto de segurança e não publique segredos, exploits contra utilizadores reais ou credenciais de produção antes de tempo razoável para correção."] },
+    ],
+  },
 };

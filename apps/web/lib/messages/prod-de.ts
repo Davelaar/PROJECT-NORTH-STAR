@@ -87,11 +87,18 @@ export const spoolsDe = {
   editSpool: "Spule bearbeiten",
   cancel: "Abbrechen",
   showArchived: "Archivierte anzeigen",
+  usageLabel: "Nach Druck verbraucht (g)",
+  usagePlaceholder: "z. B. 42",
+  usageSubmit: "Verbrauch abziehen",
+  usageSaved: "Verbrauch erfasst und Restmenge aktualisiert.",
+  usageError: "Gib eine positive Menge verbrauchter Gramm ein.",
+  usageNeedsWeights: "Trage Anfangs- und aktuelles Gewicht ein, um Druckverbrauch zu verfolgen.",
 };
 
 export const accountDe = {
   heading: "Konto",
   sessions: "Aktive Sitzungen",
+  revokeSession: "Widerrufen",
   revokeOthers: "Andere Sitzungen widerrufen",
   exportData: "Meine Daten exportieren",
   deleteAccount: "Mein Konto löschen",
@@ -100,6 +107,7 @@ export const accountDe = {
   deleteConfirmLabel: "Tippe DELETE zur Bestätigung",
   privacyPrefs: "Datenschutz-Einstellungen",
   register: "Konto erstellen",
+  logout: "Abmelden",
 };
 
 export const legalPagesDe = {
@@ -111,4 +119,30 @@ export const legalPagesDe = {
   placeholderNotice:
     "Diese Seite enthält klar markierte Platzhalter des Betreibers. Sie blockieren den Release, bis sie ersetzt sind.",
   effective: "Gültig ab",
+  operator: "Betreiber",
+  privacyContact: "Datenschutzkontakt",
+  hosting: "Hosting",
+  contact: "Kontakt",
+  openSourceRepository: "Open-Source-Repository",
+  cookieSettingsHint: "Cookie-Einstellungen im Footer verwenden",
+  sections: {
+    privacy: [
+      { heading: "Verarbeitete Daten", items: ["Konto-, Sitzungs- und Sicherheitsdaten.", "Cloud My Spools mit privaten Notizen und QR/RFID-Identitäten nur nach ausdrücklicher Synchronisierung.", "Lokale My Spools bleiben im Browser.", "Öffentliche Community-Beiträge und Einwilligungspräferenzen.", "Google Analytics 4 nur nach Zustimmung."] },
+      { heading: "Rechtsgrundlagen und Rechte", paragraphs: ["Verarbeitung erfolgt für Vertrag/angefragte Dienste, berechtigte Sicherheitsinteressen, Einwilligung für Analytics und gesetzliche Pflichten. Du kannst Auskunft, Berichtigung, Löschung, Einschränkung, Übertragbarkeit, Widerspruch und Widerruf verlangen."] },
+      { heading: "My Spools, Aufbewahrung und Übermittlungen", paragraphs: ["Local bleibt auf deinem Gerät und wird durch Anmeldung nicht hochgeladen. Cloud ist optionales Prepaid-Hosting für 12 Monate ohne automatische Verlängerung. Öffentliche QR-Auflösung zeigt keine privaten Notizen, Orte oder Konto-IDs.", "Aufbewahrung folgt docs/DATA_RETENTION.md. Bei Analytics kann Google Daten außerhalb des EWR verarbeiten. Wesentliche Änderungen können eine neue Einwilligung auslösen."] },
+    ],
+    terms: [
+      { heading: "Community-Plattform", paragraphs: ["OpenFilament bietet Katalog, Identifikation und Community-Kalibrierungen ohne Drucksicherheitsgarantie; du validierst Einstellungen selbst."] },
+      { heading: "Konten, Cloud und Beiträge", paragraphs: ["Konten sind optional. My Spools Local ist kostenlos. Cloud kostet 19,99 € für 12 Monate per einmaliger Stripe-Zahlung ohne automatische Verlängerung. Stripe verarbeitet Zahlungsdaten; OpenFilament speichert keine Kartennummern.", "Mit Kalibrierungsbeiträgen akzeptierst du die angezeigten Bedingungen; E-Mails bleiben privat."] },
+      { heading: "Verfügbarkeit und Haftung", paragraphs: ["Der Dienst wird ohne Garantie unterbrechungsfreier Verfügbarkeit bereitgestellt; Haftung für kostenlose Community-Werkzeuge ist soweit zulässig begrenzt."] },
+    ],
+    cookies: [
+      { heading: "Browser-Speicher", paragraphs: ["Notwendige Cookies/Speicher dienen Sprache, Einwilligung, Sitzungen, CSRF, lokalen My Spools und PWA-Shell. Analytics nur nach Zustimmung."] },
+      { heading: "Wahl", paragraphs: ["Ablehnung von Analytics deaktiviert Suche, My Spools, Konten, QR, RFID oder Downloads nicht. Marketing-Speicher wird nicht genutzt."] },
+    ],
+    security: [
+      { heading: "Schutz", items: ["scrypt-Passworthashes.", "Sitzungstokens gehasht und als httpOnly-Cookies.", "Private My Spools mit Ownership-Checks.", "Öffentliche QR-Projektionen ohne private Felder."] },
+      { heading: "Responsible Disclosure", paragraphs: ["Melde Schwachstellen vertraulich an den Sicherheitskontakt und veröffentliche keine Secrets, Live-Exploits oder Produktionszugänge vor angemessener Behebungszeit."] },
+    ],
+  },
 };

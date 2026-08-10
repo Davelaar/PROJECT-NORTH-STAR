@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { encodeOpenPrintTagNdef, OPENPRINTTAG_MIME } from "./index.js";
 import { mapCatalogToOpenPrintTagMain } from "./map.js";
 import { deriveBrandUuid } from "./uuid.js";
 
@@ -16,7 +17,7 @@ describe("mapCatalogToOpenPrintTagMain", () => {
       ofdVariantUuid: "33333333-3333-4333-8333-333333333333",
     });
     expect(fields.brand_uuid).toBe(ofdBrand);
-    expect(fields.status).toBe("fields_ready_encode_planned");
+    expect(fields.status).toBe("encode_ready");
     expect(fields.mime_type).toBe("application/vnd.openprinttag");
   });
 
@@ -28,5 +29,19 @@ describe("mapCatalogToOpenPrintTagMain", () => {
       variantUuid: "33333333-3333-4333-8333-333333333333",
     });
     expect(fields.brand_uuid).toBe(deriveBrandUuid("Prusament"));
+  });
+
+  it("encodes mapped fields as an NDEF MIME record", () => {
+    const fields = mapCatalogToOpenPrintTagMain({
+      brandName: "Prusament",
+      materialCode: "PLA",
+      materialDisplayName: "PLA",
+      variantUuid: "33333333-3333-4333-8333-333333333333",
+    });
+    const encoded = encodeOpenPrintTagNdef(fields);
+    expect(encoded.mimeType).toBe(OPENPRINTTAG_MIME);
+    expect(encoded.payloadHex.length).toBeGreaterThan(20);
+    expect(["d2", "c2"]).toContain(encoded.ndefHex.slice(0, 2));
+    expect(encoded.ndefBase64.length).toBeGreaterThan(20);
   });
 });
