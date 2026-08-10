@@ -22,7 +22,7 @@
 
 ## Owner input required (launch blockers)
 
-- [ ] `NEXT_PUBLIC_LEGAL_OWNER_NAME` — legal person or company that operates the site (this is what drives the yellow banner)
+- [x] `NEXT_PUBLIC_LEGAL_OWNER_NAME` — OpenFilament by Raymond Davelaar
 - [x] Privacy / security email — `info@openfilament.nl`
 - [x] Hosting — self-hosted VPS + SQLite on-server, EU (Germany); override via env if wrong
 - [ ] Confirm subprocessors + DPAs (Stripe/Google only if enabled)
@@ -33,7 +33,7 @@
 ## Optional: Google + Stripe for go-live
 
 ### Google (only if you want analytics)
-- [ ] GA4 Measurement ID → `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXX` (consent-gated; omit = no Google Analytics)
+- [x] GA4 Measurement ID → `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-3Z31PVNHQX` (consent-gated; loads only after Accept)
 - [ ] Optional Search Console (verification TXT may already exist)
 
 ### Stripe (only before real payments)
