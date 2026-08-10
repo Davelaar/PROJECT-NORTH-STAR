@@ -1,17 +1,44 @@
 :root {
+  color-scheme: light;
   --bg: #f3efe6;
   --bg-deep: #e6dfd2;
+  --bg-glow: #fff9ef;
   --ink: #1c1a17;
   --muted: #5c564c;
   --line: #c9c0b0;
   --accent: #0f5c4c;
+  --accent-hover: #0a4036;
   --accent-ink: #f7f4ee;
   --warn-bg: #f3e2c4;
   --warn-ink: #5a3d12;
   --card: #faf7f1;
+  --input-bg: #fff;
+  --shadow: rgba(20, 30, 25, 0.12);
+  --interactive-hover: color-mix(in srgb, var(--accent) 14%, transparent);
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
     Georgia, serif;
   --font-body: "Source Sans 3", "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #101815;
+    --bg-deep: #070b0a;
+    --bg-glow: #172820;
+    --ink: #f3efe6;
+    --muted: #c7bdae;
+    --line: #3f5048;
+    --accent: #77d8bd;
+    --accent-hover: #a2ead7;
+    --accent-ink: #06231b;
+    --warn-bg: #4a3519;
+    --warn-ink: #ffe5b8;
+    --card: #17211d;
+    --input-bg: #0f1714;
+    --shadow: rgba(0, 0, 0, 0.45);
+    --interactive-hover: color-mix(in srgb, var(--accent) 20%, transparent);
+  }
 }
 
 * {
@@ -23,7 +50,7 @@ body {
   margin: 0;
   padding: 0;
   background:
-    radial-gradient(1200px 600px at 10% -10%, #fff9ef 0%, transparent 55%),
+    radial-gradient(1200px 600px at 10% -10%, var(--bg-glow) 0%, transparent 55%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
   color: var(--ink);
   font-family: var(--font-body);
@@ -37,7 +64,7 @@ a {
 }
 
 a:hover {
-  color: #0a4036;
+  color: var(--accent-hover);
 }
 
 .shell {
@@ -261,7 +288,7 @@ a:hover {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 0.45rem;
-  box-shadow: 0 10px 28px rgba(20, 30, 25, 0.12);
+  box-shadow: 0 10px 28px var(--shadow);
   overflow: hidden;
 }
 
@@ -295,7 +322,7 @@ a:hover {
 
 .searchable-select-list button:hover,
 .searchable-select-list button.is-selected {
-  background: color-mix(in srgb, var(--accent, #0d6b56) 14%, transparent);
+  background: var(--interactive-hover);
 }
 
 .searchable-select-empty {
@@ -374,10 +401,19 @@ input,
 select,
 textarea {
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--input-bg);
   color: var(--ink);
   padding: 0.55rem 0.65rem;
   border-radius: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+.button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 2px;
 }
 
 button,
@@ -471,6 +507,15 @@ pre {
   margin: -1.75rem calc(50% - 50vw) 0;
   width: 100vw;
   max-width: 100vw;
+}
+
+@media (prefers-color-scheme: dark) {
+  .home {
+    --home-ink: var(--ink);
+    --home-muted: var(--muted);
+    --home-accent: var(--accent);
+    --home-accent-ink: var(--accent-ink);
+  }
 }
 
 .home-hero {
@@ -1507,20 +1552,22 @@ pre {
   border-radius: 0.4rem;
   max-height: 16rem;
   overflow: auto;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 .autocomplete-list button {
   width: 100%;
   text-align: left;
   border: 0;
   background: transparent;
+  color: var(--ink);
   padding: 0.55rem 0.65rem;
   cursor: pointer;
   border-radius: 0.3rem;
 }
 .autocomplete-list button.active,
 .autocomplete-list button:hover {
-  background: color-mix(in srgb, #0d6b56 12%, transparent);
+  background: var(--interactive-hover);
+  color: var(--ink);
 }
 
 .catalog-picker {
