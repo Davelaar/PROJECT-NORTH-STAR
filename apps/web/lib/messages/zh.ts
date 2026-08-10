@@ -268,6 +268,10 @@ export const messages: Messages = {
     invalidInput: "请输入有效的 Open Filament 链接、/f/{uuid} 或 UUID。",
     cameraBanner:
       "扫码需要你明确授权摄像头。若摄像头不可用，可在下方粘贴短链或 UUID——核心流程仍然可用。",
+    continueOnPhoneTitle: "在手机上继续",
+    continueOnPhoneLead: "在用电脑？用手机摄像头扫描此 QR 以打开扫描页，再扫描耗材标签。",
+    continueOnPhoneAlt: "用于在手机上打开 OpenFilament 扫描器的二维码",
+    continueOnPhoneHint: "扫描后在手机上继续——类似桌面端交接。",
   },
   rfid: {
     heading: "RFID 识别",

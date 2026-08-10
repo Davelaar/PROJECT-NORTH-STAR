@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { getLocaleMessages } from "@/lib/messages";
+import { ContinueOnPhoneQr } from "../components/continue-on-phone-qr";
 import { QrScanPanel } from "../components/qr-scan-panel";
 
 export default async function ScanPage() {
@@ -11,6 +13,9 @@ export default async function ScanPage() {
         {m.scan.lead}{" "}
         <Link href="/search">{m.scan.searchInstead}</Link>
       </p>
+      <Suspense fallback={null}>
+        <ContinueOnPhoneQr />
+      </Suspense>
       <QrScanPanel />
     </div>
   );

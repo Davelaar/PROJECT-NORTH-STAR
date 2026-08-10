@@ -267,6 +267,10 @@ export const messages: Messages = {
     cameraFailed: "Camera failed",
     invalidInput: "Enter a valid OpenFilament URL, /f/{uuid}, or UUID.",
     cameraBanner: "Camera scan needs an explicit permission grant. If the camera is unavailable, paste the short link or UUID below — the core workflow still works.",
+    continueOnPhoneTitle: "Continue on your phone",
+    continueOnPhoneLead: "On a laptop? Scan this QR with your phone camera to open the scanner there, then scan your filament label.",
+    continueOnPhoneAlt: "QR code that opens the OpenFilament scanner on your phone",
+    continueOnPhoneHint: "You continue on the phone after scanning — same idea as desktop checkout handoff.",
   },
   rfid: {
     heading: "RFID identification",

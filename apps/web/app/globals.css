@@ -1524,6 +1524,20 @@ pre {
   margin-top: 0.75rem;
 }
 
+.continue-on-phone {
+  max-width: 28rem;
+}
+.continue-on-phone-qr {
+  display: block;
+  margin: 0.75rem 0;
+  background: #fff;
+  border-radius: 0.35rem;
+}
+.continue-on-phone-url {
+  word-break: break-all;
+  font-size: 0.8rem;
+}
+
 .vote-row {
   display: flex;
   flex-wrap: wrap;

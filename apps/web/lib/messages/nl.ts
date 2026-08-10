@@ -266,6 +266,10 @@ export const messages: Messages = {
     cameraFailed: "Camera mislukt",
     invalidInput: "Voer een geldige OpenFilament-URL, /f/{uuid} of UUID in.",
     cameraBanner: "Camera-scan vereist expliciete toestemming. Is de camera niet beschikbaar, plak dan de shortlink of UUID hieronder — de workflow werkt gewoon.",
+    continueOnPhoneTitle: "Ga verder op je telefoon",
+    continueOnPhoneLead: "Op een laptop? Scan deze QR met je telefooncamera om de scanner daar te openen, en scan daarna je filamentlabel.",
+    continueOnPhoneAlt: "QR-code die de OpenFilament-scanner op je telefoon opent",
+    continueOnPhoneHint: "Je gaat na het scannen verder op de telefoon — zoals bij een desktop-handoff.",
   },
   rfid: {
     heading: "RFID-identificatie",

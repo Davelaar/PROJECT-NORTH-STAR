@@ -266,6 +266,10 @@ export const messages: Messages = {
     cameraFailed: "Ошибка камеры",
     invalidInput: "Введите корректный URL OpenFilament, /f/{uuid} или UUID.",
     cameraBanner: "Сканирование камерой требует явного разрешения. Если камера недоступна, вставьте короткую ссылку или UUID ниже — основной процесс работает и без неё.",
+    continueOnPhoneTitle: "Продолжить на телефоне",
+    continueOnPhoneLead: "На ноутбуке? Отсканируйте этот QR камерой телефона, чтобы открыть сканер, затем отсканируйте этикетку филамента.",
+    continueOnPhoneAlt: "QR-код, открывающий сканер OpenFilament на телефоне",
+    continueOnPhoneHint: "Дальше работаете на телефоне — как при desktop-handoff.",
   },
   rfid: {
     heading: "Идентификация RFID",

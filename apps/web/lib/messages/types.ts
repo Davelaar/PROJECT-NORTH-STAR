@@ -278,6 +278,10 @@ export type Messages = {
     cameraFailed: string;
     invalidInput: string;
     cameraBanner: string;
+    continueOnPhoneTitle: string;
+    continueOnPhoneLead: string;
+    continueOnPhoneAlt: string;
+    continueOnPhoneHint: string;
   };
   rfid: {
     heading: string;
