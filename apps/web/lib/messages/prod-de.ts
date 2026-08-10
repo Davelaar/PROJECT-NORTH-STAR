@@ -78,6 +78,15 @@ export const spoolsDe = {
     "Anmeldung lädt lokale Spulen nicht hoch. Du musst Sync ausdrücklich bestätigen.",
   conflictPolicy:
     "Konflikte nutzen last-write-wins nach Sync-Version. Re-Import überspringt ältere Duplikate.",
+  wizardLead:
+    "Wähle Marke → Material → Produkt → Farbe aus dem Katalog. Zuerst suchen; „Sonstiges“ nur wenn der Eintrag wirklich fehlt.",
+  catalogRequired:
+    "Wähle Marke, Material, Produkt und Farbe aus dem Katalog, bevor du speicherst.",
+  existingRollWarn:
+    "Du hast bereits {count} Rolle(n) dieser Farbe in My Spools. Speichere nur, wenn dies eine weitere physische Spule ist.",
+  editSpool: "Spule bearbeiten",
+  cancel: "Abbrechen",
+  showArchived: "Archivierte anzeigen",
 };
 
 export const accountDe = {

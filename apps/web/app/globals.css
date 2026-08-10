@@ -1493,6 +1493,23 @@ pre {
   background: color-mix(in srgb, #0d6b56 12%, transparent);
 }
 
+.catalog-picker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.catalog-picker.stack {
+  display: grid;
+  gap: 0.65rem;
+}
+.spool-duplicate-warn {
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid var(--accent, #0d6b56);
+  background: color-mix(in srgb, var(--accent, #0d6b56) 10%, transparent);
+}
+
 .my-spools .spool-list {
   list-style: none;
   padding: 0;

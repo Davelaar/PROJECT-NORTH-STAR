@@ -78,6 +78,15 @@ export const spoolsNl = {
     "Inloggen uploadt lokale spoelen niet. Je moet sync expliciet bevestigen.",
   conflictPolicy:
     "Conflicten gebruiken last-write-wins op sync-versie. Herimport slaat oudere duplicaten over.",
+  wizardLead:
+    "Kies merk → materiaal → product → kleur uit de catalogus. Zoek eerst; kies “Overig” alleen als het item echt ontbreekt.",
+  catalogRequired:
+    "Selecteer merk, materiaal, product en kleur uit de catalogus voordat je opslaat.",
+  existingRollWarn:
+    "Je hebt al {count} rol(len) van deze kleur in My Spools. Sla alleen op als dit een andere fysieke spoel is.",
+  editSpool: "Spoel bewerken",
+  cancel: "Annuleren",
+  showArchived: "Toon gearchiveerd",
 };
 
 export const accountNl = {

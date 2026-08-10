@@ -78,6 +78,15 @@ export const spoolsPt = {
     "Iniciar sessão não envia bobinas locais. Tens de confirmar a sync explicitamente.",
   conflictPolicy:
     "Conflitos usam last-write-wins por versão de sync. A reimportação ignora duplicados antigos.",
+  wizardLead:
+    "Escolhe marca → material → produto → cor no catálogo. Pesquisa primeiro; «Outro» só se o item realmente faltar.",
+  catalogRequired:
+    "Seleciona marca, material, produto e cor no catálogo antes de guardar.",
+  existingRollWarn:
+    "Já tens {count} rolo(s) desta cor em My Spools. Guarda só se for outra bobina física.",
+  editSpool: "Editar bobina",
+  cancel: "Cancelar",
+  showArchived: "Mostrar arquivadas",
 };
 
 export const accountPt = {

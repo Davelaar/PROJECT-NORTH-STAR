@@ -527,6 +527,12 @@ export type Messages = {
     save: string;
     syncNeverAuto: string;
     conflictPolicy: string;
+    wizardLead: string;
+    catalogRequired: string;
+    existingRollWarn: string;
+    editSpool: string;
+    cancel: string;
+    showArchived: string;
   };
   account: {
     heading: string;

@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { FilamentCatalogPicker } from "@/app/components/filament-catalog-picker";
 import { useMessages } from "@/app/components/messages-provider";
 import { loadAuth } from "@/lib/auth";
 import { apiPost } from "@/lib/api";
@@ -29,6 +30,10 @@ const STATUSES: LocalSpoolStatus[] = [
   "archived",
 ];
 
+function fillCount(template: string, count: number) {
+  return template.replace("{count}", String(count));
+}
+
 export default function MySpoolsPage() {
   const m = useMessages();
   const [spools, setSpools] = useState<LocalSpool[]>([]);
@@ -36,6 +41,7 @@ export default function MySpoolsPage() {
   const [auth, setAuth] = useState<ReturnType<typeof loadAuth>>(null);
   const [syncPreview, setSyncPreview] = useState<LocalSpool[] | null>(null);
   const [message, setMessage] = useState("");
+  const [formError, setFormError] = useState("");
   const [showArchived, setShowArchived] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -47,10 +53,34 @@ export default function MySpoolsPage() {
     void refresh();
   }, [refresh]);
 
+  const existingSameVariantCount = useMemo(() => {
+    const variantUuid = editing?.variantUuid;
+    if (!variantUuid) return 0;
+    return spools.filter(
+      (s) =>
+        s.variantUuid === variantUuid &&
+        s.uuid !== editing?.uuid &&
+        !s.archivedAt,
+    ).length;
+  }, [editing?.uuid, editing?.variantUuid, spools]);
+
   async function onSave() {
     if (!editing) return;
+    setFormError("");
+    if (
+      !editing.manufacturerUuid ||
+      !editing.materialCode ||
+      !editing.productUuid ||
+      !editing.variantUuid
+    ) {
+      setFormError(m.spools.catalogRequired);
+      return;
+    }
     const saved = await saveLocalSpool(editing);
-    trackEvent("local_spool_created", { status: saved.status });
+    trackEvent("local_spool_created", {
+      status: saved.status,
+      catalogLinked: true,
+    });
     setEditing(null);
     setMessage(m.spools.save);
     await refresh();
@@ -112,7 +142,14 @@ export default function MySpoolsPage() {
       <p className="muted">{m.cloud.syncRequiresCloud}</p>
 
       <div className="row gap">
-        <button type="button" className="btn" onClick={() => setEditing({ status: "sealed" })}>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            setFormError("");
+            setEditing({ status: "sealed" });
+          }}
+        >
           {m.spools.create}
         </button>
         <button type="button" className="btn btn-secondary" onClick={() => void onExport()}>
@@ -139,7 +176,7 @@ export default function MySpoolsPage() {
             checked={showArchived}
             onChange={(e) => setShowArchived(e.target.checked)}
           />{" "}
-          Archived
+          {m.spools.showArchived}
         </label>
       </div>
 
@@ -172,8 +209,12 @@ export default function MySpoolsPage() {
               >
                 {m.spools.syncConfirm} ({m.spools.syncRemoveLocal})
               </button>
-              <button type="button" className="btn btn-secondary" onClick={() => setSyncPreview(null)}>
-                Cancel
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setSyncPreview(null)}
+              >
+                {m.spools.cancel}
               </button>
             </div>
           ) : null}
@@ -195,34 +236,59 @@ export default function MySpoolsPage() {
             void onSave();
           }}
         >
-          <h2>{editing.uuid ? "Edit spool" : m.spools.create}</h2>
-          <label>
-            {m.fields.manufacturer}
-            <input
-              value={editing.manufacturerName ?? ""}
-              onChange={(e) =>
-                setEditing((s) => ({ ...s, manufacturerName: e.target.value }))
-              }
-            />
-          </label>
-          <label>
-            {m.fields.product}
-            <input
-              value={editing.productName ?? ""}
-              onChange={(e) =>
-                setEditing((s) => ({ ...s, productName: e.target.value }))
-              }
-            />
-          </label>
-          <label>
-            {m.fields.variant}
-            <input
-              value={editing.variantName ?? ""}
-              onChange={(e) =>
-                setEditing((s) => ({ ...s, variantName: e.target.value }))
-              }
-            />
-          </label>
+          <h2>{editing.uuid ? m.spools.editSpool : m.spools.create}</h2>
+
+          <FilamentCatalogPicker
+            labels={{
+              manufacturer: m.fields.manufacturer,
+              material: m.fields.material,
+              product: m.fields.product,
+              variant: m.fields.variant,
+              selectPlaceholder: m.fields.selectPlaceholder,
+              searchPlaceholder: m.fields.searchPlaceholder,
+              noMatches: m.fields.noMatches,
+              addBrand: m.submitProfile.addBrand,
+              addProduct: m.submitProfile.addProduct,
+              addColour: m.submitProfile.addColour,
+              creating: m.submitProfile.creating,
+              wizardLead: m.spools.wizardLead,
+            }}
+            value={{
+              manufacturerUuid: editing.manufacturerUuid ?? "",
+              manufacturerName: editing.manufacturerName ?? "",
+              materialCode: editing.materialCode ?? "",
+              productUuid: editing.productUuid ?? "",
+              productName: editing.productName ?? "",
+              variantUuid: editing.variantUuid ?? "",
+              variantName: editing.variantName ?? "",
+              colorHex: editing.colorHex ?? null,
+            }}
+            onChange={(next) => {
+              setFormError("");
+              setEditing((s) => ({
+                ...s,
+                manufacturerUuid: next.manufacturerUuid || null,
+                manufacturerName: next.manufacturerName || null,
+                materialCode: next.materialCode || null,
+                productUuid: next.productUuid || null,
+                productName: next.productName || null,
+                variantUuid: next.variantUuid || null,
+                variantName: next.variantName || null,
+                colorHex: next.colorHex ?? null,
+              }));
+            }}
+          />
+
+          {existingSameVariantCount > 0 ? (
+            <p role="status" className="spool-duplicate-warn">
+              {fillCount(m.spools.existingRollWarn, existingSameVariantCount)}
+            </p>
+          ) : null}
+
+          {formError ? (
+            <p role="alert">{formError}</p>
+          ) : null}
+
           <label>
             {m.spools.status}
             <select
@@ -368,9 +434,12 @@ export default function MySpoolsPage() {
             <button
               type="button"
               className="btn btn-secondary"
-              onClick={() => setEditing(null)}
+              onClick={() => {
+                setFormError("");
+                setEditing(null);
+              }}
             >
-              Cancel
+              {m.spools.cancel}
             </button>
           </div>
         </form>
@@ -387,14 +456,23 @@ export default function MySpoolsPage() {
                 {s.variantName || ""}
               </h3>
               <p className="muted">
-                {s.status}
+                {[s.materialCode, s.status]
+                  .filter(Boolean)
+                  .join(" · ")}
                 {s.remainingPercent != null ? ` · ${s.remainingPercent}%` : ""}
                 {s.currentWeightG != null ? ` · ${s.currentWeightG}g` : ""}
               </p>
               <p className="muted mono">{s.uuid}</p>
               <div className="row gap">
-                <button type="button" className="btn btn-secondary" onClick={() => setEditing(s)}>
-                  Edit
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setFormError("");
+                    setEditing(s);
+                  }}
+                >
+                  {m.spools.editSpool}
                 </button>
                 <button
                   type="button"

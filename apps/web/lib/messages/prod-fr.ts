@@ -78,6 +78,15 @@ export const spoolsFr = {
     "La connexion n’envoie pas les bobines locales. Tu dois confirmer la sync explicitement.",
   conflictPolicy:
     "Les conflits utilisent last-write-wins par version de sync. La réimportation ignore les anciens doublons.",
+  wizardLead:
+    "Choisis marque → matériau → produit → couleur dans le catalogue. Cherche d’abord ; « Autre » seulement si l’élément manque vraiment.",
+  catalogRequired:
+    "Sélectionne marque, matériau, produit et couleur dans le catalogue avant d’enregistrer.",
+  existingRollWarn:
+    "Tu as déjà {count} rouleau(x) de cette couleur dans My Spools. Enregistre seulement s’il s’agit d’une autre bobine physique.",
+  editSpool: "Modifier la bobine",
+  cancel: "Annuler",
+  showArchived: "Afficher les archives",
 };
 
 export const accountFr = {

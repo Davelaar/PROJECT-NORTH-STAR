@@ -77,6 +77,15 @@ export const spoolsEn = {
     "Signing in does not upload local spools. You must confirm sync explicitly.",
   conflictPolicy:
     "Conflicts use last-write-wins by sync version. Re-import skips older duplicates.",
+  wizardLead:
+    "Choose brand → material → product → colour from the catalog. Search first; add “Other” only when the item is truly missing.",
+  catalogRequired:
+    "Select brand, material, product and colour from the catalog before saving.",
+  existingRollWarn:
+    "You already have {count} roll(s) of this colour in My Spools. Save only if this is another physical spool.",
+  editSpool: "Edit spool",
+  cancel: "Cancel",
+  showArchived: "Show archived",
 };
 
 export const accountEn = {

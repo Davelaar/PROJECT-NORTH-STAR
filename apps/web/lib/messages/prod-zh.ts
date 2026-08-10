@@ -72,6 +72,14 @@ export const spoolsZh = {
   save: "保存线轴",
   syncNeverAuto: "登录不会上传本地线轴。你必须明确确认同步。",
   conflictPolicy: "冲突按同步版本采用 last-write-wins。重新导入会跳过较旧的重复项。",
+  wizardLead:
+    "从目录选择品牌 → 材料 → 产品 → 颜色。请先搜索；仅在确实缺失时使用“其他”。",
+  catalogRequired: "保存前请从目录选择品牌、材料、产品和颜色。",
+  existingRollWarn:
+    "My Spools 中已有 {count} 卷此颜色。仅当这是另一卷实体线轴时再保存。",
+  editSpool: "编辑线轴",
+  cancel: "取消",
+  showArchived: "显示已归档",
 };
 
 export const accountZh = {
