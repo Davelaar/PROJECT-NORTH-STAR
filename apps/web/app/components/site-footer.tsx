@@ -23,6 +23,8 @@ export function SiteFooter() {
         <Link href="/trust">{m.footer.trust}</Link>
         <Link href="/my-spools">{m.footer.mySpools}</Link>
         <Link href="/docs/slicers">{m.export.supportedSlicersLink}</Link>
+        <Link href="/docs/usage-tracking">{m.nav.usageTracking}</Link>
+        <Link href="/compatibility">{m.nav.compatibility}</Link>
         <Link href="/docs/api">{m.nav.docsApi}</Link>
         <Link href="/contribute">{m.nav.contribute}</Link>
       </nav>

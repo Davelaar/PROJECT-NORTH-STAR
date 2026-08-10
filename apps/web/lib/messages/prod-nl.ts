@@ -90,6 +90,7 @@ export const spoolsNl = {
   usageLabel: "Verbruikt na print (g)",
   usagePlaceholder: "bijv. 42",
   usageSubmit: "Verbruik aftrekken",
+  usageAddSubmit: "Grammen toevoegen",
   usageSaved: "Verbruik gelogd en resterende hoeveelheid bijgewerkt.",
   usageError: "Voer een positief aantal gebruikte grammen in.",
   usageNeedsWeights: "Vul begin- en huidig gewicht in om printverbruik te volgen.",

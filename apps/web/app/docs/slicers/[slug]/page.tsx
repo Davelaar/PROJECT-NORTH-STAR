@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSlicerEntry } from "@open-filament/domain";
 import { getLocaleMessages } from "@/lib/messages";
 import { getSlicerGuides, type GuideBlock } from "@/lib/slicer-guides";
+import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
 
 const SLUGS = [
   "creality-print",
@@ -62,6 +63,7 @@ export default async function SlicerGuidePage({
 
   const { locale, messages } = await getLocaleMessages();
   const bundle = await getSlicerGuides(locale);
+  const usage = getUsageTrackingCopy(locale);
   const guide = bundle.guides[slug as Slug];
 
   return (
@@ -85,12 +87,30 @@ export default async function SlicerGuidePage({
         </Link>
       </p>
 
+      <section className="home-section" id="export-profile">
+        <h2>{usage.exportProfileTitle}</h2>
+        <p>{guide.lead}</p>
+      </section>
+
       {guide.sections.map((section) => (
         <section key={section.id} className="home-section" id={section.id}>
           <h2>{section.heading}</h2>
           {renderBlocks(section.blocks)}
         </section>
       ))}
+
+      <section className="home-section" id="track-filament-consumption">
+        <h2>{usage.trackConsumptionTitle}</h2>
+        <p className="banner-warn">{usage.centralRule}</p>
+        <p>{usage.beforePrint}</p>
+        <p>{usage.afterSuccess}</p>
+        <p>{usage.afterFailure}</p>
+        <p>
+          <Link href={`/docs/usage-tracking/${entry.id}`}>{usage.docsTitle}</Link>
+          {" · "}
+          <Link href="/compatibility">{usage.checkSetup}</Link>
+        </p>
+      </section>
 
       <p className="muted">
         {entry.officialDocsUrl ? (

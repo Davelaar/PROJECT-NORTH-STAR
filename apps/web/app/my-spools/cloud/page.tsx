@@ -6,6 +6,8 @@ import { useMessages } from "@/app/components/messages-provider";
 import { apiGet, apiPost } from "@/lib/api";
 import { loadAuth } from "@/lib/auth";
 import { trackEvent } from "@/lib/analytics/ga";
+import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
+import type { Locale } from "@/lib/messages";
 
 type Offer = {
   priceCents: number;
@@ -109,6 +111,7 @@ export default function MySpoolsCloudPage() {
   const active =
     entitlement &&
     (entitlement.status === "active" || entitlement.accessMode === "full");
+  const usage = getUsageTrackingCopy(locale as Locale);
 
   return (
     <article className="prose cloud-page">
@@ -160,6 +163,21 @@ export default function MySpoolsCloudPage() {
         <h3>{m.cloud.notIncludedTitle}</h3>
         <p>{m.cloud.notIncludedBody}</p>
         <p>{m.cloud.retentionHint}</p>
+
+        <div className="panel" role="note" aria-labelledby="cloud-compat-heading">
+          <h3 id="cloud-compat-heading">{usage.cloudDisclosureTitle}</h3>
+          <p className="banner-warn">{usage.centralRule}</p>
+          <ul>
+            {usage.cloudDisclosures.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p>
+            <Link href="/compatibility">{usage.checkSetup}</Link>
+            {" · "}
+            <Link href="/docs/usage-tracking">{usage.title}</Link>
+          </p>
+        </div>
 
         {entitlement ? (
           <div className="panel" aria-live="polite">

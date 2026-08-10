@@ -90,6 +90,7 @@ export const spoolsPt = {
   usageLabel: "Usado após impressão (g)",
   usagePlaceholder: "ex. 42",
   usageSubmit: "Subtrair uso",
+  usageAddSubmit: "Adicionar gramas",
   usageSaved: "Uso registado e quantidade restante atualizada.",
   usageError: "Introduza uma quantidade positiva de gramas usadas.",
   usageNeedsWeights: "Adicione peso inicial e atual para acompanhar o uso de impressão.",

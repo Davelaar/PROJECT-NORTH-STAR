@@ -90,6 +90,7 @@ export const spoolsUk = {
   usageLabel: "Використано після друку (г)",
   usagePlaceholder: "наприклад 42",
   usageSubmit: "Відняти витрату",
+  usageAddSubmit: "Додати грами",
   usageSaved: "Витрату записано, залишок оновлено.",
   usageError: "Введіть додатну кількість використаних грамів.",
   usageNeedsWeights: "Додайте початкову й поточну вагу, щоб відстежувати витрату друку.",

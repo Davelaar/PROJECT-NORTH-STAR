@@ -22,6 +22,8 @@ export const messages: Messages = {
     rfid: "RFID",
     hardware: "Обладнання",
     docsApi: "API",
+    usageTracking: "Облік витрати",
+    compatibility: "Сумісність",
     me: "Обліковий запис",
     login: "Увійти",
     language: "Мова",

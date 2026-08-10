@@ -27,6 +27,8 @@ export const messages: Messages = {
     rfid: "RFID",
     hardware: "硬件说明",
     docsApi: "API",
+    usageTracking: "用量追踪",
+    compatibility: "兼容性",
     me: "账户",
     login: "登录",
     language: "语言",

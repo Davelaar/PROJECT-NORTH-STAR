@@ -11,11 +11,11 @@ import {
   clearAllLocalSpools,
   deleteLocalSpool,
   duplicateLocalSpool,
-  applySpoolUsage,
   deriveRemainingPercent,
   exportLocalSpoolsJson,
   importLocalSpoolsJson,
   listLocalSpools,
+  recordLocalSpoolUsage,
   saveLocalSpool,
   type LocalSpool,
   type LocalSpoolStatus,
@@ -127,15 +127,14 @@ export default function MySpoolsPage() {
     });
   }
 
-  async function logUsage(spool: LocalSpool) {
+  async function logUsage(spool: LocalSpool, mode: "used" | "added") {
     const raw = usageBySpool[spool.uuid] ?? "";
-    const usedG = Number(raw);
-    if (!Number.isFinite(usedG) || usedG <= 0) {
+    const amountG = Number(raw);
+    if (!Number.isFinite(amountG) || amountG <= 0) {
       setMessage(m.spools.usageError);
       return;
     }
-    const next = applySpoolUsage(spool, usedG);
-    await saveLocalSpool({ ...spool, ...next });
+    await recordLocalSpoolUsage(spool.uuid, amountG, mode);
     setUsageBySpool((prev) => ({ ...prev, [spool.uuid]: "" }));
     setMessage(m.spools.usageSaved);
     await refresh();
@@ -498,9 +497,16 @@ export default function MySpoolsPage() {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={() => void logUsage(s)}
+                    onClick={() => void logUsage(s, "used")}
                   >
                     {m.spools.usageSubmit}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void logUsage(s, "added")}
+                  >
+                    {m.spools.usageAddSubmit}
                   </button>
                 </div>
               ) : (

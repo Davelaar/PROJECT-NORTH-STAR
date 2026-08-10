@@ -83,6 +83,7 @@ export const spoolsZh = {
   usageLabel: "打印后使用量（克）",
   usagePlaceholder: "例如 42",
   usageSubmit: "扣除用量",
+  usageAddSubmit: "添加克数",
   usageSaved: "已记录用量并更新剩余量。",
   usageError: "请输入正数克数。",
   usageNeedsWeights: "填写初始和当前重量后即可跟踪打印用量。",

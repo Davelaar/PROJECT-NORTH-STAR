@@ -755,6 +755,47 @@ export const userSpoolIdentities = sqliteTable(
   ],
 );
 
+export const userSpoolUsageTransactions = sqliteTable(
+  "user_spool_usage_transactions",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    spoolId: integer("spool_id")
+      .notNull()
+      .references(() => userSpools.id, { onDelete: "cascade" }),
+    printJobId: text("print_job_id"),
+    eventId: text("event_id"),
+    slicer: text("slicer"),
+    slicerVersion: text("slicer_version"),
+    printerIntegrationType: text("printer_integration_type"),
+    status: text("status").notNull().default("unknown"),
+    predictedJson: text("predicted_json").notNull().default("{}"),
+    printerReportedJson: text("printer_reported_json").notNull().default("{}"),
+    deductedJson: text("deducted_json").notNull().default("{}"),
+    materialDensityGcm3: real("material_density_g_cm3").notNull().default(1.24),
+    filamentDiameterMm: real("filament_diameter_mm").notNull().default(1.75),
+    usageSource: text("usage_source").notNull(),
+    confidence: text("confidence").notNull(),
+    recordedAt: text("recorded_at").notNull(),
+    automaticallyGenerated: integer("automatically_generated", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    manuallyConfirmed: integer("manually_confirmed", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    originalValuesJson: text("original_values_json").notNull().default("{}"),
+    correctionOfTransactionUuid: text("correction_of_transaction_uuid"),
+    notes: text("notes"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [
+    index("user_spool_usage_spool_idx").on(t.spoolId),
+    uniqueIndex("user_spool_usage_event_unique").on(t.spoolId, t.eventId),
+  ],
+);
+
 export const userPrivacyPrefs = sqliteTable("user_privacy_prefs", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id")

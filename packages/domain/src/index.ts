@@ -7,3 +7,4 @@ export * from "./catalog-sort.js";
 export * from "./amazon-affiliate.js";
 export * from "./name-match.js";
 export * from "./slicer-registry.js";
+export * from "./usage-tracking.js";

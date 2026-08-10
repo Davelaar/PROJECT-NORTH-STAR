@@ -22,6 +22,8 @@ export const messages: Messages = {
     rfid: "RFID",
     hardware: "Оборудование",
     docsApi: "API",
+    usageTracking: "Учёт расхода",
+    compatibility: "Совместимость",
     me: "Аккаунт",
     login: "Вход",
     language: "Язык",

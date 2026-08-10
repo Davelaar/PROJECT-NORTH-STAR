@@ -83,6 +83,8 @@ export function SiteHeader() {
           ))}
           <div className="nav-mobile-secondary">
             <Link href="/docs/slicers">{m.export.supportedSlicersLink}</Link>
+            <Link href="/docs/usage-tracking">{m.nav.usageTracking}</Link>
+            <Link href="/compatibility">{m.nav.compatibility}</Link>
             <Link href="/scan">{m.nav.scan}</Link>
             <Link href="/rfid">{m.nav.rfid}</Link>
             <Link href="/export">{m.export.downloadForSlicer}</Link>

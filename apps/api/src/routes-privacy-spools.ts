@@ -29,6 +29,57 @@ function db(app: FastifyInstance): AppDb {
   return app.db;
 }
 
+const usageQuantitySchema = z.object({
+  lengthMm: z.number().nullable().optional(),
+  volumeMm3: z.number().nullable().optional(),
+  weightG: z.number().nullable().optional(),
+});
+
+const usageTransactionSchema = z.object({
+  uuid: z.string().uuid(),
+  spoolId: z.string().min(1),
+  printJobId: z.string().nullable().optional(),
+  eventId: z.string().nullable().optional(),
+  slicer: z.string().nullable().optional(),
+  slicerVersion: z.string().nullable().optional(),
+  printerIntegrationType: z.string().nullable().optional(),
+  status: z.enum([
+    "queued",
+    "printing",
+    "completed",
+    "failed",
+    "cancelled",
+    "interrupted",
+    "unknown",
+  ]),
+  predicted: usageQuantitySchema,
+  printerReported: usageQuantitySchema,
+  deducted: usageQuantitySchema,
+  materialDensityGcm3: z.number().positive(),
+  filamentDiameterMm: z.number().positive(),
+  usageSource: z.enum([
+    "slicer_estimate",
+    "completed_print_estimate",
+    "printer_reported_usage",
+    "manual_correction",
+    "scale_measured_usage",
+  ]),
+  confidence: z.enum([
+    "slicer_estimate",
+    "completed_print_estimate",
+    "printer_reported_extrusion",
+    "rough_estimate",
+    "manual",
+    "scale_measured_actual",
+  ]),
+  recordedAt: z.string(),
+  automaticallyGenerated: z.boolean(),
+  manuallyConfirmed: z.boolean(),
+  originalValues: z.record(z.unknown()),
+  correctionOfTransactionUuid: z.string().nullable().optional(),
+  notes: z.string().max(4000).nullable().optional(),
+});
+
 async function requireUser(
   request: {
     headers: { authorization?: string; cookie?: string };
@@ -102,6 +153,7 @@ const spoolBodySchema = z.object({
       }),
     )
     .optional(),
+  usageTransactions: z.array(usageTransactionSchema).max(1000).optional(),
 });
 
 export async function registerPrivacySpoolRoutes(app: FastifyInstance) {

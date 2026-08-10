@@ -1,4 +1,5 @@
 import { and, desc, eq, isNull } from "drizzle-orm";
+import type { UsageQuantity, UsageTransaction } from "@open-filament/domain";
 import { v4 as uuid } from "uuid";
 import type { AppDb } from "./client.js";
 import * as schema from "./schema.js";
@@ -19,6 +20,8 @@ export type SpoolIdentityInput = {
   value: string;
   label?: string | null;
 };
+
+export type SpoolUsageTransactionInput = UsageTransaction;
 
 export type SpoolWriteInput = {
   uuid?: string;
@@ -47,6 +50,7 @@ export type SpoolWriteInput = {
   syncVersion?: number;
   dryingEvents?: SpoolDryingEventInput[];
   identities?: SpoolIdentityInput[];
+  usageTransactions?: SpoolUsageTransactionInput[];
 };
 
 export type PublicSpoolProjection = {
@@ -68,6 +72,7 @@ function mapSpool(
   row: typeof schema.userSpools.$inferSelect,
   drying: typeof schema.userSpoolDryingEvents.$inferSelect[],
   identities: typeof schema.userSpoolIdentities.$inferSelect[],
+  usageTransactions: typeof schema.userSpoolUsageTransactions.$inferSelect[] = [],
 ) {
   return {
     uuid: row.uuid,
@@ -110,6 +115,44 @@ function mapSpool(
       value: i.value,
       label: i.label,
     })),
+    usageTransactions: usageTransactions.map((tx) => mapUsageTransaction(tx, row.uuid)),
+  };
+}
+
+function parseJson<T>(value: string, fallback: T): T {
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function mapUsageTransaction(
+  tx: typeof schema.userSpoolUsageTransactions.$inferSelect,
+  spoolUuid: string,
+): UsageTransaction {
+  return {
+    uuid: tx.uuid,
+    spoolId: spoolUuid,
+    printJobId: tx.printJobId,
+    eventId: tx.eventId,
+    slicer: tx.slicer,
+    slicerVersion: tx.slicerVersion,
+    printerIntegrationType: tx.printerIntegrationType,
+    status: tx.status as UsageTransaction["status"],
+    predicted: parseJson<UsageQuantity>(tx.predictedJson, {}),
+    printerReported: parseJson<UsageQuantity>(tx.printerReportedJson, {}),
+    deducted: parseJson<UsageQuantity>(tx.deductedJson, {}),
+    materialDensityGcm3: tx.materialDensityGcm3,
+    filamentDiameterMm: tx.filamentDiameterMm,
+    usageSource: tx.usageSource as UsageTransaction["usageSource"],
+    confidence: tx.confidence as UsageTransaction["confidence"],
+    recordedAt: tx.recordedAt,
+    automaticallyGenerated: tx.automaticallyGenerated,
+    manuallyConfirmed: tx.manuallyConfirmed,
+    originalValues: parseJson<Record<string, unknown>>(tx.originalValuesJson, {}),
+    correctionOfTransactionUuid: tx.correctionOfTransactionUuid,
+    notes: tx.notes,
   };
 }
 
@@ -146,7 +189,12 @@ export function listUserSpools(
       .from(schema.userSpoolIdentities)
       .where(eq(schema.userSpoolIdentities.spoolId, row.id))
       .all();
-    return mapSpool(row, drying, identities);
+    const usageTransactions = db
+      .select()
+      .from(schema.userSpoolUsageTransactions)
+      .where(eq(schema.userSpoolUsageTransactions.spoolId, row.id))
+      .all();
+    return mapSpool(row, drying, identities, usageTransactions);
   });
   return { total, page, pageSize, items };
 }
@@ -174,7 +222,12 @@ export function getOwnedSpool(db: AppDb, userId: number, spoolUuid: string) {
     .from(schema.userSpoolIdentities)
     .where(eq(schema.userSpoolIdentities.spoolId, row.id))
     .all();
-  return mapSpool(row, drying, identities);
+  const usageTransactions = db
+    .select()
+    .from(schema.userSpoolUsageTransactions)
+    .where(eq(schema.userSpoolUsageTransactions.spoolId, row.id))
+    .all();
+  return mapSpool(row, drying, identities, usageTransactions);
 }
 
 function replaceChildren(
@@ -182,6 +235,7 @@ function replaceChildren(
   spoolId: number,
   dryingEvents: SpoolDryingEventInput[] | undefined,
   identities: SpoolIdentityInput[] | undefined,
+  usageTransactions: SpoolUsageTransactionInput[] | undefined,
 ) {
   if (dryingEvents) {
     db.delete(schema.userSpoolDryingEvents)
@@ -213,6 +267,38 @@ function replaceChildren(
           kind: i.kind,
           value: i.value.trim(),
           label: i.label ?? null,
+        })
+        .run();
+    }
+  }
+  if (usageTransactions) {
+    db.delete(schema.userSpoolUsageTransactions)
+      .where(eq(schema.userSpoolUsageTransactions.spoolId, spoolId))
+      .run();
+    for (const tx of usageTransactions) {
+      db.insert(schema.userSpoolUsageTransactions)
+        .values({
+          uuid: tx.uuid ?? uuid(),
+          spoolId,
+          printJobId: tx.printJobId ?? null,
+          eventId: tx.eventId ?? null,
+          slicer: tx.slicer ?? null,
+          slicerVersion: tx.slicerVersion ?? null,
+          printerIntegrationType: tx.printerIntegrationType ?? null,
+          status: tx.status,
+          predictedJson: JSON.stringify(tx.predicted ?? {}),
+          printerReportedJson: JSON.stringify(tx.printerReported ?? {}),
+          deductedJson: JSON.stringify(tx.deducted ?? {}),
+          materialDensityGcm3: tx.materialDensityGcm3,
+          filamentDiameterMm: tx.filamentDiameterMm,
+          usageSource: tx.usageSource,
+          confidence: tx.confidence,
+          recordedAt: tx.recordedAt,
+          automaticallyGenerated: tx.automaticallyGenerated,
+          manuallyConfirmed: tx.manuallyConfirmed,
+          originalValuesJson: JSON.stringify(tx.originalValues ?? {}),
+          correctionOfTransactionUuid: tx.correctionOfTransactionUuid ?? null,
+          notes: tx.notes ?? null,
         })
         .run();
     }
@@ -288,7 +374,13 @@ export function upsertUserSpool(db: AppDb, userId: number, input: SpoolWriteInpu
       })
       .where(eq(schema.userSpools.id, existing.id))
       .run();
-    replaceChildren(db, existing.id, input.dryingEvents, input.identities);
+    replaceChildren(
+      db,
+      existing.id,
+      input.dryingEvents,
+      input.identities,
+      input.usageTransactions,
+    );
     return getOwnedSpool(db, userId, existing.uuid);
   }
 
@@ -328,7 +420,13 @@ export function upsertUserSpool(db: AppDb, userId: number, input: SpoolWriteInpu
     .from(schema.userSpools)
     .where(eq(schema.userSpools.uuid, spoolUuid))
     .get()!;
-  replaceChildren(db, inserted.id, input.dryingEvents, input.identities);
+  replaceChildren(
+    db,
+    inserted.id,
+    input.dryingEvents,
+    input.identities,
+    input.usageTransactions,
+  );
   return getOwnedSpool(db, userId, spoolUuid);
 }
 

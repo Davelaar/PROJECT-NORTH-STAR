@@ -49,6 +49,8 @@ export type Messages = {
     rfid: string;
     hardware: string;
     docsApi: string;
+    usageTracking: string;
+    compatibility: string;
     me: string;
     login: string;
     language: string;
@@ -588,6 +590,7 @@ export type Messages = {
     usageLabel: string;
     usagePlaceholder: string;
     usageSubmit: string;
+    usageAddSubmit: string;
     usageSaved: string;
     usageError: string;
     usageNeedsWeights: string;

@@ -23,10 +23,15 @@
 - Every cloud spool read/write checks `user_id` ownership server-side.
 - Public QR/RFID resolve returns a **public projection** only (no notes, location, email, account id).
 - Local IndexedDB mode never uploads without explicit sync confirmation.
+- Usage transactions and print/job history are private inventory data. Cloud sync stores them owner-scoped under the spool and account export returns them only for the authenticated owner.
+- Browser-first printer integrations must minimize data: local printer IPs, filenames, job metadata, API keys and tokens must not be sent to analytics and must not be public by default.
+- Do not store local printer credentials in plaintext. Server-stored printer secrets require the approved secret-management/encryption design before any automatic integration is enabled.
+- Integrations must be revocable. Experimental printer-reported usage must stay disabled unless the user explicitly configures and confirms it.
 
 ## Logging
 
 - Do not log passwords, raw tokens, Authorization headers, full cookies, RFID/QR secrets, or private spool notes.
+- Do not log local printer credentials, LAN addresses, printer tokens, job filenames or spool identifiers from usage tracking flows.
 - Prefer structured Fastify logs without request bodies in production.
 
 ## Responsible disclosure

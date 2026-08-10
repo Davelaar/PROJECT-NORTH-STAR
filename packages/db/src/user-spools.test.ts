@@ -123,4 +123,75 @@ describe("user spools privacy", () => {
     expect(softDeleteUserSpool(db, alice.id, spool!.uuid)).toBe(true);
     expect(getOwnedSpool(db, alice.id, spool!.uuid)).toBeNull();
   });
+
+  it("syncs usage transactions owner-scoped and includes them in export", async () => {
+    const { db, alice, bob } = await seedUsers();
+    const txUuid = uuid();
+    const spool = upsertUserSpool(db, alice.id, {
+      clientId: uuid(),
+      manufacturerName: "Brand",
+      currentWeightG: 800,
+      initialNetWeightG: 1000,
+      tareWeightG: 150,
+      usageTransactions: [
+        {
+          uuid: txUuid,
+          spoolId: "client-spool",
+          printJobId: "job-1",
+          eventId: "event-1",
+          slicer: "OrcaSlicer",
+          slicerVersion: "2.2",
+          printerIntegrationType: "manual",
+          status: "completed",
+          predicted: { weightG: 42, lengthMm: 14000, volumeMm3: 34000 },
+          printerReported: {},
+          deducted: { weightG: 42 },
+          materialDensityGcm3: 1.24,
+          filamentDiameterMm: 1.75,
+          usageSource: "completed_print_estimate",
+          confidence: "completed_print_estimate",
+          recordedAt: "2026-08-10T00:00:00.000Z",
+          automaticallyGenerated: false,
+          manuallyConfirmed: true,
+          originalValues: { predictedWeightG: 42 },
+        },
+      ],
+    });
+    const owned = getOwnedSpool(db, alice.id, spool!.uuid)!;
+    expect(owned.usageTransactions).toHaveLength(1);
+    expect(owned.usageTransactions[0]?.spoolId).toBe(spool!.uuid);
+    expect(getOwnedSpool(db, bob.id, spool!.uuid)).toBeNull();
+
+    const exported = exportUserData(db, alice.id)!;
+    expect(exported.spools[0]?.usageTransactions).toHaveLength(1);
+    expect(JSON.stringify(exported.spools[0])).toContain("completed_print_estimate");
+  });
+
+  it("purges usage transactions when an account is deleted", async () => {
+    const { db, alice } = await seedUsers();
+    upsertUserSpool(db, alice.id, {
+      clientId: uuid(),
+      usageTransactions: [
+        {
+          uuid: uuid(),
+          spoolId: "client-spool",
+          status: "unknown",
+          predicted: {},
+          printerReported: {},
+          deducted: { weightG: 25 },
+          materialDensityGcm3: 1.24,
+          filamentDiameterMm: 1.75,
+          usageSource: "manual_correction",
+          confidence: "manual",
+          recordedAt: "2026-08-10T00:00:00.000Z",
+          automaticallyGenerated: false,
+          manuallyConfirmed: true,
+          originalValues: { amountG: 25, mode: "used" },
+        },
+      ],
+    });
+    expect(db.select().from(schema.userSpoolUsageTransactions).all()).toHaveLength(1);
+    deleteUserAccount(db, alice.id);
+    expect(db.select().from(schema.userSpoolUsageTransactions).all()).toHaveLength(0);
+  });
 });

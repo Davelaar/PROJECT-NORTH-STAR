@@ -14,6 +14,14 @@ function hashIp(ip: string | undefined): string | null {
   return createHash("sha256").update(`of-ip:${ip}`).digest("hex").slice(0, 32);
 }
 
+function parseJson<T>(value: string, fallback: T): T {
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
 export function exportUserData(db: AppDb, userId: number) {
   const user = db
     .select()
@@ -55,6 +63,11 @@ export function exportUserData(db: AppDb, userId: number) {
         .from(schema.userSpoolIdentities)
         .where(eq(schema.userSpoolIdentities.spoolId, row.id))
         .all();
+      const usageTransactions = db
+        .select()
+        .from(schema.userSpoolUsageTransactions)
+        .where(eq(schema.userSpoolUsageTransactions.spoolId, row.id))
+        .all();
       return {
         uuid: row.uuid,
         clientId: row.clientId,
@@ -84,6 +97,29 @@ export function exportUserData(db: AppDb, userId: number) {
           kind: i.kind,
           value: i.value,
           label: i.label,
+        })),
+        usageTransactions: usageTransactions.map((tx) => ({
+          uuid: tx.uuid,
+          spoolId: row.uuid,
+          printJobId: tx.printJobId,
+          eventId: tx.eventId,
+          slicer: tx.slicer,
+          slicerVersion: tx.slicerVersion,
+          printerIntegrationType: tx.printerIntegrationType,
+          status: tx.status,
+          predicted: parseJson(tx.predictedJson, {}),
+          printerReported: parseJson(tx.printerReportedJson, {}),
+          deducted: parseJson(tx.deductedJson, {}),
+          materialDensityGcm3: tx.materialDensityGcm3,
+          filamentDiameterMm: tx.filamentDiameterMm,
+          usageSource: tx.usageSource,
+          confidence: tx.confidence,
+          recordedAt: tx.recordedAt,
+          automaticallyGenerated: tx.automaticallyGenerated,
+          manuallyConfirmed: tx.manuallyConfirmed,
+          originalValues: parseJson(tx.originalValuesJson, {}),
+          correctionOfTransactionUuid: tx.correctionOfTransactionUuid,
+          notes: tx.notes,
         })),
       };
     });

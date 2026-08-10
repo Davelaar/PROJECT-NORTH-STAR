@@ -90,6 +90,7 @@ export const spoolsDe = {
   usageLabel: "Nach Druck verbraucht (g)",
   usagePlaceholder: "z. B. 42",
   usageSubmit: "Verbrauch abziehen",
+  usageAddSubmit: "Gramm hinzufügen",
   usageSaved: "Verbrauch erfasst und Restmenge aktualisiert.",
   usageError: "Gib eine positive Menge verbrauchter Gramm ein.",
   usageNeedsWeights: "Trage Anfangs- und aktuelles Gewicht ein, um Druckverbrauch zu verfolgen.",

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
 import { SearchAutocomplete } from "./components/search-autocomplete";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import type { Metadata } from "next";
@@ -29,7 +30,8 @@ type PreviewSection = {
 const HOME_PREVIEW_MAX = 12;
 
 export default async function HomePage() {
-  const { messages: m } = await getLocaleMessages();
+  const { locale, messages: m } = await getLocaleMessages();
+  const usage = getUsageTrackingCopy(locale);
   let sections: PreviewSection[] = [];
   let catalogWarning: string | null = null;
   let previewCount = 0;
@@ -152,6 +154,20 @@ export default async function HomePage() {
           <h2>{m.home.profilesTitle}</h2>
           <p>{m.home.profilesBody}</p>
           <p className="muted">{m.home.nozzlesNote}</p>
+        </section>
+
+        <section className="home-section">
+          <h2>My Spools Cloud</h2>
+          <p>{usage.cloudDisclosures[0]}</p>
+          <p className="banner-warn">{usage.centralRule}</p>
+          <p className="home-cta-links">
+            <Link className="button" href="/my-spools/cloud">
+              My Spools Cloud
+            </Link>
+            <Link className="button secondary" href="/compatibility">
+              {usage.checkSetup}
+            </Link>
+          </p>
         </section>
 
         <section className="home-section home-catalog-preview" id="catalog">

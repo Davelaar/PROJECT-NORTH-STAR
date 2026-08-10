@@ -2,6 +2,7 @@
  * Local My Spools — IndexedDB with schema versioning.
  * Never uploads unless the user explicitly confirms cloud sync.
  */
+import type { UsageTransaction } from "@open-filament/domain";
 
 function uuid(): string {
   return crypto.randomUUID();
@@ -65,6 +66,7 @@ export type LocalSpool = {
   syncVersion: number;
   dryingEvents: LocalDryingEvent[];
   identities: LocalIdentity[];
+  usageTransactions: UsageTransaction[];
   createdAt: string;
   updatedAt: string;
 };
@@ -105,6 +107,70 @@ export function applySpoolUsage(
   return {
     currentWeightG,
     remainingPercent: deriveRemainingPercent({ ...spool, currentWeightG }),
+  };
+}
+
+export type UsageAdjustmentMode = "used" | "added";
+
+export function buildManualUsageTransaction(input: {
+  spool: Pick<
+    LocalSpool,
+    | "uuid"
+    | "currentWeightG"
+    | "tareWeightG"
+    | "initialNetWeightG"
+    | "remainingPercent"
+    | "materialCode"
+  >;
+  amountG: number;
+  mode: UsageAdjustmentMode;
+  now?: string;
+  uuid?: string;
+}): { transaction: UsageTransaction; currentWeightG: number | null; remainingPercent: number | null } {
+  if (!Number.isFinite(input.amountG) || input.amountG <= 0) {
+    throw new Error("Usage amount must be a positive number of grams");
+  }
+  const current = finiteNumber(input.spool.currentWeightG);
+  const tare = finiteNumber(input.spool.tareWeightG) ?? 0;
+  const signed = input.mode === "used" ? -input.amountG : input.amountG;
+  const currentWeightG =
+    current == null ? null : Math.max(tare, current + signed);
+  const remainingPercent = deriveRemainingPercent({
+    ...input.spool,
+    currentWeightG,
+  });
+  const deductedWeightG = input.mode === "used" ? input.amountG : -input.amountG;
+  const transactionUuid = input.uuid ?? uuid();
+  return {
+    currentWeightG,
+    remainingPercent,
+    transaction: {
+      uuid: transactionUuid,
+      spoolId: input.spool.uuid,
+      printJobId: null,
+      eventId: `manual:${transactionUuid}`,
+      slicer: null,
+      slicerVersion: null,
+      printerIntegrationType: "manual",
+      status: "unknown",
+      predicted: {},
+      printerReported: {},
+      deducted: { weightG: deductedWeightG },
+      materialDensityGcm3: 1.24,
+      filamentDiameterMm: 1.75,
+      usageSource: "manual_correction",
+      confidence: "manual",
+      recordedAt: input.now ?? new Date().toISOString(),
+      automaticallyGenerated: false,
+      manuallyConfirmed: true,
+      originalValues: {
+        currentWeightG: input.spool.currentWeightG ?? null,
+        remainingPercent: input.spool.remainingPercent ?? null,
+        mode: input.mode,
+        amountG: input.amountG,
+        materialCode: input.spool.materialCode ?? null,
+      },
+    },
   };
 }
 
@@ -204,6 +270,8 @@ export async function saveLocalSpool(
     syncVersion: (existing?.syncVersion ?? 0) + 1,
     dryingEvents: input.dryingEvents ?? existing?.dryingEvents ?? [],
     identities: input.identities ?? existing?.identities ?? [],
+    usageTransactions:
+      input.usageTransactions ?? existing?.usageTransactions ?? [],
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   };
@@ -212,6 +280,22 @@ export async function saveLocalSpool(
   tx.objectStore(SPOOL_STORE).put(spool);
   await txDone(tx);
   return spool;
+}
+
+export async function recordLocalSpoolUsage(
+  spoolUuid: string,
+  amountG: number,
+  mode: UsageAdjustmentMode,
+): Promise<LocalSpool | null> {
+  const existing = await getLocalSpool(spoolUuid);
+  if (!existing) return null;
+  const built = buildManualUsageTransaction({ spool: existing, amountG, mode });
+  return saveLocalSpool({
+    ...existing,
+    currentWeightG: built.currentWeightG,
+    remainingPercent: built.remainingPercent,
+    usageTransactions: [...(existing.usageTransactions ?? []), built.transaction],
+  });
 }
 
 export async function deleteLocalSpool(spoolUuid: string, hard = false) {
@@ -293,5 +377,6 @@ export async function duplicateLocalSpool(spoolUuid: string) {
     notes: src.notes ? `Copy of ${src.uuid.slice(0, 8)}. ${src.notes}` : `Copy of ${src.uuid.slice(0, 8)}`,
     dryingEvents: [],
     identities: [],
+    usageTransactions: [],
   });
 }

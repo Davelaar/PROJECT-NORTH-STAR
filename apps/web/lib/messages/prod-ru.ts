@@ -90,6 +90,7 @@ export const spoolsRu = {
   usageLabel: "Использовано после печати (г)",
   usagePlaceholder: "например 42",
   usageSubmit: "Вычесть расход",
+  usageAddSubmit: "Добавить граммы",
   usageSaved: "Расход записан, остаток обновлён.",
   usageError: "Введите положительное количество использованных граммов.",
   usageNeedsWeights: "Укажите начальный и текущий вес, чтобы отслеживать расход печати.",
