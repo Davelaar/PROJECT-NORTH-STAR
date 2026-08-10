@@ -271,6 +271,7 @@ export const messages: Messages = {
     cameraIdle: "启动后将在此显示摄像头预览。",
     scanningStatus: "扫描中…请将标签保持在画面中",
     scanSuccess: "已识别标签 — 正在打开耗材…",
+    unrecognizedQr: "已找到二维码，但不是 OpenFilament 标签：",
     modeToggleAria: "如何扫描？",
     modePhone: "使用手机",
     modeCamera: "使用此摄像头",

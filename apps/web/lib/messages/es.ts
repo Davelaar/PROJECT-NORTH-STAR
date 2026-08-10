@@ -270,6 +270,7 @@ export const messages: Messages = {
     cameraIdle: "La vista previa aparece aquí al iniciar el escaneo.",
     scanningStatus: "Escaneando… mantén la etiqueta a la vista",
     scanSuccess: "Etiqueta reconocida — abriendo filamento…",
+    unrecognizedQr: "QR encontrado, pero no es una etiqueta OpenFilament:",
     modeToggleAria: "¿Cómo quieres escanear?",
     modePhone: "Usar teléfono",
     modeCamera: "Usar esta cámara",

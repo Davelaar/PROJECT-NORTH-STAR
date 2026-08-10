@@ -270,6 +270,7 @@ export const messages: Messages = {
     cameraIdle: "A pré-visualização aparece aqui após iniciar.",
     scanningStatus: "A digitalizar… mantenha o rótulo à vista",
     scanSuccess: "Rótulo reconhecido — a abrir filamento…",
+    unrecognizedQr: "QR encontrado, mas não é um rótulo OpenFilament:",
     modeToggleAria: "Como quer digitalizar?",
     modePhone: "Usar telemóvel",
     modeCamera: "Usar esta câmara",

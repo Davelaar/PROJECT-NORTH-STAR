@@ -270,6 +270,7 @@ export const messages: Messages = {
     cameraIdle: "Camerabeeld verschijnt hier na het starten.",
     scanningStatus: "Bezig met scannen… houd het label in beeld",
     scanSuccess: "Label herkend — filament openen…",
+    unrecognizedQr: "QR gevonden, maar geen OpenFilament-label:",
     modeToggleAria: "Hoe wil je scannen?",
     modePhone: "Gebruik telefoon",
     modeCamera: "Gebruik deze camera",

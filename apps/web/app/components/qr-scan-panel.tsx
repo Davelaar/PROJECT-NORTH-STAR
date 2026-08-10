@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import jsQR from "jsqr";
 import QRCode from "qrcode";
 import { detectBrowserCapabilities } from "@/lib/capabilities";
@@ -9,6 +9,10 @@ import { parseOpenFilamentQrPayload } from "@/lib/qr-parse";
 import { useMessages } from "@/app/components/messages-provider";
 
 type Mode = "phone" | "camera";
+
+type BarcodeDetectorLike = {
+  detect: (source: ImageBitmapSource) => Promise<{ rawValue: string }[]>;
+};
 
 function isDesktopLike(): boolean {
   if (typeof window === "undefined") return false;
@@ -18,18 +22,41 @@ function isDesktopLike(): boolean {
   );
 }
 
+/** Safari/iOS BarcodeDetector is unreliable on canvas frames and can stall the loop. */
+function createBarcodeDetector(): BarcodeDetectorLike | null {
+  if (typeof window === "undefined") return null;
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return null;
+  if (/Safari/i.test(ua) && !/Chrome|Chromium|CriOS|Edg|Firefox|FxiOS/i.test(ua)) {
+    return null;
+  }
+  const Detector = (
+    window as unknown as {
+      BarcodeDetector?: new (opts: { formats: string[] }) => BarcodeDetectorLike;
+    }
+  ).BarcodeDetector;
+  if (!Detector) return null;
+  try {
+    return new Detector({ formats: ["qr_code"] });
+  } catch {
+    return null;
+  }
+}
+
 export function QrScanPanel() {
   const messages = useMessages();
   const s = messages.scan;
-  const router = useRouter();
   const params = useSearchParams();
   const onPhone = params.get("onPhone") === "1";
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const smallCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const activeRef = useRef(false);
+  const busyRef = useRef(false);
+  const openingRef = useRef(false);
 
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
@@ -63,15 +90,30 @@ export function QrScanPanel() {
     }).then(setHandoffQr);
   }, [mode, onPhone]);
 
-  const goToUuid = useCallback(
+  const openVariant = useCallback(
     (uuid: string) => {
-      router.push(`/variants/${uuid}`);
+      if (openingRef.current) return;
+      openingRef.current = true;
+      activeRef.current = false;
+      setStatus(s.scanSuccess);
+      // Stop tracks before navigating. Soft App Router pushes often no-op on
+      // iOS Safari while/after getUserMedia — use a full document load.
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+      const video = videoRef.current;
+      if (video) video.srcObject = null;
+      setScanning(false);
+      window.location.assign(`/f/${uuid}`);
     },
-    [router],
+    [s.scanSuccess],
   );
 
   const stop = useCallback(() => {
+    if (openingRef.current) return;
     activeRef.current = false;
+    busyRef.current = false;
     setScanning(false);
     setStatus("");
     if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
@@ -87,19 +129,19 @@ export function QrScanPanel() {
   const tryDecodeFrame = useCallback(
     async (
       canvas: HTMLCanvasElement,
-      detector: {
-        detect: (source: ImageBitmapSource) => Promise<{ rawValue: string }[]>;
-      } | null,
-    ): Promise<string | null> => {
+      detector: BarcodeDetectorLike | null,
+    ): Promise<{ uuid: string | null; raw: string | null }> => {
       const ctx = canvas.getContext("2d", { willReadFrequently: true });
-      if (!ctx) return null;
+      if (!ctx) return { uuid: null, raw: null };
 
       if (detector) {
         try {
           const codes = await detector.detect(canvas);
           for (const code of codes) {
-            const uuid = parseOpenFilamentQrPayload(code.rawValue);
-            if (uuid) return uuid;
+            const raw = code.rawValue;
+            const uuid = parseOpenFilamentQrPayload(raw);
+            if (uuid) return { uuid, raw };
+            if (raw) return { uuid: null, raw };
           }
         } catch {
           /* fall through to jsQR */
@@ -111,17 +153,25 @@ export function QrScanPanel() {
       const scale = canvas.width > maxW ? maxW / canvas.width : 1;
       const w = Math.max(1, Math.floor(canvas.width * scale));
       const h = Math.max(1, Math.floor(canvas.height * scale));
-      const small = document.createElement("canvas");
-      small.width = w;
-      small.height = h;
+      let small = smallCanvasRef.current;
+      if (!small) {
+        small = document.createElement("canvas");
+        smallCanvasRef.current = small;
+      }
+      if (small.width !== w || small.height !== h) {
+        small.width = w;
+        small.height = h;
+      }
       const sctx = small.getContext("2d", { willReadFrequently: true });
-      if (!sctx) return null;
+      if (!sctx) return { uuid: null, raw: null };
       sctx.drawImage(canvas, 0, 0, w, h);
       const image = sctx.getImageData(0, 0, w, h);
       const code = jsQR(image.data, image.width, image.height, {
         inversionAttempts: "attemptBoth",
       });
-      return code ? parseOpenFilamentQrPayload(code.data) : null;
+      if (!code?.data) return { uuid: null, raw: null };
+      const raw = code.data;
+      return { uuid: parseOpenFilamentQrPayload(raw), raw };
     },
     [],
   );
@@ -129,11 +179,13 @@ export function QrScanPanel() {
   const startCamera = useCallback(async () => {
     setError("");
     setStatus(s.scanningStatus);
+    openingRef.current = false;
     if (!navigator.mediaDevices?.getUserMedia) {
       setError(s.cameraUnavailable);
       return;
     }
     stop();
+    openingRef.current = false;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -158,53 +210,54 @@ export function QrScanPanel() {
       activeRef.current = true;
       setScanning(true);
 
-      const Detector = (
-        window as unknown as {
-          BarcodeDetector?: new (opts: { formats: string[] }) => {
-            detect: (
-              source: ImageBitmapSource,
-            ) => Promise<{ rawValue: string }[]>;
-          };
-        }
-      ).BarcodeDetector;
-      const detector = Detector
-        ? new Detector({ formats: ["qr_code"] })
-        : null;
+      const detector = createBarcodeDetector();
 
-      const tick = async () => {
-        if (!activeRef.current) return;
-        const v = videoRef.current;
-        const c = canvasRef.current;
-        if (!v || !c || v.readyState < 2 || v.videoWidth < 16) {
-          rafRef.current = requestAnimationFrame(() => {
-            void tick();
-          });
-          return;
-        }
-        c.width = v.videoWidth;
-        c.height = v.videoHeight;
-        const ctx = c.getContext("2d", { willReadFrequently: true });
-        if (!ctx) return;
-        ctx.drawImage(v, 0, 0, c.width, c.height);
-
-        try {
-          const uuid = await tryDecodeFrame(c, detector);
-          if (uuid && activeRef.current) {
-            stop();
-            setStatus(s.scanSuccess);
-            goToUuid(uuid);
-            return;
-          }
-        } catch {
-          /* keep scanning */
-        }
+      const schedule = () => {
         rafRef.current = requestAnimationFrame(() => {
           void tick();
         });
       };
-      rafRef.current = requestAnimationFrame(() => {
-        void tick();
-      });
+
+      const tick = async () => {
+        if (!activeRef.current || openingRef.current) return;
+        const v = videoRef.current;
+        const c = canvasRef.current;
+        if (!v || !c || v.readyState < 2 || v.videoWidth < 16) {
+          schedule();
+          return;
+        }
+        if (busyRef.current) {
+          schedule();
+          return;
+        }
+        busyRef.current = true;
+        c.width = v.videoWidth;
+        c.height = v.videoHeight;
+        const ctx = c.getContext("2d", { willReadFrequently: true });
+        if (!ctx) {
+          busyRef.current = false;
+          schedule();
+          return;
+        }
+        ctx.drawImage(v, 0, 0, c.width, c.height);
+
+        try {
+          const { uuid, raw } = await tryDecodeFrame(c, detector);
+          if (uuid && activeRef.current) {
+            openVariant(uuid);
+            return;
+          }
+          if (raw && activeRef.current) {
+            setStatus(`${s.unrecognizedQr} ${raw.slice(0, 96)}`);
+          }
+        } catch {
+          /* keep scanning */
+        } finally {
+          busyRef.current = false;
+        }
+        if (activeRef.current && !openingRef.current) schedule();
+      };
+      schedule();
     } catch (e) {
       setError(
         e instanceof Error
@@ -213,7 +266,7 @@ export function QrScanPanel() {
       );
       stop();
     }
-  }, [goToUuid, s, stop, tryDecodeFrame]);
+  }, [openVariant, s, stop, tryDecodeFrame]);
 
   // Auto-start camera when handed off to phone.
   useEffect(() => {
@@ -231,7 +284,7 @@ export function QrScanPanel() {
       setError(s.invalidInput);
       return;
     }
-    goToUuid(uuid);
+    openVariant(uuid);
   }
 
   function switchMode(next: Mode) {

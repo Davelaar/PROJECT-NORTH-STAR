@@ -282,6 +282,7 @@ export type Messages = {
     cameraIdle: string;
     scanningStatus: string;
     scanSuccess: string;
+    unrecognizedQr: string;
     modeToggleAria: string;
     modePhone: string;
     modeCamera: string;

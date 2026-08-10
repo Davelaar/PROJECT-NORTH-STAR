@@ -270,6 +270,7 @@ export const messages: Messages = {
     cameraIdle: "L’aperçu caméra apparaît ici après le démarrage.",
     scanningStatus: "Scan en cours… garde l’étiquette dans le cadre",
     scanSuccess: "Étiquette reconnue — ouverture du filament…",
+    unrecognizedQr: "QR trouvé, mais ce n’est pas une étiquette OpenFilament :",
     modeToggleAria: "Comment veux-tu scanner ?",
     modePhone: "Utiliser le téléphone",
     modeCamera: "Utiliser cette caméra",

@@ -270,6 +270,7 @@ export const messages: Messages = {
     cameraIdle: "Kameravorschau erscheint hier nach dem Start.",
     scanningStatus: "Scannen… Label im Bild halten",
     scanSuccess: "Label erkannt — Filament wird geöffnet…",
+    unrecognizedQr: "QR gefunden, aber kein OpenFilament-Label:",
     modeToggleAria: "Wie möchtest du scannen?",
     modePhone: "Handy nutzen",
     modeCamera: "Diese Kamera nutzen",

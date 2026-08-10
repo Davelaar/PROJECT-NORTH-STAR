@@ -15,6 +15,10 @@ describe("parseOpenFilamentQrPayload", () => {
     expect(
       parseOpenFilamentQrPayload(`https://openfilament.nl/variants/${id}`),
     ).toBe(id);
+    expect(parseOpenFilamentQrPayload(`\uFEFFhttps://openfilament.nl/f/${id}`)).toBe(
+      id,
+    );
+    expect(parseOpenFilamentQrPayload(`openfilament.nl/f/${id}`)).toBe(id);
   });
 
   it("rejects unrelated text", () => {

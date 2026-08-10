@@ -270,6 +270,7 @@ export const messages: Messages = {
     cameraIdle: "Попередній перегляд з’явиться тут після запуску.",
     scanningStatus: "Сканування… тримайте етикетку в кадрі",
     scanSuccess: "Етикетку розпізнано — відкриваємо філамент…",
+    unrecognizedQr: "QR знайдено, але це не етикетка OpenFilament:",
     modeToggleAria: "Як сканувати?",
     modePhone: "Через телефон",
     modeCamera: "Цією камерою",
