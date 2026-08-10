@@ -204,7 +204,9 @@ export default function MySpoolsCloudPage() {
             </button>
           </div>
         )}
-        {!offer?.checkoutAvailable ? (
+        {!offer ? (
+          <p className="muted">{m.common.loading}</p>
+        ) : !offer.checkoutAvailable ? (
           <p className="muted">{m.cloud.checkoutUnavailable}</p>
         ) : null}
         {error ? (
