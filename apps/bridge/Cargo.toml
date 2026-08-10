@@ -14,9 +14,14 @@ aes = "0.8"
 axum = "0.8"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 hex = "0.4"
+pcsc = { version = "2", optional = true }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "fs"] }
+ureq = { version = "2", default-features = false, features = ["json"] }
 
 [dev-dependencies]
 tempfile = "3"
+
+[features]
+pcsc = ["dep:pcsc"]

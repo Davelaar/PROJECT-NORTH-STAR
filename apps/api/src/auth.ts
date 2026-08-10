@@ -9,13 +9,58 @@ import {
 import { randomBytes } from "node:crypto";
 import { v4 as uuid } from "uuid";
 
+export type AuthScope =
+  | "read:filaments"
+  | "write:profiles"
+  | "write:calibrations"
+  | "write:rfid"
+  | "moderate"
+  | "*";
+
 export type AuthUser = {
   id: number;
   uuid: string;
   username: string;
   role: string;
   trustScore: number;
+  scopes: string[];
 };
+
+export function scopesForRole(role: string): AuthScope[] {
+  const base: AuthScope[] = [
+    "read:filaments",
+    "write:profiles",
+    "write:calibrations",
+    "write:rfid",
+  ];
+  if (
+    role === "administrator" ||
+    role === "moderator" ||
+    role === "trusted_contributor"
+  ) {
+    return [...base, "moderate"];
+  }
+  return base;
+}
+
+export function parseScopes(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed)) {
+      return parsed.filter((s): s is string => typeof s === "string");
+    }
+  } catch {
+    // fall through
+  }
+  return [];
+}
+
+export function hasScope(user: AuthUser, required: AuthScope | AuthScope[]): boolean {
+  const needed = Array.isArray(required) ? required : [required];
+  if (user.scopes.includes("*")) return true;
+  return needed.some((s) => user.scopes.includes(s));
+}
 
 export async function resolveBearerUser(
   db: AppDb,
@@ -34,6 +79,7 @@ export async function resolveBearerUser(
       trustScore: schema.users.trustScore,
       revokedAt: schema.apiTokens.revokedAt,
       expiresAt: schema.apiTokens.expiresAt,
+      scopes: schema.apiTokens.scopes,
     })
     .from(schema.apiTokens)
     .innerJoin(schema.users, eq(schema.apiTokens.userId, schema.users.id))
@@ -49,14 +95,30 @@ export async function resolveBearerUser(
     username: row.username,
     role: row.role,
     trustScore: row.trustScore,
+    scopes: parseScopes(row.scopes),
   };
+}
+
+function issueToken(db: AppDb, user: typeof schema.users.$inferSelect): string {
+  const token = randomBytes(32).toString("hex");
+  const scopes = scopesForRole(user.role);
+  db.insert(schema.apiTokens)
+    .values({
+      uuid: uuid(),
+      userId: user.id,
+      name: "session",
+      tokenHash: hashToken(token),
+      scopes: JSON.stringify(scopes),
+    })
+    .run();
+  return token;
 }
 
 export async function loginWithPassword(
   db: AppDb,
   usernameOrEmail: string,
   password: string,
-): Promise<{ user: AuthUser; token: string } | null> {
+): Promise<{ user: AuthUser; token: string; scopes: string[] } | null> {
   const user =
     db
       .select()
@@ -71,24 +133,18 @@ export async function loginWithPassword(
   if (!user?.passwordHash) return null;
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) return null;
-  const token = randomBytes(32).toString("hex");
-  db.insert(schema.apiTokens)
-    .values({
-      uuid: uuid(),
-      userId: user.id,
-      name: "session",
-      tokenHash: hashToken(token),
-      scopes: JSON.stringify(["*"]),
-    })
-    .run();
+  const scopes = scopesForRole(user.role);
+  const token = issueToken(db, user);
   return {
     token,
+    scopes,
     user: {
       id: user.id,
       uuid: user.uuid,
       username: user.username,
       role: user.role,
       trustScore: user.trustScore,
+      scopes,
     },
   };
 }
@@ -116,24 +172,18 @@ export async function registerUser(
     .returning()
     .all();
   if (!user) throw new Error("Failed to create user");
-  const token = randomBytes(32).toString("hex");
-  db.insert(schema.apiTokens)
-    .values({
-      uuid: uuid(),
-      userId: user.id,
-      name: "session",
-      tokenHash: hashToken(token),
-      scopes: JSON.stringify(["*"]),
-    })
-    .run();
+  const scopes = scopesForRole(user.role);
+  const token = issueToken(db, user);
   return {
     token,
+    scopes,
     user: {
       id: user.id,
       uuid: user.uuid,
       username: user.username,
       role: user.role,
       trustScore: user.trustScore,
+      scopes,
     },
   };
 }

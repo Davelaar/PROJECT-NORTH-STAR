@@ -212,6 +212,14 @@ impl MemoryTag {
         })
     }
 
+    pub fn sector1_blocks(&self) -> [Vec<u8>; 3] {
+        [
+            self.blocks.get(&4).cloned().unwrap_or_else(|| vec![0u8; 16]),
+            self.blocks.get(&5).cloned().unwrap_or_else(|| vec![0u8; 16]),
+            self.blocks.get(&6).cloned().unwrap_or_else(|| vec![0u8; 16]),
+        ]
+    }
+
     pub fn write_and_verify(
         &mut self,
         plaintext: &[u8],

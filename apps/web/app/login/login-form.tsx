@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getApiBase } from "@/lib/api";
+import { saveAuth } from "@/lib/auth";
 import { messages } from "@/lib/messages/en";
 
 export function LoginForm() {
@@ -23,11 +24,14 @@ export function LoginForm() {
       });
       const data = (await res.json()) as {
         token?: string;
+        user?: { uuid: string; username: string; role: string };
         error?: { message: string };
       };
       if (!res.ok) throw new Error(data.error?.message ?? "Login failed");
       setToken(data.token ?? "");
-      if (data.token) {
+      if (data.token && data.user) {
+        saveAuth({ token: data.token, user: data.user });
+      } else if (data.token) {
         window.localStorage.setItem("of_token", data.token);
       }
     } catch (err) {

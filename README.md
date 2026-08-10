@@ -68,9 +68,11 @@ Seed includes Flashforge ASA Burnt Titanium **seed catalog** fixtures — exampl
 
 ### What works in v0.1+
 
-Working: catalog DB, calibrations + revisions, search, community aggregation, web UI, REST API, OpenFilamentProfile export, **Creality Print / Orca installable user presets**, **local bridge install** into allowlisted filament dirs, **CFS-compatible RFID encode/decrypt/simulate-verify**.
+Working: catalog DB, calibrations + revisions + evidence, search, community aggregation, submit/import/admin web UI, REST API + OpenAPI, OpenFilamentProfile import/export, **Creality Print / Orca install** (backup/rollback), **CFS RFID encode/simulate/write-policy/resolve→map-install**.
 
-Remaining hardware gap: physical NFC/PC/SC tag write (simulate path does not need hardware). See `docs/ROADMAP.md` and `docs/CREALITY_CFS_RFID.md`.
+Physical PC/SC write is implemented behind `FEATURE_RFID_WRITE=true` + `--features pcsc`; without hardware, software §53 path is verified by `./scripts/acceptance-software.sh`.
+
+See `docs/ROADMAP.md` and `docs/CURRENT_STATE.md`.
 
 ### Environment
 

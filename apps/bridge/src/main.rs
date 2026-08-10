@@ -1,6 +1,7 @@
 mod cfs;
 mod presets;
 mod slicers;
+mod transport;
 
 use axum::{
     extract::Request,
@@ -19,6 +20,39 @@ const DEFAULT_TOKEN: &str = "local-dev-token";
 
 fn bridge_token() -> String {
     std::env::var("OF_BRIDGE_TOKEN").unwrap_or_else(|_| DEFAULT_TOKEN.to_string())
+}
+
+fn origin_allowed(headers: &HeaderMap) -> bool {
+    let allowed = [
+        "http://127.0.0.1:3000",
+        "http://localhost:3000",
+        "http://127.0.0.1:8787",
+        "http://localhost:8787",
+    ];
+    let origin = headers
+        .get("origin")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("");
+    if origin.is_empty() {
+        // non-browser clients (curl) — allow when no Origin
+        return true;
+    }
+    allowed.iter().any(|a| *a == origin)
+}
+
+async fn require_origin(headers: HeaderMap, req: Request, next: Next) -> Response {
+    let path = req.uri().path();
+    if path == "/health" || req.method() == axum::http::Method::GET {
+        return next.run(req).await;
+    }
+    if !origin_allowed(&headers) {
+        return (
+            StatusCode::FORBIDDEN,
+            Json(json!({ "ok": false, "error": "Origin not allowed" })),
+        )
+            .into_response();
+    }
+    next.run(req).await
 }
 
 async fn require_token(headers: HeaderMap, req: Request, next: Next) -> Response {
@@ -51,9 +85,15 @@ async fn main() {
         .route("/v1/slicers", get(list_slicers))
         .route("/v1/presets/install", post(presets_install))
         .route("/v1/presets/list", post(presets_list))
+        .route("/v1/presets/rollback", post(presets_rollback))
+        .route("/v1/presets/remove", post(presets_remove))
         .route("/v1/rfid/encode", post(rfid_encode))
         .route("/v1/rfid/simulate-write", post(rfid_simulate))
+        .route("/v1/rfid/write", post(rfid_write))
+        .route("/v1/rfid/readers", get(rfid_readers))
+        .route("/v1/rfid/map-install", post(rfid_map_install))
         .route("/v1/auth/session", post(auth_session))
+        .layer(middleware::from_fn(require_origin))
         .layer(middleware::from_fn(require_token));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8788));
@@ -121,6 +161,93 @@ async fn presets_list(Json(body): Json<Value>) -> Response {
     match parsed {
         Ok(req) => match presets::list_presets(req) {
             Ok(list) => (StatusCode::OK, Json(json!({ "presets": list }))).into_response(),
+            Err(e) => (
+                StatusCode::BAD_REQUEST,
+                Json(json!({ "ok": false, "error": e })),
+            )
+                .into_response(),
+        },
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "ok": false, "error": e.to_string() })),
+        )
+            .into_response(),
+    }
+}
+
+async fn presets_rollback(Json(body): Json<Value>) -> Response {
+    let parsed: Result<presets::RollbackRequest, _> = serde_json::from_value(body);
+    match parsed {
+        Ok(req) => match presets::rollback_preset(req) {
+            Ok(resp) => (StatusCode::OK, Json(resp)).into_response(),
+            Err(e) => (
+                StatusCode::BAD_REQUEST,
+                Json(json!({ "ok": false, "error": e })),
+            )
+                .into_response(),
+        },
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "ok": false, "error": e.to_string() })),
+        )
+            .into_response(),
+    }
+}
+
+async fn presets_remove(Json(body): Json<Value>) -> Response {
+    let parsed: Result<presets::RemoveRequest, _> = serde_json::from_value(body);
+    match parsed {
+        Ok(req) => match presets::remove_preset(req) {
+            Ok(resp) => (StatusCode::OK, Json(resp)).into_response(),
+            Err(e) => (
+                StatusCode::BAD_REQUEST,
+                Json(json!({ "ok": false, "error": e })),
+            )
+                .into_response(),
+        },
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "ok": false, "error": e.to_string() })),
+        )
+            .into_response(),
+    }
+}
+
+async fn rfid_readers() -> Json<Value> {
+    Json(transport::list_readers_json())
+}
+
+async fn rfid_write(Json(body): Json<RfidEncodeBody>) -> Response {
+    match transport::write_with_policy(
+        &body.material,
+        &body.color,
+        &body.weight_or_length,
+        body.serial.as_deref(),
+        body.batch.as_deref(),
+        body.date.as_deref(),
+        body.supplier.as_deref(),
+        body.uid.as_deref(),
+        false,
+    ) {
+        Ok(v) => (StatusCode::OK, Json(v)).into_response(),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(json!({ "ok": false, "error": e })),
+        )
+            .into_response(),
+    }
+}
+
+async fn rfid_map_install(Json(body): Json<Value>) -> Response {
+    // Accept either bridgeInstallPayload directly or nested under that key
+    let payload = body
+        .get("bridgeInstallPayload")
+        .cloned()
+        .unwrap_or(body);
+    let parsed: Result<presets::InstallRequest, _> = serde_json::from_value(payload);
+    match parsed {
+        Ok(req) => match presets::install_preset(req) {
+            Ok(resp) => (StatusCode::OK, Json(json!({ "ok": true, "install": resp }))).into_response(),
             Err(e) => (
                 StatusCode::BAD_REQUEST,
                 Json(json!({ "ok": false, "error": e })),
@@ -209,7 +336,7 @@ async fn rfid_simulate(Json(body): Json<RfidEncodeBody>) -> Response {
 }
 
 fn simulate_inner(body: RfidEncodeBody) -> Result<Value, String> {
-    let (ascii, fields) = cfs::encode_plaintext(
+    transport::write_with_policy(
         &body.material,
         &body.color,
         &body.weight_or_length,
@@ -217,27 +344,9 @@ fn simulate_inner(body: RfidEncodeBody) -> Result<Value, String> {
         body.batch.as_deref(),
         body.date.as_deref(),
         body.supplier.as_deref(),
-    )?;
-    let ct = cfs::encrypt_payload(ascii.as_bytes())?;
-    let uid = body.uid.unwrap_or_else(|| "35B94A19".into());
-    let mut tag = cfs::MemoryTag::new(&uid)?;
-    let (uid_hex, key_a, blocks) = tag.write_and_verify(ascii.as_bytes(), &ct)?;
-    Ok(json!({
-        "ok": true,
-        "verified": true,
-        "format": "creality-cfs-v1",
-        "plaintextAscii": ascii,
-        "ciphertextHex": hex::encode(&ct),
-        "fields": fields,
-        "uidHex": uid_hex,
-        "keyAHex": key_a,
-        "blocksHex": {
-            "block4": blocks[0],
-            "block5": blocks[1],
-            "block6": blocks[2],
-        },
-        "note": "In-memory MIFARE sector simulation — no PC/SC hardware used"
-    }))
+        body.uid.as_deref(),
+        true,
+    )
 }
 
 #[derive(Deserialize)]

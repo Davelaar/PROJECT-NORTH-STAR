@@ -246,3 +246,100 @@ export function suggestedCrealityFileName(
   const preset = convertCanonicalToCrealityUserPreset(canonical, opts);
   return `${String(preset.name)}.json`;
 }
+
+function firstString(v: unknown): string | null {
+  if (typeof v === "string") return v;
+  if (Array.isArray(v) && typeof v[0] === "string") return v[0];
+  if (Array.isArray(v) && typeof v[0] === "number") return String(v[0]);
+  if (typeof v === "number") return String(v);
+  return null;
+}
+
+function firstNumber(v: unknown): number | null {
+  const s = firstString(v);
+  if (s == null || s === "" || s === "nil") return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Map a Creality Print user filament preset JSON toward canonical fields.
+ * Does not invent missing context; returns a partial suitable for draft import.
+ */
+export function convertCrealityUserPresetToCanonicalPartial(
+  preset: Record<string, unknown>,
+): {
+  title: string;
+  filament: {
+    manufacturerName: string | null;
+    materialCode: string | null;
+    variantName: string | null;
+    primaryColorHex: string | null;
+    diameterMm: number | null;
+    densityGCm3: number | null;
+  };
+  context: {
+    printerHint: string | null;
+    nozzleDiameterMm: number | null;
+  };
+  thermal: Record<string, number | null>;
+  extrusion: Record<string, number | null>;
+  cooling: Record<string, number | null>;
+  retraction: Record<string, number | null>;
+  inherits: string | null;
+  notes: string | null;
+} {
+  const name = firstString(preset.name) ?? "Imported Creality preset";
+  const printerHint = name.includes("@")
+    ? name.split("@").slice(1).join("@").trim()
+    : firstString(preset.compatible_printers);
+  let nozzleDiameterMm: number | null = null;
+  if (printerHint) {
+    const m = printerHint.match(/(\d+(?:\.\d+)?)\s*nozzle/i);
+    if (m) nozzleDiameterMm = Number(m[1]);
+  }
+  return {
+    title: name,
+    filament: {
+      manufacturerName: firstString(preset.filament_vendor),
+      materialCode: firstString(preset.filament_type),
+      variantName: name.split("@")[0]?.trim() ?? name,
+      primaryColorHex:
+        firstString(preset.default_filament_colour) ??
+        firstString(preset.filament_colour),
+      diameterMm: firstNumber(preset.filament_diameter),
+      densityGCm3: firstNumber(preset.filament_density),
+    },
+    context: { printerHint, nozzleDiameterMm },
+    thermal: {
+      nozzleTempOtherLayersC: firstNumber(preset.nozzle_temperature),
+      nozzleTempFirstLayerC: firstNumber(
+        preset.nozzle_temperature_initial_layer,
+      ),
+      bedTempOtherLayersC:
+        firstNumber(preset.textured_plate_temp) ??
+        firstNumber(preset.hot_plate_temp),
+      bedTempFirstLayerC:
+        firstNumber(preset.textured_plate_temp_initial_layer) ??
+        firstNumber(preset.hot_plate_temp_initial_layer),
+      chamberTempC: firstNumber(preset.chamber_temperature),
+    },
+    extrusion: {
+      flowRatio: firstNumber(preset.filament_flow_ratio),
+      pressureAdvance: firstNumber(preset.pressure_advance),
+      maxVolumetricFlowMm3s: firstNumber(preset.filament_max_volumetric_speed),
+    },
+    cooling: {
+      fanMinPercent: firstNumber(preset.fan_min_speed),
+      fanMaxPercent: firstNumber(preset.fan_max_speed),
+      bridgeFanPercent: firstNumber(preset.bridge_fan_speed),
+      fanDisableFirstLayers: firstNumber(preset.close_fan_the_first_x_layers),
+    },
+    retraction: {
+      retractionDistanceMm: firstNumber(preset.filament_retraction_length),
+      retractionSpeedMms: firstNumber(preset.filament_retraction_speed),
+    },
+    inherits: firstString(preset.inherits),
+    notes: firstString(preset.filament_notes),
+  };
+}

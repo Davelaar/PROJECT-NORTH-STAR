@@ -1,5 +1,6 @@
 export {
   convertCanonicalToCrealityUserPreset,
+  convertCrealityUserPresetToCanonicalPartial,
   buildCrealityInfoFile,
   suggestCompatiblePrinter,
   suggestedCrealityFileName,

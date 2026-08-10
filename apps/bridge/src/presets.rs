@@ -166,6 +166,106 @@ pub fn list_presets(req: ListRequest) -> Result<Vec<ListedPreset>, String> {
     Ok(out)
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RollbackRequest {
+    pub backup_dir: String,
+    pub slicer: String,
+}
+
+pub fn rollback_preset(req: RollbackRequest) -> Result<InstallResponse, String> {
+    let slicer = match req.slicer.as_str() {
+        "creality_print" | "orca" => req.slicer.as_str(),
+        other => return Err(format!("slicer must be creality_print|orca, got {other}")),
+    };
+    let backup = PathBuf::from(&req.backup_dir);
+    if !backup.is_dir() {
+        return Err("backup_dir does not exist".into());
+    }
+    let filament_dir = resolve_install_dir(slicer)?;
+    // Only restore from backups under filament_dir/.open-filament-backups
+    let allowed_root = filament_dir.join(".open-filament-backups");
+    let canon_backup = backup
+        .canonicalize()
+        .map_err(|e| format!("invalid backup_dir: {e}"))?;
+    let canon_allowed = allowed_root
+        .canonicalize()
+        .map_err(|e| format!("no backups root: {e}"))?;
+    if !canon_backup.starts_with(&canon_allowed) {
+        return Err("backup_dir outside allowlisted backups root".into());
+    }
+    let mut restored_json = None;
+    let mut restored_info = None;
+    for entry in fs::read_dir(&backup).map_err(|e| e.to_string())?.flatten() {
+        let path = entry.path();
+        let name = path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .ok_or_else(|| "bad backup entry".to_string())?;
+        let dest = filament_dir.join(name);
+        if !is_path_allowlisted(&dest, slicer)
+            && std::env::var_os("OF_BRIDGE_FILAMENT_ROOT_OVERRIDE").is_none()
+        {
+            return Err("restore path outside allowlist".into());
+        }
+        fs::copy(&path, &dest).map_err(|e| e.to_string())?;
+        if name.ends_with(".json") {
+            restored_json = Some(dest.display().to_string());
+        }
+        if name.ends_with(".info") {
+            restored_info = Some(dest.display().to_string());
+        }
+    }
+    let json_path = restored_json.ok_or_else(|| "No .json in backup".to_string())?;
+    Ok(InstallResponse {
+        ok: true,
+        json_path,
+        info_path: restored_info,
+        backup_dir: Some(backup.display().to_string()),
+        filament_dir: filament_dir.display().to_string(),
+    })
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveRequest {
+    pub slicer: String,
+    pub file_name: String,
+}
+
+pub fn remove_preset(req: RemoveRequest) -> Result<InstallResponse, String> {
+    let slicer = match req.slicer.as_str() {
+        "creality_print" | "orca" => req.slicer.as_str(),
+        other => return Err(format!("slicer must be creality_print|orca, got {other}")),
+    };
+    let file_name = sanitize_file_name(&req.file_name)?;
+    let filament_dir = resolve_install_dir(slicer)?;
+    let json_path = filament_dir.join(&file_name);
+    if !json_path.exists() {
+        return Err("preset not found".into());
+    }
+    let content = fs::read_to_string(&json_path).unwrap_or_default();
+    if !content.contains("Open Filament") {
+        return Err("Refusing to remove preset that is not an Open Filament install".into());
+    }
+    let backup_dir = backup_existing(&json_path, &filament_dir)?;
+    fs::remove_file(&json_path).map_err(|e| e.to_string())?;
+    let info = json_path.with_extension("info");
+    let info_path = if info.exists() {
+        fs::remove_file(&info).map_err(|e| e.to_string())?;
+        Some(info.display().to_string())
+    } else {
+        None
+    };
+    Ok(InstallResponse {
+        ok: true,
+        json_path: json_path.display().to_string(),
+        info_path,
+        backup_dir: backup_dir.map(|p| p.display().to_string()),
+        filament_dir: filament_dir.display().to_string(),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -193,6 +293,43 @@ mod tests {
         let parsed: Value =
             serde_json::from_str(&fs::read_to_string(&resp.json_path).unwrap()).unwrap();
         assert_eq!(parsed["from"], "User");
+
+        // overwrite then rollback
+        let backup = resp.backup_dir; // none on first write
+        let _ = backup;
+        let resp2 = install_preset(InstallRequest {
+            slicer: "creality_print".into(),
+            preset_json: json!({
+                "name": "Test ASA @Creality K2 Plus 0.6 nozzle",
+                "from": "User",
+                "inherits": "HP-ASA @Creality K2 Plus 0.6 nozzle",
+                "filament_notes": ["Open Filament user preset"],
+                "filament_flow_ratio": ["0.99"]
+            }),
+            info_text: Some("sync_info = \nuser_id = 1\nsetting_id = abc\nbase_id = GFSA04\nupdated_time = 2\n".into()),
+            file_name: "Test ASA @Creality K2 Plus 0.6 nozzle.json".into(),
+            user_id: None,
+        })
+        .unwrap();
+        assert!(resp2.backup_dir.is_some());
+        let rolled = rollback_preset(RollbackRequest {
+            backup_dir: resp2.backup_dir.unwrap(),
+            slicer: "creality_print".into(),
+        })
+        .unwrap();
+        assert!(rolled.ok);
+        let restored: Value =
+            serde_json::from_str(&fs::read_to_string(&rolled.json_path).unwrap()).unwrap();
+        assert!(restored.get("filament_flow_ratio").is_none());
+
+        let removed = remove_preset(RemoveRequest {
+            slicer: "creality_print".into(),
+            file_name: "Test ASA @Creality K2 Plus 0.6 nozzle.json".into(),
+        })
+        .unwrap();
+        assert!(removed.ok);
+        assert!(!Path::new(&removed.json_path).exists());
+
         std::env::remove_var("OF_BRIDGE_FILAMENT_ROOT_OVERRIDE");
     }
 }

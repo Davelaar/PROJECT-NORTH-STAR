@@ -5,14 +5,17 @@
  * 1. Ignore null/undefined values (unknown ≠ 0).
  * 2. Cap per-sample trust weight to [0.25, 3].
  * 3. Exclude Tukey IQR outliers (k=1.5) when n >= 4.
- * 4. Recommended value = unweighted median of remaining samples.
+ * 4. Recommended value = unweighted median of remaining samples (primary).
  * 5. Also report trimmed mean (10% each side) when n >= 5.
- * 6. Confidence:
+ * 6. Secondary: trustWeightedRecommended = weighted median of kept samples
+ *    using capped trustScore weights (default weight 1 when absent).
+ * 7. Confidence:
  *    - high:   n_kept >= 5 AND IQR/median <= 0.15 (or IQR==0)
  *    - medium: n_kept >= 3 AND IQR/median <= 0.30
  *    - low:    otherwise
  *
  * Algorithm version string is part of the public contract.
+ * Median remains the primary recommended field; trust weighting is secondary.
  */
 export const AGGREGATION_ALGORITHM_VERSION = "of-agg-v1-median-iqr";
 
@@ -24,6 +27,8 @@ export type Sample = {
 export type AggregateResult = {
   algorithmVersion: string;
   recommended: number | null;
+  /** Weighted median after outlier removal; trustScore capped to [0.25, 3]. */
+  trustWeightedRecommended: number | null;
   trimmedMean: number | null;
   observedMin: number | null;
   observedMax: number | null;
@@ -48,6 +53,31 @@ function median(nums: number[]): number | null {
   return s[mid]!;
 }
 
+function capTrust(score: number | undefined): number {
+  const raw = typeof score === "number" && Number.isFinite(score) ? score : 1;
+  return Math.min(3, Math.max(0.25, raw));
+}
+
+/**
+ * Weighted median: sort by value, find the smallest value where cumulative
+ * weight reaches half of total weight.
+ */
+export function weightedMedian(
+  samples: Array<{ value: number; weight: number }>,
+): number | null {
+  if (samples.length === 0) return null;
+  const ordered = [...samples].sort((a, b) => a.value - b.value);
+  const total = ordered.reduce((sum, s) => sum + s.weight, 0);
+  if (total <= 0) return median(ordered.map((s) => s.value));
+  const half = total / 2;
+  let cumulative = 0;
+  for (const s of ordered) {
+    cumulative += s.weight;
+    if (cumulative >= half) return s.value;
+  }
+  return ordered[ordered.length - 1]!.value;
+}
+
 function quantile(sortedAsc: number[], q: number): number {
   if (sortedAsc.length === 1) return sortedAsc[0]!;
   const pos = (sortedAsc.length - 1) * q;
@@ -68,14 +98,16 @@ function trimmedMean(nums: number[], trimFraction = 0.1): number | null {
 }
 
 export function aggregateMetric(samples: Sample[]): AggregateResult {
-  const values = samples
-    .map((s) => s.value)
-    .filter((v) => typeof v === "number" && Number.isFinite(v));
+  const finite = samples.filter(
+    (s) => typeof s.value === "number" && Number.isFinite(s.value),
+  );
+  const values = finite.map((s) => s.value);
 
   if (values.length === 0) {
     return {
       algorithmVersion: AGGREGATION_ALGORITHM_VERSION,
       recommended: null,
+      trustWeightedRecommended: null,
       trimmedMean: null,
       observedMin: null,
       observedMax: null,
@@ -87,7 +119,7 @@ export function aggregateMetric(samples: Sample[]): AggregateResult {
     };
   }
 
-  let kept = [...values];
+  let keptSamples = [...finite];
   let excluded: number[] = [];
 
   if (values.length >= 4) {
@@ -97,20 +129,27 @@ export function aggregateMetric(samples: Sample[]): AggregateResult {
     const iqr = q3 - q1;
     const lo = q1 - 1.5 * iqr;
     const hi = q3 + 1.5 * iqr;
-    kept = [];
+    keptSamples = [];
     excluded = [];
-    for (const v of values) {
-      if (v < lo || v > hi) excluded.push(v);
-      else kept.push(v);
+    for (const sample of finite) {
+      if (sample.value < lo || sample.value > hi) excluded.push(sample.value);
+      else keptSamples.push(sample);
     }
     // If everything was excluded (degenerate), fall back to all values
-    if (kept.length === 0) {
-      kept = [...values];
+    if (keptSamples.length === 0) {
+      keptSamples = [...finite];
       excluded = [];
     }
   }
 
+  const kept = keptSamples.map((s) => s.value);
   const med = median(kept);
+  const trustWeightedRecommended = weightedMedian(
+    keptSamples.map((s) => ({
+      value: s.value,
+      weight: capTrust(s.trustScore),
+    })),
+  );
   const tMean = kept.length >= 5 ? trimmedMean(kept, 0.1) : med;
   const sKept = sorted(kept);
   const iqr =
@@ -129,6 +168,7 @@ export function aggregateMetric(samples: Sample[]): AggregateResult {
   return {
     algorithmVersion: AGGREGATION_ALGORITHM_VERSION,
     recommended: med,
+    trustWeightedRecommended,
     trimmedMean: tMean,
     observedMin: sKept[0] ?? null,
     observedMax: sKept[sKept.length - 1] ?? null,

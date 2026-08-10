@@ -28,7 +28,14 @@ export async function buildServer(options?: { dbPath?: string }) {
     credentials: true,
   });
 
+  await app.register(import("@fastify/rate-limit"), {
+    max: Number(process.env.API_RATE_LIMIT_MAX ?? 300),
+    timeWindow: "1 minute",
+  });
+
   await registerRoutes(app);
+  const { registerExtraRoutes } = await import("./routes-extra.js");
+  await registerExtraRoutes(app);
 
   // Friendly root — browsers often open the API port and hit Fastify's bare 404.
   app.get("/", async (req, reply) => {

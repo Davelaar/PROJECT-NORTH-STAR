@@ -369,8 +369,8 @@ export async function seed(dbPath?: string) {
       uuid: uuid(),
       filamentVariantId: burntTitanium!.id,
       rfidSchemeId: cfs!.id,
-      materialIdentifier: "ASA",
-      colorEncoding: "Burnt Titanium (lossy mapping TBD)",
+      materialIdentifier: "100007",
+      colorEncoding: "#6B5E54",
       lossyColorMapping: true,
       compatibilityNotes:
         "SYNTHETIC mapping placeholder — not a verified CFS color ID",

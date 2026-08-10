@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { messages } from "@/lib/messages/en";
+import { InstallProfileButton } from "../../components/install-profile-button";
+import { ConfirmFailButtons } from "../../components/confirm-fail-buttons";
 
 type Profile = {
   uuid: string;
@@ -54,12 +56,20 @@ export default async function ProfilePage({
           {rev.notes ? <p className="muted">{rev.notes}</p> : null}
         </div>
       ) : null}
+      <div className="panel">
+        <h3>Install</h3>
+        <InstallProfileButton profileUuid={profile.uuid} />
+        <p className="muted">
+          Also: <Link href={`/export?profileUuid=${profile.uuid}`}>Export page</Link>
+          {" · "}
+          <Link href={`/rfid`}>Write CFS RFID</Link>
+        </p>
+      </div>
+      <ConfirmFailButtons profileUuid={profile.uuid} />
       <p>
         <Link href={`/variants/${profile.variantUuid}`}>Variant</Link>
         {" · "}
         <Link href={`/printers/${profile.printerUuid}`}>Printer</Link>
-        {" · "}
-        <Link href={`/export?profileUuid=${profile.uuid}`}>Export</Link>
       </p>
       {profile.openFilamentProfile ? (
         <>

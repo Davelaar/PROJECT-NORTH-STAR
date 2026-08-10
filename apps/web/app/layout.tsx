@@ -25,9 +25,12 @@ export default function RootLayout({
             <nav className="nav" aria-label="Primary">
               <Link href="/">{m.nav.home}</Link>
               <Link href="/search">{m.nav.search}</Link>
+              <Link href="/submit">Submit</Link>
+              <Link href="/import">Import</Link>
               <Link href="/export">{m.nav.export}</Link>
               <Link href="/rfid">{m.nav.rfid}</Link>
               <Link href="/docs/api">{m.nav.docsApi}</Link>
+              <Link href="/me">Me</Link>
               <Link href="/login">{m.nav.login}</Link>
             </nav>
           </header>

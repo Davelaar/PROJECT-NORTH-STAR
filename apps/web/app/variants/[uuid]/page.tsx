@@ -153,9 +153,18 @@ export default async function VariantPage({
               {" "}
               — {p.printerName}, {p.nozzleDiameterMm} mm
             </span>
+            {" · "}
+            <Link href={`/export?profileUuid=${p.uuid}`}>Install / export</Link>
           </li>
         ))}
       </ul>
+      <p>
+        <Link href={`/f/${uuid}`}>Short link / QR</Link>
+        {" · "}
+        <Link href={`/submit`}>Submit calibration</Link>
+        {" · "}
+        <Link href={`/rfid`}>Write CFS RFID</Link>
+      </p>
       <p>
         <Link href={`/filaments/${variant.productUuid}`}>{variant.productName}</Link>
       </p>

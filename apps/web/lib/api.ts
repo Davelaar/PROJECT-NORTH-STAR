@@ -5,10 +5,11 @@ export function getApiBase(): string {
   return API_URL.replace(/\/$/, "");
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
+export async function apiGet<T>(path: string, token?: string): Promise<T> {
   const res = await fetch(`${getApiBase()}${path}`, {
     next: { revalidate: 0 },
     cache: "no-store",
+    headers: token ? { authorization: `Bearer ${token}` } : undefined,
   });
   if (!res.ok) {
     const body = await res.text();

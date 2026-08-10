@@ -468,16 +468,26 @@ export async function registerRoutes(app: FastifyInstance) {
         .from(schema.calibrationProfiles)
         .where(eq(schema.calibrationProfiles.uuid, req.params.uuid))
         .get();
-      if (!profile?.currentRevisionId) {
-        return notFound(reply, "Profile not found");
-      }
+      if (!profile) return notFound(reply, "Profile not found");
+      const published = db()
+        .select()
+        .from(schema.calibrationRevisions)
+        .where(
+          and(
+            eq(schema.calibrationRevisions.profileId, profile.id),
+            eq(schema.calibrationRevisions.status, "published"),
+          ),
+        )
+        .get();
+      const revisionId = published?.id ?? profile.currentRevisionId;
+      if (!revisionId) return notFound(reply, "No revision to confirm");
       const body = (req.body ?? {}) as { notes?: string };
       try {
         const [row] = db()
           .insert(schema.profileConfirmations)
           .values({
             uuid: uuid(),
-            revisionId: profile.currentRevisionId,
+            revisionId,
             userId: user.id,
             notes: body.notes,
           })
@@ -500,9 +510,19 @@ export async function registerRoutes(app: FastifyInstance) {
         .from(schema.calibrationProfiles)
         .where(eq(schema.calibrationProfiles.uuid, req.params.uuid))
         .get();
-      if (!profile?.currentRevisionId) {
-        return notFound(reply, "Profile not found");
-      }
+      if (!profile) return notFound(reply, "Profile not found");
+      const published = db()
+        .select()
+        .from(schema.calibrationRevisions)
+        .where(
+          and(
+            eq(schema.calibrationRevisions.profileId, profile.id),
+            eq(schema.calibrationRevisions.status, "published"),
+          ),
+        )
+        .get();
+      const revisionId = published?.id ?? profile.currentRevisionId;
+      if (!revisionId) return notFound(reply, "No revision for failure report");
       const bodySchema = z.object({
         category: z.enum(failureCategories),
         notes: z.string().optional(),
@@ -515,7 +535,7 @@ export async function registerRoutes(app: FastifyInstance) {
         .insert(schema.profileFailureReports)
         .values({
           uuid: uuid(),
-          revisionId: profile.currentRevisionId,
+          revisionId,
           userId: user.id,
           category: parsed.data.category,
           notes: parsed.data.notes,

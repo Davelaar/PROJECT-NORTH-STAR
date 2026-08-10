@@ -29,6 +29,10 @@ export function unauthorized(reply: FastifyReply, message = "Unauthorized") {
   return sendError(reply, 401, "unauthorized", message);
 }
 
+export function forbidden(reply: FastifyReply, message = "Forbidden") {
+  return sendError(reply, 403, "forbidden", message);
+}
+
 export function badRequest(
   reply: FastifyReply,
   message: string,
