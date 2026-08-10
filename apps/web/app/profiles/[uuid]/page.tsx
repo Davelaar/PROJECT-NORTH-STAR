@@ -2,12 +2,14 @@ import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
 import { InstallProfileButton } from "../../components/install-profile-button";
-import { ConfirmFailButtons } from "../../components/confirm-fail-buttons";
+import { ProfileVoteButtons } from "../../components/profile-vote-buttons";
 
 type Profile = {
   uuid: string;
   title: string;
   isSyntheticFixture: boolean;
+  voteScore?: number;
+  communityVerified?: boolean;
   variantUuid: string;
   printerUuid: string;
   currentRevision: {
@@ -38,12 +40,17 @@ export default async function ProfilePage({
   return (
     <div>
       <h1>{profile.title}</h1>
+      {profile.communityVerified ? (
+        <p className="badge badge-verified">{pr.verifiedBadge}</p>
+      ) : null}
       {profile.isSyntheticFixture ? (
         <div className="banner-warn">{messages.variant.syntheticBanner}</div>
       ) : null}
       {rev ? (
         <div className="panel">
-          <h3>{pr.currentRevision} ({rev.status})</h3>
+          <h3>
+            {pr.currentRevision} ({rev.status})
+          </h3>
           <dl className="kv">
             <dt>{sp.nozzleTemp}</dt>
             <dd>{rev.nozzleTempOtherLayersC ?? "—"}</dd>
@@ -74,18 +81,26 @@ export default async function ProfilePage({
           <Link href="/docs/slicers">{messages.export.supportedSlicersLink}</Link>
           {" · "}
           {pr.identifySpool}{" "}
-          <Link href={`/label/${profile.variantUuid}`}>{messages.variant.printQr}</Link>
+          <Link href={`/label/${profile.variantUuid}`}>
+            {messages.variant.printQr}
+          </Link>
           {" · "}
           <Link href={`/scan`}>{messages.variant.scanQr}</Link>
           {" · "}
           <Link href={`/rfid`}>{messages.nav.rfid}</Link>
         </p>
       </div>
-      <ConfirmFailButtons profileUuid={profile.uuid} />
+      <ProfileVoteButtons profileUuid={profile.uuid} />
       <p>
-        <Link href={`/variants/${profile.variantUuid}`}>{messages.fields.variant}</Link>
+        <Link href={`/variants/${profile.variantUuid}`}>
+          {messages.fields.variant}
+        </Link>
         {" · "}
-        <Link href={`/printers/${profile.printerUuid}`}>{messages.nav.hardware}</Link>
+        <Link href={`/printers/${profile.printerUuid}`}>
+          {messages.nav.hardware}
+        </Link>
+        {" · "}
+        <Link href="/hardware">{messages.printers.addHeading}</Link>
       </p>
       {profile.openFilamentProfile ? (
         <>

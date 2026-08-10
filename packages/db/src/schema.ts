@@ -355,6 +355,13 @@ export const calibrationProfiles = sqliteTable(
       .references(() => users.id),
     title: text("title").notNull(),
     currentRevisionId: integer("current_revision_id"),
+    /** Net thumbs score (up − down). Community-verified when ≥ 5. */
+    voteScore: integer("vote_score").notNull().default(0),
+    voteUpCount: integer("vote_up_count").notNull().default(0),
+    voteDownCount: integer("vote_down_count").notNull().default(0),
+    communityVerified: integer("community_verified", { mode: "boolean" })
+      .notNull()
+      .default(false),
     isSyntheticFixture: integer("is_synthetic_fixture", { mode: "boolean" })
       .notNull()
       .default(false),
@@ -364,6 +371,7 @@ export const calibrationProfiles = sqliteTable(
     index("profile_variant_idx").on(t.filamentVariantId),
     index("profile_printer_idx").on(t.printerModelId),
     index("profile_toolhead_idx").on(t.toolheadConfigId),
+    index("profile_vote_score_idx").on(t.voteScore),
   ],
 );
 
@@ -541,6 +549,33 @@ export const profileFailureReports = sqliteTable(
     ...timestamps,
   },
   (t) => [index("failure_revision_idx").on(t.revisionId)],
+);
+
+/** Thumbs up (+1) / thumbs down (−1) on a calibration profile. */
+export const profileVotes = sqliteTable(
+  "profile_votes",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    profileId: integer("profile_id")
+      .notNull()
+      .references(() => calibrationProfiles.id, { onDelete: "cascade" }),
+    /** Logged-in voter when present. */
+    userId: integer("user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
+    /**
+     * Stable voter key: `user:<id>` or `anon:<fingerprint>`.
+     * One vote per profile per voterKey (upsert / flip).
+     */
+    voterKey: text("voter_key").notNull(),
+    value: integer("value").notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex("profile_vote_unique").on(t.profileId, t.voterKey),
+    index("profile_vote_profile_idx").on(t.profileId),
+  ],
 );
 
 export const rfidSchemes = sqliteTable("rfid_schemes", {

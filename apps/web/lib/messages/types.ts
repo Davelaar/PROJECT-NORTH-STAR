@@ -389,6 +389,16 @@ export type Messages = {
     installViaHelper: string;
     exportPageLink: string;
     slicerPresetDesc: string;
+    voteHeading: string;
+    voteLead: string;
+    thumbsUp: string;
+    thumbsDown: string;
+    voteNet: string;
+    verifiedBadge: string;
+    verifiedHint: string;
+    voteAnonOk: string;
+    voteLoginOptional: string;
+    voteError: string;
   };
   compare: {
     heading: string;
@@ -403,6 +413,17 @@ export type Messages = {
     cfsBody: string;
     optHeading: string;
     optBody: string;
+  };
+  printers: {
+    addHeading: string;
+    addLead: string;
+    addCta: string;
+    maxNozzleTemp: string;
+    maxBedTemp: string;
+    chamberCapable: string;
+    addSuccessNew: string;
+    addSuccessExisting: string;
+    addError: string;
   };
   contribute: {
     heading: string;

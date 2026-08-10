@@ -166,6 +166,13 @@ export type ResolvePrinterInput = {
   nozzleDiameterMm: number;
   hotendName?: string;
   technology?: "fff" | "resin" | "sls" | "other";
+  /** Optional printer capability hints (community contributions). */
+  maxNozzleTempC?: number | null;
+  maxBedTempC?: number | null;
+  chamberCapable?: boolean | null;
+  typicalNozzleTempC?: number | null;
+  typicalBedTempC?: number | null;
+  notes?: string | null;
 };
 
 export type ResolvePrinterResult = {
@@ -269,7 +276,14 @@ export function resolveOrCreatePrinter(
           revision: "1",
           slug,
           technology: input.technology ?? "fff",
-          notes: "Added by community submit",
+          maxNozzleTempC: input.maxNozzleTempC ?? null,
+          maxBedTempC: input.maxBedTempC ?? null,
+          chamberCapable: Boolean(input.chamberCapable),
+          typicalNozzleTempC: input.typicalNozzleTempC ?? null,
+          typicalBedTempC: input.typicalBedTempC ?? null,
+          notes:
+            input.notes?.trim() ||
+            "Added by community — printer settings welcome",
           isSyntheticFixture: false,
           sourceType: "community",
         })
@@ -290,6 +304,39 @@ export function resolveOrCreatePrinter(
         .get();
       if (!printer) throw new Error("Could not create printer");
     }
+  }
+
+  // Fill missing capability fields from community input (never overwrite known values).
+  const patch: Partial<typeof schema.printerModels.$inferInsert> = {};
+  if (input.maxNozzleTempC != null && printer.maxNozzleTempC == null) {
+    patch.maxNozzleTempC = input.maxNozzleTempC;
+  }
+  if (input.maxBedTempC != null && printer.maxBedTempC == null) {
+    patch.maxBedTempC = input.maxBedTempC;
+  }
+  if (input.typicalNozzleTempC != null && printer.typicalNozzleTempC == null) {
+    patch.typicalNozzleTempC = input.typicalNozzleTempC;
+  }
+  if (input.typicalBedTempC != null && printer.typicalBedTempC == null) {
+    patch.typicalBedTempC = input.typicalBedTempC;
+  }
+  if (input.chamberCapable === true && !printer.chamberCapable) {
+    patch.chamberCapable = true;
+  }
+  if (input.technology && !printer.technology) {
+    patch.technology = input.technology;
+  }
+  if (Object.keys(patch).length > 0) {
+    patch.updatedAt = new Date().toISOString();
+    db.update(schema.printerModels)
+      .set(patch)
+      .where(eq(schema.printerModels.id, printer.id))
+      .run();
+    printer = db
+      .select()
+      .from(schema.printerModels)
+      .where(eq(schema.printerModels.id, printer.id))
+      .get()!;
   }
 
   ensureToolheads(db, printer.id, printer.uuid);

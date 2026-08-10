@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AddPrinterForm } from "@/app/components/add-printer-form";
 import { getLocaleMessages } from "@/lib/messages";
 
 export default async function HardwarePage() {
@@ -8,6 +9,8 @@ export default async function HardwarePage() {
     <div>
       <h1>{h.heading}</h1>
       <p className="muted">{h.intro}</p>
+
+      <AddPrinterForm />
 
       <section className="panel stack">
         <h2>{h.qrHeading}</h2>
@@ -40,15 +43,6 @@ export default async function HardwarePage() {
               specs.openprinttag.org
             </a>
           </li>
-          <li>
-            <a
-              href="https://openfilamentdatabase.org"
-              target="_blank"
-              rel="noreferrer"
-            >
-              openfilamentdatabase.org
-            </a>
-          </li>
         </ul>
       </section>
 
@@ -59,6 +53,8 @@ export default async function HardwarePage() {
           <Link href="/label">{m.nav.label}</Link>
           {" · "}
           <Link href="/scan">{m.nav.scan}</Link>
+          {" · "}
+          <Link href="/submit">{m.nav.submit}</Link>
         </p>
       </section>
     </div>

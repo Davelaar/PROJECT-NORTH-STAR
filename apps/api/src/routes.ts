@@ -13,6 +13,10 @@ import {
   searchCatalogProducts,
   isPlaceholderIdentifier,
   provenanceForProfile,
+  castProfileVote,
+  getProfileVoteSummary,
+  voterKeyForAnon,
+  voterKeyForUser,
   type AppDb,
 } from "@open-filament/db";
 import {
@@ -595,10 +599,14 @@ export async function registerRoutes(app: FastifyInstance) {
         .get();
       if (!variant) return notFound(reply, "Variant not found");
       return db()
-        .select({
+        .        select({
           uuid: schema.calibrationProfiles.uuid,
           title: schema.calibrationProfiles.title,
           isSyntheticFixture: schema.calibrationProfiles.isSyntheticFixture,
+          voteScore: schema.calibrationProfiles.voteScore,
+          voteUpCount: schema.calibrationProfiles.voteUpCount,
+          voteDownCount: schema.calibrationProfiles.voteDownCount,
+          communityVerified: schema.calibrationProfiles.communityVerified,
           printerUuid: schema.printerModels.uuid,
           printerManufacturer: schema.printerModels.manufacturerName,
           printerModel: schema.printerModels.model,
@@ -629,6 +637,10 @@ export async function registerRoutes(app: FastifyInstance) {
           ),
         )
         .where(eq(schema.calibrationProfiles.filamentVariantId, variant.id))
+        .orderBy(
+          sql`${schema.calibrationProfiles.communityVerified} DESC`,
+          sql`${schema.calibrationProfiles.voteScore} DESC`,
+        )
         .all()
         .filter((p) => {
           const prov = provenanceForProfile({
@@ -1065,6 +1077,65 @@ export async function registerRoutes(app: FastifyInstance) {
     },
   );
 
+  app.get<{
+    Params: { uuid: string };
+    Querystring: { fingerprint?: string };
+  }>("/api/v1/profiles/:uuid/votes", async (req, reply) => {
+    const user = await requireAuth(req);
+    let voterKey: string | null = null;
+    if (user) voterKey = voterKeyForUser(user.id);
+    else if (req.query.fingerprint?.trim()) {
+      voterKey = voterKeyForAnon(req.query.fingerprint.trim());
+    }
+    const summary = getProfileVoteSummary(db(), req.params.uuid, voterKey);
+    if (!summary) return notFound(reply, "Profile not found");
+    return summary;
+  });
+
+  app.post<{ Params: { uuid: string } }>(
+    "/api/v1/profiles/:uuid/votes",
+    {
+      config: { rateLimit: { max: 60, timeWindow: "1 minute" } },
+      handler: async (req, reply) => {
+        const user = await requireAuth(req);
+        const body = z
+          .object({
+            value: z.union([z.literal(1), z.literal(-1), z.literal(0)]),
+            /** Anonymous fingerprint when not logged in (browser localStorage UUID). */
+            voterFingerprint: z.string().min(8).max(80).optional(),
+          })
+          .safeParse(req.body);
+        if (!body.success) {
+          return badRequest(reply, "Invalid body", body.error.flatten());
+        }
+        let voterKey: string;
+        let userId: number | null = null;
+        if (user) {
+          voterKey = voterKeyForUser(user.id);
+          userId = user.id;
+        } else if (body.data.voterFingerprint) {
+          voterKey = voterKeyForAnon(body.data.voterFingerprint);
+        } else {
+          return unauthorized(reply, "Log in or provide a voter fingerprint");
+        }
+        try {
+          const summary = castProfileVote(db(), {
+            profileUuid: req.params.uuid,
+            voterKey,
+            userId,
+            value: body.data.value,
+          });
+          return summary;
+        } catch (e) {
+          return badRequest(
+            reply,
+            e instanceof Error ? e.message : "Could not cast vote",
+          );
+        }
+      },
+    },
+  );
+
   app.post<{ Params: { uuid: string } }>(
     "/api/v1/profiles/:uuid/failure",
     async (req, reply) => {
@@ -1128,6 +1199,12 @@ export async function registerRoutes(app: FastifyInstance) {
       nozzleDiameterMm: z.number().min(0).max(2),
       hotendName: z.string().min(1).max(80).optional(),
       technology: z.enum(["fff", "resin", "sls", "other"]).optional(),
+      maxNozzleTempC: z.number().min(0).max(500).optional().nullable(),
+      maxBedTempC: z.number().min(0).max(200).optional().nullable(),
+      chamberCapable: z.boolean().optional().nullable(),
+      typicalNozzleTempC: z.number().min(0).max(500).optional().nullable(),
+      typicalBedTempC: z.number().min(0).max(200).optional().nullable(),
+      notes: z.string().max(2000).optional().nullable(),
     });
     const parsed = bodySchema.safeParse(req.body);
     if (!parsed.success) {
@@ -1142,6 +1219,41 @@ export async function registerRoutes(app: FastifyInstance) {
         err instanceof Error ? err.message : "Could not resolve printer",
       );
     }
+  });
+
+  /** Anonymous community printer create — same resolve-or-create as submit. */
+  app.post("/api/v1/community/printers", {
+    config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    handler: async (req, reply) => {
+      const bodySchema = z.object({
+        brand: z.string().min(1).max(120),
+        model: z.string().min(1).max(120),
+        nozzleDiameterMm: z.number().min(0).max(2).default(0.4),
+        hotendName: z.string().min(1).max(80).optional(),
+        technology: z.enum(["fff", "resin", "sls", "other"]).optional(),
+        maxNozzleTempC: z.number().min(0).max(500).optional().nullable(),
+        maxBedTempC: z.number().min(0).max(200).optional().nullable(),
+        chamberCapable: z.boolean().optional().nullable(),
+        typicalNozzleTempC: z.number().min(0).max(500).optional().nullable(),
+        typicalBedTempC: z.number().min(0).max(200).optional().nullable(),
+        notes: z.string().max(2000).optional().nullable(),
+      });
+      const parsed = bodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return badRequest(reply, "Invalid body", parsed.error.flatten());
+      }
+      try {
+        const result = resolveOrCreatePrinter(parsed.data);
+        return reply
+          .status(result.created.printer || result.created.toolhead ? 201 : 200)
+          .send(result);
+      } catch (err) {
+        return badRequest(
+          reply,
+          err instanceof Error ? err.message : "Could not add printer",
+        );
+      }
+    },
   });
 
   app.get<{ Params: { uuid: string } }>(

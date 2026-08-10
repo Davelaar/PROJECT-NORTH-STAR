@@ -98,6 +98,8 @@ type ProfileRow = {
   printerName: string;
   nozzleDiameterMm: number;
   provenance: string;
+  voteScore?: number;
+  communityVerified?: boolean;
   updatedAt?: string | null;
   status?: string | null;
 };
@@ -247,6 +249,23 @@ export default async function VariantPage({
                   <span className={`badge badge-${p.provenance}`}>
                     {provLabel(p.provenance)}
                   </span>
+                  {p.communityVerified ? (
+                    <>
+                      {" · "}
+                      <span className="badge badge-verified">
+                        {messages.profile.verifiedBadge}
+                      </span>
+                    </>
+                  ) : null}
+                  {typeof p.voteScore === "number" ? (
+                    <>
+                      {" · "}
+                      {messages.profile.voteNet.replace(
+                        "{score}",
+                        String(p.voteScore),
+                      )}
+                    </>
+                  ) : null}
                 </p>
               </div>
               <div className="profile-card-actions">

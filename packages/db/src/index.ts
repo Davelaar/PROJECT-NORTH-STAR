@@ -75,6 +75,16 @@ export {
   resolveOrCreateFilamentVariant,
 } from "./community-catalog.js";
 export type { PurchaseLinkRecord } from "./community-catalog.js";
+export {
+  COMMUNITY_VERIFIED_THRESHOLD,
+  castProfileVote,
+  getProfileVoteSummary,
+  hashAnonVoterFingerprint,
+  profileVoteOrderSql,
+  voterKeyForAnon,
+  voterKeyForUser,
+} from "./profile-votes.js";
+export type { ProfileVoteSummary } from "./profile-votes.js";
 export { searchAutocomplete } from "./autocomplete.js";
 export type { AutocompleteHit } from "./autocomplete.js";
 export {

@@ -1524,6 +1524,28 @@ pre {
   margin-top: 0.75rem;
 }
 
+.vote-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.vote-btn.is-active {
+  outline: 2px solid var(--accent, #0d6b56);
+}
+.badge-verified {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.25rem;
+  background: color-mix(in srgb, var(--accent, #0d6b56) 18%, transparent);
+  color: inherit;
+  font-weight: 600;
+}
+.add-printer-form label {
+  display: grid;
+  gap: 0.25rem;
+}
+
 .my-spools .spool-list {
   list-style: none;
   padding: 0;
