@@ -108,11 +108,15 @@ export const cloudEn = {
   billingLink: "Billing history",
   pageTitle: "My Spools Cloud",
   pageLead:
-    "Secure cloud storage and cross-device sync for your spool inventory. Local My Spools stays free on this device.",
+    "Optional cloud backup and sync for people who do not want to risk losing local inventory. Local My Spools stays free and complete — Cloud does not unlock extra inventory features.",
+  optionalBadge: "Optional luxury — not required",
   localTitle: "My Spools Local — free",
   localBody:
-    "Complete inventory on this device (IndexedDB). No account required. Export backups regularly — clearing browser data can remove local inventory.",
+    "Full inventory on this device (IndexedDB): notes, drying, QR/RFID, import/export. No account required. Export backups regularly — clearing browser data can remove local inventory.",
   cloudTitle: "My Spools Cloud — €19.99 for 12 months",
+  cloudWhyTitle: "What Cloud adds",
+  cloudWhyBody:
+    "Only hosting on our VPS, sync across your devices, and server-side backup/recovery. The same spool tools exist in Local; Cloud is for peace of mind, not extra capabilities.",
   priceLine: "€19.99 for 12 months",
   oneTime: "One-time payment",
   noAutoRenewal: "No automatic renewal",
@@ -122,8 +126,20 @@ export const cloudEn = {
   includeSync: "Synchronisation across devices",
   includeBackup: "Server-side backups on our VPS",
   includeRecovery: "Account recovery for Cloud inventory",
-  includeExport: "Cloud JSON export anytime during access, grace and retention",
+  includeExport: "Cloud JSON export during access, grace and retention",
+  notIncludedTitle: "Not included",
+  notIncludedBody:
+    "No extra inventory tools beyond Local. Cloud does not add RFID/QR features, smarter profiles, or catalog privileges — only storage and sync.",
   statusLabel: "Cloud status",
+  statusInactive: "Inactive",
+  statusPending: "Pending",
+  statusActive: "Active",
+  statusGrace: "Grace period",
+  statusReadOnly: "Read-only",
+  statusExpired: "Expired",
+  statusRefunded: "Refunded",
+  statusDisputed: "Disputed",
+  statusRevoked: "Revoked",
   validUntil: "Cloud access valid until",
   graceUntil: "Grace period until",
   readOnlyFrom: "Read-only from",
@@ -137,9 +153,10 @@ export const cloudEn = {
   termsLink: "Terms",
   privacyLink: "Privacy",
   retentionHint:
-    "After expiry: grace period, then read-only export window, then Cloud inventory deletion. Local My Spools remains fully usable.",
+    "After expiry you keep a grace window, then a read-only export window, then Cloud inventory deletion. Local My Spools remains fully usable.",
   vatUnspecified:
     "Tax presentation is not yet configured by the operator (VAT inclusive/exclusive).",
+  vatNotApplicable: "VAT not applicable — price shown is the amount charged.",
   successTitle: "Payment status",
   verifying:
     "We are verifying your payment with Stripe. Cloud access will activate after payment confirmation.",
@@ -158,5 +175,14 @@ export const cloudEn = {
   exportCloud: "Export Cloud spools (JSON)",
   backToSpools: "Back to My Spools",
   syncRequiresCloud:
-    "Cloud sync requires an active prepaid Cloud period (or grace). Local inventory stays free.",
+    "Cloud sync is optional and needs an active prepaid Cloud period (or grace). Local inventory stays free and complete without Cloud.",
+  paymentStatusCreated: "Created",
+  paymentStatusPending: "Pending",
+  paymentStatusPaid: "Paid",
+  paymentStatusFailed: "Failed",
+  paymentStatusExpired: "Expired",
+  paymentStatusRefunded: "Refunded",
+  paymentStatusPartialRefund: "Partially refunded",
+  paymentStatusDisputed: "Disputed",
+  paymentStatusCancelled: "Cancelled",
 };

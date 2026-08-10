@@ -17,10 +17,16 @@ type Props = {
   emptyText?: string;
   disabled?: boolean;
   required?: boolean;
+  /** Allow creating a new option from the typed query. */
+  allowCreate?: boolean;
+  createLabel?: (query: string) => string;
+  onCreate?: (query: string) => void | Promise<void>;
+  creatingText?: string;
 };
 
 /**
  * Accessible combobox: type to filter long lists, then pick an option.
+ * Optional create-new path for community catalog contributions.
  */
 export function SearchableSelect({
   label,
@@ -32,11 +38,16 @@ export function SearchableSelect({
   emptyText = "No matches",
   disabled = false,
   required = false,
+  allowCreate = false,
+  createLabel = (q) => `Add “${q}”`,
+  onCreate,
+  creatingText = "Adding…",
 }: Props) {
   const listId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [creating, setCreating] = useState(false);
 
   const selected = options.find((o) => o.value === value) ?? null;
 
@@ -45,6 +56,15 @@ export function SearchableSelect({
     if (!q) return options;
     return options.filter((o) => o.label.toLowerCase().includes(q));
   }, [options, query]);
+
+  const canCreate = useMemo(() => {
+    if (!allowCreate || !onCreate) return false;
+    const q = query.trim();
+    if (q.length < 1) return false;
+    return !options.some(
+      (o) => o.label.trim().toLowerCase() === q.toLowerCase(),
+    );
+  }, [allowCreate, onCreate, options, query]);
 
   useEffect(() => {
     if (!open) setQuery("");
@@ -62,6 +82,19 @@ export function SearchableSelect({
     onChange(next);
     setOpen(false);
     setQuery("");
+  }
+
+  async function createFromQuery() {
+    if (!canCreate || !onCreate || creating) return;
+    const q = query.trim();
+    setCreating(true);
+    try {
+      await onCreate(q);
+      setOpen(false);
+      setQuery("");
+    } finally {
+      setCreating(false);
+    }
   }
 
   return (
@@ -99,9 +132,13 @@ export function SearchableSelect({
             autoFocus
             onKeyDown={(e) => {
               if (e.key === "Escape") setOpen(false);
-              if (e.key === "Enter" && filtered[0]) {
+              if (e.key === "Enter") {
                 e.preventDefault();
-                pick(filtered[0].value);
+                if (canCreate && filtered.length === 0) {
+                  void createFromQuery();
+                } else if (filtered[0]) {
+                  pick(filtered[0].value);
+                }
               }
             }}
           />
@@ -111,7 +148,19 @@ export function SearchableSelect({
                 {placeholder}
               </button>
             </li>
-            {filtered.length === 0 ? (
+            {canCreate ? (
+              <li role="option" aria-selected={false}>
+                <button
+                  type="button"
+                  className="searchable-select-create"
+                  disabled={creating}
+                  onClick={() => void createFromQuery()}
+                >
+                  {creating ? creatingText : createLabel(query.trim())}
+                </button>
+              </li>
+            ) : null}
+            {filtered.length === 0 && !canCreate ? (
               <li className="muted searchable-select-empty">{emptyText}</li>
             ) : (
               filtered.map((o) => (

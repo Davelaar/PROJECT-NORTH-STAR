@@ -5,11 +5,10 @@ import {
   footerEn,
   legalPagesEn,
   spoolsEn,
-  cloudEn,
 } from "./prod-en";
 
 export const messages: Messages = {
-  brand: "Open Filament",
+  brand: "OpenFilament",
   tagline:
     "Trouvez le bon profil de filament, identifiez votre bobine et utilisez-la partout — directement dans le navigateur.",
   nav: {
@@ -338,6 +337,14 @@ export const messages: Messages = {
     success: "Profil publié. Merci !",
     viewProfile: "Voir le profil",
     errorGeneric: "Impossible de publier le profil. Vérifiez les champs obligatoires.",
+    addBrand: "Ajouter la marque « {name} »",
+    addProduct: "Ajouter le produit « {name} »",
+    addColour: "Ajouter la couleur « {name} »",
+    creating: "Ajout…",
+    termsAcceptPrefix: "J’accepte les",
+    termsAcceptLink: "conditions de contribution",
+    termsAcceptSuffix: "et comprends que mon e-mail reste privé tandis que la calibration peut rester publique si je supprime mon compte plus tard (attribution anonymisée).",
+    termsRequired: "Acceptez les conditions de contribution pour continuer.",
     ofdNote:
       "Les données de marque/couleur du catalogue proviennent de l'Open Filament Database (import unidirectionnel). Les calibrations vivent sur Open Filament. OFD n'a pas d'API d'écriture — pour corriger le catalogue, utilisez leur éditeur sur openfilamentdatabase.org.",
   },
@@ -461,5 +468,87 @@ export const messages: Messages = {
   spools: spoolsEn,
   account: accountEn,
   legalPages: legalPagesEn,
-  cloud: cloudEn,
+  cloud: {
+    navLink: "Cloud",
+    billingLink: "Historique de paiement",
+    pageTitle: "My Spools Cloud",
+    pageLead:
+      "Sauvegarde et sync cloud optionnelles pour ceux qui ne veulent pas risquer de perdre l’inventaire local. My Spools Local reste gratuit et complet — Cloud n’ajoute aucune fonction d’inventaire supplémentaire.",
+    optionalBadge: "Luxe optionnel — pas obligatoire",
+    localTitle: "My Spools Local — gratuit",
+    localBody:
+      "Inventaire complet sur cet appareil (IndexedDB) : notes, séchage, QR/RFID, import/export. Aucun compte requis. Exporte régulièrement des sauvegardes — vider les données du navigateur peut supprimer l’inventaire local.",
+    cloudTitle: "My Spools Cloud — 19,99 € pour 12 mois",
+    cloudWhyTitle: "Ce que Cloud ajoute",
+    cloudWhyBody:
+      "Uniquement l’hébergement sur notre VPS, la sync entre tes appareils, et la sauvegarde/récupération côté serveur. Les mêmes outils de bobines existent déjà en Local ; Cloud, c’est la tranquillité d’esprit, pas des capacités en plus.",
+    priceLine: "19,99 € pour 12 mois",
+    oneTime: "Paiement unique",
+    noAutoRenewal: "Pas de renouvellement automatique",
+    neverCharge:
+      "Nous ne te facturerons jamais à nouveau, sauf si tu choisis d’acheter 12 mois de plus.",
+    includesTitle: "Inclus avec Cloud",
+    includeSync: "Synchronisation entre appareils",
+    includeBackup: "Sauvegardes côté serveur sur notre VPS",
+    includeRecovery: "Récupération de compte pour l’inventaire Cloud",
+    includeExport: "Export JSON Cloud pendant l’accès, le délai de grâce et la rétention",
+    notIncludedTitle: "Non inclus",
+    notIncludedBody:
+      "Aucun outil d’inventaire en plus du Local. Cloud n’ajoute pas de fonctions RFID/QR, de profils plus intelligents ni de privilèges catalogue — uniquement stockage et sync.",
+    statusLabel: "Statut Cloud",
+    statusInactive: "Inactif",
+    statusPending: "En attente",
+    statusActive: "Actif",
+    statusGrace: "Période de grâce",
+    statusReadOnly: "Lecture seule",
+    statusExpired: "Expiré",
+    statusRefunded: "Remboursé",
+    statusDisputed: "Contesté",
+    statusRevoked: "Révoqué",
+    validUntil: "Accès Cloud valable jusqu’au",
+    graceUntil: "Période de grâce jusqu’au",
+    readOnlyFrom: "Lecture seule à partir du",
+    deletionAt: "Suppression des données Cloud prévue vers",
+    buyCta: "Acheter 12 mois de Cloud — 19,99 €",
+    extendCta: "Prolonger Cloud de 12 mois — 19,99 €",
+    extendHint:
+      "Acheter 12 mois de plus prolonge l’accès à partir de la date d’expiration actuelle.",
+    loginRequired: "Connecte-toi pour acheter ou gérer My Spools Cloud.",
+    checkoutUnavailable: "Le paiement n’est pas encore disponible (configuration en attente).",
+    termsLink: "Conditions",
+    privacyLink: "Confidentialité",
+    retentionHint:
+      "Après expiration, tu gardes une fenêtre de grâce, puis une fenêtre d’export en lecture seule, puis suppression de l’inventaire Cloud. My Spools Local reste pleinement utilisable.",
+    vatUnspecified:
+      "La présentation fiscale n’est pas encore configurée par l’opérateur (TVA incluse/exclue).",
+    vatNotApplicable: "TVA non applicable — le prix affiché est le montant facturé.",
+    successTitle: "Statut du paiement",
+    verifying:
+      "Nous vérifions ton paiement avec Stripe. L’accès Cloud s’activera après confirmation du paiement.",
+    activatedTitle: "My Spools Cloud est actif",
+    paidOnce: "Payé une fois",
+    autoRenewalOff: "Renouvellement automatique : Désactivé",
+    pendingPayment:
+      "Ton paiement est encore en cours. Nous activerons Cloud après confirmation Stripe.",
+    failedPayment:
+      "Le paiement n’a pas été effectué. Aucun accès Cloud n’a été ajouté et aucun paiement futur ne sera tenté.",
+    billingTitle: "Historique de facturation Cloud",
+    billingLead:
+      "Paiements uniques uniquement. Ce ne sont pas des factures récurrentes. OpenFilament ne stocke pas les données de carte.",
+    receipt: "Reçu",
+    accessPeriod: "Période d’accès",
+    exportCloud: "Exporter les bobines Cloud (JSON)",
+    backToSpools: "Retour à My Spools",
+    syncRequiresCloud:
+      "La sync Cloud est optionnelle et nécessite une période Cloud prépayée active (ou de grâce). L’inventaire local reste gratuit et complet sans Cloud.",
+    paymentStatusCreated: "Créé",
+    paymentStatusPending: "En attente",
+    paymentStatusPaid: "Payé",
+    paymentStatusFailed: "Échoué",
+    paymentStatusExpired: "Expiré",
+    paymentStatusRefunded: "Remboursé",
+    paymentStatusPartialRefund: "Partiellement remboursé",
+    paymentStatusDisputed: "Contesté",
+    paymentStatusCancelled: "Annulé",
+  },
 };

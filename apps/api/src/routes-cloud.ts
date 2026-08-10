@@ -89,7 +89,7 @@ export async function registerCloudBillingRoutes(app: FastifyInstance) {
       accessMonths: config.accessMonths,
       graceDays: config.graceDays,
       retentionDays: config.retentionDays,
-      priceDisplayMode: config.priceDisplayMode,
+        priceDisplayMode: config.priceDisplayMode,
       paymentType: "one_time",
       automaticRenewal: false,
       checkoutMode: "payment",
@@ -97,6 +97,7 @@ export async function registerCloudBillingRoutes(app: FastifyInstance) {
       checkoutAvailable: Boolean(stripe?.priceId) && !liveBlocked,
       livePaymentsEnabled: stripe?.livePaymentsEnabled ?? false,
       stripeMode: stripe?.mode ?? null,
+      vatNotApplicable: config.priceDisplayMode === "not_applicable",
       copy: {
         price: `€${(config.priceCents / 100).toFixed(2)} for ${config.accessMonths} months`,
         oneTime: "One-time payment",

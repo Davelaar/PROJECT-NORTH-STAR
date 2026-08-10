@@ -18,7 +18,7 @@ export type CloudConfig = {
   accessMonths: number;
   graceDays: number;
   retentionDays: number;
-  priceDisplayMode: "vat_inclusive" | "vat_exclusive" | "unspecified";
+  priceDisplayMode: "vat_inclusive" | "vat_exclusive" | "unspecified" | "not_applicable";
 };
 
 export function loadCloudConfigFromEnv(
@@ -28,10 +28,11 @@ export function loadCloudConfigFromEnv(
   const accessMonths = Number(env.MY_SPOOLS_CLOUD_ACCESS_MONTHS ?? "12");
   const graceDays = Number(env.MY_SPOOLS_CLOUD_GRACE_DAYS ?? "14");
   const retentionDays = Number(env.MY_SPOOLS_CLOUD_RETENTION_DAYS ?? "90");
-  const mode = (env.CLOUD_PRICE_DISPLAY_MODE ?? "unspecified") as
+  const mode = (env.CLOUD_PRICE_DISPLAY_MODE ?? "not_applicable") as
     | "vat_inclusive"
     | "vat_exclusive"
-    | "unspecified";
+    | "unspecified"
+    | "not_applicable";
   if (!Number.isFinite(priceCents) || priceCents <= 0) {
     throw new Error("MY_SPOOLS_CLOUD_PRICE_EUR_CENTS must be a positive integer");
   }
@@ -44,11 +45,14 @@ export function loadCloudConfigFromEnv(
     accessMonths: Math.round(accessMonths),
     graceDays: Math.max(0, Math.round(graceDays)),
     retentionDays: Math.max(1, Math.round(retentionDays)),
-    priceDisplayMode: ["vat_inclusive", "vat_exclusive", "unspecified"].includes(
-      mode,
-    )
+    priceDisplayMode: [
+      "vat_inclusive",
+      "vat_exclusive",
+      "unspecified",
+      "not_applicable",
+    ].includes(mode)
       ? mode
-      : "unspecified",
+      : "not_applicable",
   };
 }
 

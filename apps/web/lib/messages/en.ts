@@ -9,7 +9,7 @@ import {
 } from "./prod-en";
 
 export const messages: Messages = {
-  brand: "Open Filament",
+  brand: "OpenFilament",
   tagline:
     "Find the right filament profile, recognise your spool, and use it from any device — right in the browser.",
   nav: {
@@ -338,6 +338,14 @@ export const messages: Messages = {
     success: "Profile published. Thank you!",
     viewProfile: "View profile",
     errorGeneric: "Could not publish the profile. Check the required fields.",
+    addBrand: "Add brand “{name}”",
+    addProduct: "Add product “{name}”",
+    addColour: "Add colour “{name}”",
+    creating: "Adding…",
+    termsAcceptPrefix: "I accept the",
+    termsAcceptLink: "contribution terms",
+    termsAcceptSuffix: "and understand my email stays private while the calibration may remain public if I later delete my account (anonymized attribution).",
+    termsRequired: "Accept the contribution terms to continue.",
     ofdNote:
       "Catalog brand/colour data comes from the Open Filament Database (one-way import). Calibrations live on Open Filament. OFD has no write API — for catalog corrections use their editor at openfilamentdatabase.org.",
   },

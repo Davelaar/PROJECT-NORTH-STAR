@@ -5,11 +5,10 @@ import {
   footerEn,
   legalPagesEn,
   spoolsEn,
-  cloudEn,
 } from "./prod-en";
 
 export const messages: Messages = {
-  brand: "Open Filament",
+  brand: "OpenFilament",
   tagline:
     "Encuentra el perfil de filamento adecuado, identifica tu bobina y úsala en cualquier dispositivo — en el navegador.",
   nav: {
@@ -338,6 +337,14 @@ export const messages: Messages = {
     success: "Perfil publicado. ¡Gracias!",
     viewProfile: "Ver perfil",
     errorGeneric: "No se pudo publicar el perfil. Revisa los campos obligatorios.",
+    addBrand: "Añadir marca “{name}”",
+    addProduct: "Añadir producto “{name}”",
+    addColour: "Añadir color “{name}”",
+    creating: "Añadiendo…",
+    termsAcceptPrefix: "Acepto los",
+    termsAcceptLink: "términos de contribución",
+    termsAcceptSuffix: "y entiendo que mi correo permanece privado mientras la calibración puede seguir pública si borro mi cuenta más adelante (atribución anonimizada).",
+    termsRequired: "Acepta los términos de contribución para continuar.",
     ofdNote:
       "Los datos de marca/color del catálogo provienen de Open Filament Database (importación unidireccional). Las calibraciones viven en Open Filament. OFD no tiene API de escritura — para correcciones del catálogo usa su editor en openfilamentdatabase.org.",
   },
@@ -461,5 +468,86 @@ export const messages: Messages = {
   spools: spoolsEn,
   account: accountEn,
   legalPages: legalPagesEn,
-  cloud: cloudEn,
+  cloud: {
+    navLink: "Cloud",
+    billingLink: "Historial de pagos",
+    pageTitle: "My Spools Cloud",
+    pageLead:
+      "Copia de seguridad y sync en la nube opcionales para quien no quiere arriesgarse a perder el inventario local. My Spools Local sigue gratis y completo — Cloud no desbloquea funciones extra de inventario.",
+    optionalBadge: "Lujo opcional — no obligatorio",
+    localTitle: "My Spools Local — gratis",
+    localBody:
+      "Inventario completo en este dispositivo (IndexedDB): notas, secado, QR/RFID, importar/exportar. No hace falta cuenta. Exporta copias de seguridad con regularidad — borrar datos del navegador puede eliminar el inventario local.",
+    cloudTitle: "My Spools Cloud — 19,99 € por 12 meses",
+    cloudWhyTitle: "Qué añade Cloud",
+    cloudWhyBody:
+      "Solo alojamiento en nuestro VPS, sync entre tus dispositivos y copia de seguridad/recuperación en el servidor. Las mismas herramientas de bobinas ya están en Local; Cloud es tranquilidad, no capacidades extra.",
+    priceLine: "19,99 € por 12 meses",
+    oneTime: "Pago único",
+    noAutoRenewal: "Sin renovación automática",
+    neverCharge: "Nunca te cobraremos de nuevo a menos que elijas comprar otros 12 meses.",
+    includesTitle: "Incluido con Cloud",
+    includeSync: "Sincronización entre dispositivos",
+    includeBackup: "Copias de seguridad en el servidor en nuestro VPS",
+    includeRecovery: "Recuperación de cuenta para el inventario Cloud",
+    includeExport: "Exportación JSON de Cloud durante el acceso, la gracia y la retención",
+    notIncludedTitle: "No incluido",
+    notIncludedBody:
+      "Ninguna herramienta de inventario extra respecto a Local. Cloud no añade funciones RFID/QR, perfiles más inteligentes ni privilegios de catálogo — solo almacenamiento y sync.",
+    statusLabel: "Estado de Cloud",
+    statusInactive: "Inactivo",
+    statusPending: "Pendiente",
+    statusActive: "Activo",
+    statusGrace: "Periodo de gracia",
+    statusReadOnly: "Solo lectura",
+    statusExpired: "Caducado",
+    statusRefunded: "Reembolsado",
+    statusDisputed: "Disputado",
+    statusRevoked: "Revocado",
+    validUntil: "Acceso Cloud válido hasta",
+    graceUntil: "Periodo de gracia hasta",
+    readOnlyFrom: "Solo lectura desde",
+    deletionAt: "Eliminación de datos Cloud prevista alrededor de",
+    buyCta: "Comprar 12 meses de Cloud — 19,99 €",
+    extendCta: "Ampliar Cloud 12 meses — 19,99 €",
+    extendHint:
+      "Comprar otros 12 meses amplía el acceso desde la fecha de caducidad actual.",
+    loginRequired: "Inicia sesión para comprar o gestionar My Spools Cloud.",
+    checkoutUnavailable: "El pago aún no está disponible (configuración pendiente).",
+    termsLink: "Términos",
+    privacyLink: "Privacidad",
+    retentionHint:
+      "Tras caducar, conservas una ventana de gracia, luego una ventana de exportación solo lectura, y después se elimina el inventario Cloud. My Spools Local sigue siendo plenamente usable.",
+    vatUnspecified:
+      "La presentación fiscal aún no está configurada por el operador (IVA incluido/excluido).",
+    vatNotApplicable: "IVA no aplicable — el precio mostrado es el importe cobrado.",
+    successTitle: "Estado del pago",
+    verifying:
+      "Estamos verificando tu pago con Stripe. El acceso Cloud se activará tras la confirmación del pago.",
+    activatedTitle: "My Spools Cloud está activo",
+    paidOnce: "Pagado una vez",
+    autoRenewalOff: "Renovación automática: Desactivada",
+    pendingPayment:
+      "Tu pago aún se está procesando. Activaremos Cloud cuando Stripe lo confirme.",
+    failedPayment:
+      "El pago no se completó. No se añadió acceso Cloud y no se intentará ningún pago futuro.",
+    billingTitle: "Historial de facturación Cloud",
+    billingLead:
+      "Solo pagos únicos. No son facturas recurrentes. OpenFilament no almacena datos de tarjeta.",
+    receipt: "Recibo",
+    accessPeriod: "Periodo de acceso",
+    exportCloud: "Exportar bobinas Cloud (JSON)",
+    backToSpools: "Volver a My Spools",
+    syncRequiresCloud:
+      "La sync Cloud es opcional y requiere un periodo Cloud prepago activo (o de gracia). El inventario local sigue gratis y completo sin Cloud.",
+    paymentStatusCreated: "Creado",
+    paymentStatusPending: "Pendiente",
+    paymentStatusPaid: "Pagado",
+    paymentStatusFailed: "Fallido",
+    paymentStatusExpired: "Caducado",
+    paymentStatusRefunded: "Reembolsado",
+    paymentStatusPartialRefund: "Reembolsado parcialmente",
+    paymentStatusDisputed: "Disputado",
+    paymentStatusCancelled: "Cancelado",
+  },
 };

@@ -16,12 +16,6 @@ type Offer = {
   priceDisplayMode: string;
   checkoutAvailable: boolean;
   automaticRenewal: boolean;
-  copy: {
-    price: string;
-    oneTime: string;
-    noAutoRenewal: string;
-    neverChargeAgain: string;
-  };
 };
 
 type Entitlement = {
@@ -54,6 +48,24 @@ export default function MySpoolsCloudPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [locale, setLocale] = useState("en");
+
+  const statusLabel = useCallback(
+    (status: string) => {
+      const map: Record<string, string> = {
+        inactive: m.cloud.statusInactive,
+        pending: m.cloud.statusPending,
+        active: m.cloud.statusActive,
+        grace_period: m.cloud.statusGrace,
+        read_only: m.cloud.statusReadOnly,
+        expired: m.cloud.statusExpired,
+        refunded: m.cloud.statusRefunded,
+        disputed: m.cloud.statusDisputed,
+        revoked: m.cloud.statusRevoked,
+      };
+      return map[status] ?? status;
+    },
+    [m.cloud],
+  );
 
   const refresh = useCallback(async () => {
     const a = loadAuth();
@@ -103,6 +115,9 @@ export default function MySpoolsCloudPage() {
   return (
     <article className="prose cloud-page">
       <h1>{m.cloud.pageTitle}</h1>
+      <p>
+        <strong>{m.cloud.optionalBadge}</strong>
+      </p>
       <p>{m.cloud.pageLead}</p>
 
       <section aria-labelledby="local-heading">
@@ -115,6 +130,8 @@ export default function MySpoolsCloudPage() {
 
       <section aria-labelledby="cloud-heading">
         <h2 id="cloud-heading">{m.cloud.cloudTitle}</h2>
+        <h3>{m.cloud.cloudWhyTitle}</h3>
+        <p>{m.cloud.cloudWhyBody}</p>
         <p>
           <strong>{m.cloud.priceLine}</strong>
         </p>
@@ -125,7 +142,11 @@ export default function MySpoolsCloudPage() {
           <strong>{m.cloud.noAutoRenewal}</strong>
         </p>
         <p>{m.cloud.neverCharge}</p>
-        {offer?.priceDisplayMode === "unspecified" ? (
+        {offer?.priceDisplayMode === "not_applicable" ? (
+          <p className="muted" role="note">
+            {m.cloud.vatNotApplicable}
+          </p>
+        ) : offer?.priceDisplayMode === "unspecified" ? (
           <p className="muted" role="note">
             {m.cloud.vatUnspecified}
           </p>
@@ -138,12 +159,15 @@ export default function MySpoolsCloudPage() {
           <li>{m.cloud.includeRecovery}</li>
           <li>{m.cloud.includeExport}</li>
         </ul>
+        <h3>{m.cloud.notIncludedTitle}</h3>
+        <p>{m.cloud.notIncludedBody}</p>
         <p>{m.cloud.retentionHint}</p>
 
         {entitlement ? (
           <div className="panel" aria-live="polite">
             <p>
-              {m.cloud.statusLabel}: <strong>{entitlement.status}</strong>
+              {m.cloud.statusLabel}:{" "}
+              <strong>{statusLabel(entitlement.status)}</strong>
             </p>
             {entitlement.paidUntil ? (
               <p>

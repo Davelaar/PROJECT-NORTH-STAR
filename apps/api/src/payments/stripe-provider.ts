@@ -33,7 +33,11 @@ export function loadStripeCloudConfig(
   return {
     secretKey,
     webhookSecret: env.STRIPE_WEBHOOK_SECRET?.trim() ?? "",
-    priceId: env.STRIPE_MY_SPOOLS_CLOUD_PRICE_ID?.trim() ?? "",
+    priceId:
+      (mode === "live"
+        ? env.STRIPE_LIVE_MY_SPOOLS_CLOUD_PRICE_ID?.trim() ||
+          env.STRIPE_MY_SPOOLS_CLOUD_PRICE_ID?.trim()
+        : env.STRIPE_MY_SPOOLS_CLOUD_PRICE_ID?.trim()) ?? "",
     mode,
     livePaymentsEnabled: env.MY_SPOOLS_CLOUD_LIVE_PAYMENTS === "true",
   };

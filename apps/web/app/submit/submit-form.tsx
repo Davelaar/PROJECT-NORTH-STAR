@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useMessages } from "@/app/components/messages-provider";
 import { SearchableSelect } from "@/app/components/searchable-select";
-import { apiGet, getApiBase } from "@/lib/api";
+import { apiGet, apiPost, getApiBase } from "@/lib/api";
 
 type Manufacturer = { uuid: string; name: string };
 type Material = { uuid: string; code: string; name: string };
@@ -23,6 +23,10 @@ type Variant = {
 type PrinterBrand = { name: string; models: Array<{ name: string }> };
 
 const NOZZLE_OPTIONS = ["0.2", "0.25", "0.4", "0.6", "0.8", "1.0"];
+
+function fillName(template: string, name: string) {
+  return template.replace("{name}", name);
+}
 
 export function SubmitProfileForm() {
   const messages = useMessages();
@@ -57,6 +61,12 @@ export function SubmitProfileForm() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [profileUuid, setProfileUuid] = useState<string | null>(null);
+
+  async function reloadManufacturers() {
+    const mfr = await apiGet<Manufacturer[]>("/api/v1/manufacturers");
+    setManufacturers([...mfr].sort((a, b) => a.name.localeCompare(b.name)));
+    return mfr;
+  }
 
   useEffect(() => {
     Promise.all([
@@ -117,7 +127,7 @@ export function SubmitProfileForm() {
     setError("");
     setProfileUuid(null);
     if (!termsAccepted) {
-      setError("Accept the contribution terms to continue.");
+      setError(m.termsRequired);
       return;
     }
     setBusy(true);
@@ -205,6 +215,19 @@ export function SubmitProfileForm() {
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
+          allowCreate
+          createLabel={(name) => fillName(m.addBrand, name)}
+          creatingText={m.creating}
+          onCreate={async (name) => {
+            const created = await apiPost<{ uuid: string; name: string }>(
+              "/api/v1/community/manufacturers",
+              { name },
+            );
+            await reloadManufacturers();
+            setManufacturerUuid(created.uuid);
+            setFilamentUuid("");
+            setVariantUuid("");
+          }}
           required
         />
         <SearchableSelect
@@ -239,6 +262,28 @@ export function SubmitProfileForm() {
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
           disabled={!manufacturerUuid || !materialCode}
+          allowCreate={Boolean(manufacturerUuid && materialCode)}
+          createLabel={(name) => fillName(m.addProduct, name)}
+          creatingText={m.creating}
+          onCreate={async (name) => {
+            const created = await apiPost<{ uuid: string; productName: string }>(
+              "/api/v1/community/filaments",
+              {
+                manufacturerUuid,
+                materialCode,
+                productName: name,
+              },
+            );
+            const qs = new URLSearchParams({ manufacturerUuid, materialCode });
+            const rows = await apiGet<Filament[]>(`/api/v1/filaments?${qs}`);
+            setFilaments(
+              [...rows].sort((a, b) =>
+                a.productName.localeCompare(b.productName),
+              ),
+            );
+            setFilamentUuid(created.uuid);
+            setVariantUuid("");
+          }}
           required
         />
         <SearchableSelect
@@ -253,6 +298,30 @@ export function SubmitProfileForm() {
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
           disabled={!filamentUuid}
+          allowCreate={Boolean(filamentUuid)}
+          createLabel={(name) => fillName(m.addColour, name)}
+          creatingText={m.creating}
+          onCreate={async (name) => {
+            const created = await apiPost<{ uuid: string; variantName: string }>(
+              "/api/v1/community/variants",
+              {
+                filamentProductUuid: filamentUuid,
+                variantName: name,
+                colorName: name,
+              },
+            );
+            const rows = await apiGet<Variant[]>(
+              `/api/v1/filaments/${filamentUuid}/variants`,
+            );
+            setVariants(
+              [...rows].sort((a, b) =>
+                (a.colorName ?? a.variantName).localeCompare(
+                  b.colorName ?? b.variantName,
+                ),
+              ),
+            );
+            setVariantUuid(created.uuid);
+          }}
           required
         />
       </section>
@@ -298,7 +367,6 @@ export function SubmitProfileForm() {
               onChange={(e) => setPrinterModel(e.target.value)}
               required
               disabled={!printerBrand}
-              placeholder="K2 Plus"
             />
           </label>
         )}
@@ -431,10 +499,9 @@ export function SubmitProfileForm() {
           required
         />
         <span>
-          I accept the{" "}
-          <Link href="/terms">contribution terms</Link> and understand my email
-          stays private while the calibration may remain public if I later delete
-          my account (anonymized attribution).
+          {m.termsAcceptPrefix}{" "}
+          <Link href="/terms">{m.termsAcceptLink}</Link>{" "}
+          {m.termsAcceptSuffix}
         </span>
       </label>
 
@@ -442,7 +509,8 @@ export function SubmitProfileForm() {
         type="submit"
         className="button"
         disabled={busy || !variantUuid || !termsAccepted}
-      >        {busy ? messages.common.loading : m.submit}
+      >
+        {busy ? messages.common.loading : m.submit}
       </button>
       <p className="muted">{m.ofdNote}</p>
     </form>

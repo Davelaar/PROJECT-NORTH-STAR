@@ -100,6 +100,66 @@ export async function registerRoutes(app: FastifyInstance) {
     return db().select().from(schema.manufacturers).all();
   });
 
+  app.post("/api/v1/community/manufacturers", {
+    config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    handler: async (req, reply) => {
+      const body = z
+        .object({ name: z.string().min(1).max(120) })
+        .safeParse(req.body);
+      if (!body.success) return badRequest(reply, "Invalid body", body.error.flatten());
+      try {
+        const { resolveOrCreateManufacturer } = await import("@open-filament/db");
+        const result = resolveOrCreateManufacturer(db(), body.data.name);
+        return reply.status(result.created ? 201 : 200).send(result);
+      } catch (e) {
+        return badRequest(reply, e instanceof Error ? e.message : "Could not create brand");
+      }
+    },
+  });
+
+  app.post("/api/v1/community/filaments", {
+    config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    handler: async (req, reply) => {
+      const body = z
+        .object({
+          manufacturerUuid: z.string().uuid(),
+          materialCode: z.string().min(1).max(40),
+          productName: z.string().min(1).max(200),
+        })
+        .safeParse(req.body);
+      if (!body.success) return badRequest(reply, "Invalid body", body.error.flatten());
+      try {
+        const { resolveOrCreateFilamentProduct } = await import("@open-filament/db");
+        const result = resolveOrCreateFilamentProduct(db(), body.data);
+        return reply.status(result.created ? 201 : 200).send(result);
+      } catch (e) {
+        return badRequest(reply, e instanceof Error ? e.message : "Could not create product");
+      }
+    },
+  });
+
+  app.post("/api/v1/community/variants", {
+    config: { rateLimit: { max: 20, timeWindow: "1 minute" } },
+    handler: async (req, reply) => {
+      const body = z
+        .object({
+          filamentProductUuid: z.string().uuid(),
+          variantName: z.string().min(1).max(200),
+          colorName: z.string().max(120).optional().nullable(),
+          primaryColorHex: z.string().max(7).optional().nullable(),
+        })
+        .safeParse(req.body);
+      if (!body.success) return badRequest(reply, "Invalid body", body.error.flatten());
+      try {
+        const { resolveOrCreateFilamentVariant } = await import("@open-filament/db");
+        const result = resolveOrCreateFilamentVariant(db(), body.data);
+        return reply.status(result.created ? 201 : 200).send(result);
+      } catch (e) {
+        return badRequest(reply, e instanceof Error ? e.message : "Could not create colour");
+      }
+    },
+  });
+
   app.get<{ Params: { uuid: string } }>(
     "/api/v1/manufacturers/:uuid",
     async (req, reply) => {

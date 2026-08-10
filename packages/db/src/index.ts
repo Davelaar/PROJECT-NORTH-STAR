@@ -68,6 +68,11 @@ export {
   purgeSoftDeletedSpools,
   revokeExpiredTokens,
 } from "./account-privacy.js";
+export {
+  resolveOrCreateManufacturer,
+  resolveOrCreateFilamentProduct,
+  resolveOrCreateFilamentVariant,
+} from "./community-catalog.js";
 export { searchAutocomplete } from "./autocomplete.js";
 export type { AutocompleteHit } from "./autocomplete.js";
 export {

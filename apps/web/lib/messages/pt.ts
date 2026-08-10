@@ -5,11 +5,10 @@ import {
   footerEn,
   legalPagesEn,
   spoolsEn,
-  cloudEn,
 } from "./prod-en";
 
 export const messages: Messages = {
-  brand: "Open Filament",
+  brand: "OpenFilament",
   tagline:
     "Encontre o perfil de filamento certo, identifique o carretel e use-o em qualquer dispositivo — no navegador.",
   nav: {
@@ -338,6 +337,14 @@ export const messages: Messages = {
     success: "Perfil publicado. Obrigado!",
     viewProfile: "Ver perfil",
     errorGeneric: "Não foi possível publicar o perfil. Verifique os campos obrigatórios.",
+    addBrand: "Adicionar marca “{name}”",
+    addProduct: "Adicionar produto “{name}”",
+    addColour: "Adicionar cor “{name}”",
+    creating: "A adicionar…",
+    termsAcceptPrefix: "Aceito os",
+    termsAcceptLink: "termos de contribuição",
+    termsAcceptSuffix: "e compreendo que o meu e-mail permanece privado enquanto a calibração pode continuar pública se eu apagar a conta mais tarde (atribuição anonimizada).",
+    termsRequired: "Aceite os termos de contribuição para continuar.",
     ofdNote:
       "Os dados de marca/cor do catálogo vêm da Open Filament Database (importação unidirecional). As calibrações vivem no Open Filament. A OFD não tem API de escrita — para correções do catálogo use o editor deles em openfilamentdatabase.org.",
   },
@@ -461,5 +468,86 @@ export const messages: Messages = {
   spools: spoolsEn,
   account: accountEn,
   legalPages: legalPagesEn,
-  cloud: cloudEn,
+  cloud: {
+    navLink: "Cloud",
+    billingLink: "Histórico de pagamentos",
+    pageTitle: "My Spools Cloud",
+    pageLead:
+      "Cópia de segurança e sync na cloud opcionais para quem não quer arriscar perder o inventário local. My Spools Local continua gratuito e completo — a Cloud não desbloqueia funcionalidades extra de inventário.",
+    optionalBadge: "Luxo opcional — não obrigatório",
+    localTitle: "My Spools Local — gratuito",
+    localBody:
+      "Inventário completo neste dispositivo (IndexedDB): notas, secagem, QR/RFID, importar/exportar. Sem conta necessária. Exporte cópias de segurança regularmente — limpar os dados do browser pode remover o inventário local.",
+    cloudTitle: "My Spools Cloud — 19,99 € por 12 meses",
+    cloudWhyTitle: "O que a Cloud acrescenta",
+    cloudWhyBody:
+      "Apenas alojamento no nosso VPS, sync entre os seus dispositivos e cópia de segurança/recuperação no servidor. As mesmas ferramentas de bobinas já existem no Local; a Cloud é para tranquilidade, não para capacidades extra.",
+    priceLine: "19,99 € por 12 meses",
+    oneTime: "Pagamento único",
+    noAutoRenewal: "Sem renovação automática",
+    neverCharge: "Nunca voltaremos a cobrar, a menos que escolha comprar outros 12 meses.",
+    includesTitle: "Incluído com a Cloud",
+    includeSync: "Sincronização entre dispositivos",
+    includeBackup: "Cópias de segurança no servidor no nosso VPS",
+    includeRecovery: "Recuperação de conta para o inventário Cloud",
+    includeExport: "Exportação JSON da Cloud durante o acesso, a graça e a retenção",
+    notIncludedTitle: "Não incluído",
+    notIncludedBody:
+      "Sem ferramentas de inventário além do Local. A Cloud não acrescenta funções RFID/QR, perfis mais inteligentes nem privilégios de catálogo — apenas armazenamento e sync.",
+    statusLabel: "Estado da Cloud",
+    statusInactive: "Inativo",
+    statusPending: "Pendente",
+    statusActive: "Ativo",
+    statusGrace: "Período de graça",
+    statusReadOnly: "Só leitura",
+    statusExpired: "Expirado",
+    statusRefunded: "Reembolsado",
+    statusDisputed: "Contestado",
+    statusRevoked: "Revogado",
+    validUntil: "Acesso Cloud válido até",
+    graceUntil: "Período de graça até",
+    readOnlyFrom: "Só leitura a partir de",
+    deletionAt: "Eliminação dos dados Cloud prevista por volta de",
+    buyCta: "Comprar 12 meses de Cloud — 19,99 €",
+    extendCta: "Prolongar Cloud por 12 meses — 19,99 €",
+    extendHint:
+      "Comprar outros 12 meses prolonga o acesso a partir da data de expiração atual.",
+    loginRequired: "Inicie sessão para comprar ou gerir My Spools Cloud.",
+    checkoutUnavailable: "O pagamento ainda não está disponível (configuração pendente).",
+    termsLink: "Termos",
+    privacyLink: "Privacidade",
+    retentionHint:
+      "Após a expiração, mantém uma janela de graça, depois uma janela de exportação só de leitura e, por fim, a eliminação do inventário Cloud. My Spools Local continua plenamente utilizável.",
+    vatUnspecified:
+      "A apresentação fiscal ainda não foi configurada pelo operador (IVA incluído/excluído).",
+    vatNotApplicable: "IVA não aplicável — o preço apresentado é o montante cobrado.",
+    successTitle: "Estado do pagamento",
+    verifying:
+      "Estamos a verificar o seu pagamento com o Stripe. O acesso Cloud ativar-se-á após a confirmação do pagamento.",
+    activatedTitle: "My Spools Cloud está ativo",
+    paidOnce: "Pago uma vez",
+    autoRenewalOff: "Renovação automática: Desligada",
+    pendingPayment:
+      "O seu pagamento ainda está a ser processado. Ativaremos a Cloud após a confirmação do Stripe.",
+    failedPayment:
+      "O pagamento não foi concluído. Não foi adicionado acesso Cloud e não será tentado nenhum pagamento futuro.",
+    billingTitle: "Histórico de faturação Cloud",
+    billingLead:
+      "Apenas pagamentos únicos. Não são faturas recorrentes. A OpenFilament não armazena dados de cartão.",
+    receipt: "Recibo",
+    accessPeriod: "Período de acesso",
+    exportCloud: "Exportar bobinas Cloud (JSON)",
+    backToSpools: "Voltar a My Spools",
+    syncRequiresCloud:
+      "A sync Cloud é opcional e requer um período Cloud pré-pago ativo (ou de graça). O inventário local continua gratuito e completo sem Cloud.",
+    paymentStatusCreated: "Criado",
+    paymentStatusPending: "Pendente",
+    paymentStatusPaid: "Pago",
+    paymentStatusFailed: "Falhado",
+    paymentStatusExpired: "Expirado",
+    paymentStatusRefunded: "Reembolsado",
+    paymentStatusPartialRefund: "Parcialmente reembolsado",
+    paymentStatusDisputed: "Contestado",
+    paymentStatusCancelled: "Cancelado",
+  },
 };
