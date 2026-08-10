@@ -221,6 +221,9 @@ export const messages: Messages = {
     extensionLabel: "Bestand",
     limitationsLabel: "Beperkingen",
     viewInstructionsNamed: "Bekijk {name}-instructies",
+    loadProfilesTitle: "Zo laad je het profiel in je slicer",
+    loadProfilesIntro:
+      "OpenFilament downloadt een gebruikerspreset voor filament. Je slicer ontvangt die niet automatisch; importeer het bestand één keer en selecteer daarna de nieuwe filamentpreset in je project.",
     readyTitle: "Je {name}-filamentpreset is klaar",
     readyNext: "Volgende",
     readyStepOpen: "Open {name}.",

@@ -233,6 +233,8 @@ export type Messages = {
     extensionLabel: string;
     limitationsLabel: string;
     viewInstructionsNamed: string;
+    loadProfilesTitle: string;
+    loadProfilesIntro: string;
     readyTitle: string;
     readyNext: string;
     readyStepOpen: string;

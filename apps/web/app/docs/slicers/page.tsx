@@ -23,6 +23,23 @@ export default async function SlicersOverviewPage() {
         <p>{g.overview.identityBody}</p>
       </section>
 
+      <section className="panel" aria-labelledby="load-profiles-heading">
+        <h2 id="load-profiles-heading">{messages.export.loadProfilesTitle}</h2>
+        <p>{messages.export.loadProfilesIntro}</p>
+        <ol>
+          <li>
+            {messages.export.readyStepOpen.replace(
+              "{name}",
+              "Creality Print / OrcaSlicer / PrusaSlicer / Bambu Studio",
+            )}
+          </li>
+          <li>{messages.export.readyStepImport}</li>
+          <li>{messages.export.readyStepPrinter}</li>
+          <li>{messages.export.readyStepSelect}</li>
+          <li>{messages.export.readyStepMap}</li>
+        </ol>
+      </section>
+
       <div className="slicer-cards">
         {slicers.map((s) => (
           <article key={s.id} className="slicer-card panel">

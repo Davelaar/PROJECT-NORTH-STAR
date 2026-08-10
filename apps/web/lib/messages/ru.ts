@@ -221,6 +221,9 @@ export const messages: Messages = {
     extensionLabel: "Файл",
     limitationsLabel: "Ограничения",
     viewInstructionsNamed: "Инструкция для {name}",
+    loadProfilesTitle: "Как загрузить профиль в слайсер",
+    loadProfilesIntro:
+      "OpenFilament скачивает пользовательский пресет филамента. Слайсер не получает его автоматически; импортируйте файл один раз, затем выберите новый пресет филамента в проекте.",
     readyTitle: "Ваш пресет филамента {name} готов",
     readyNext: "Далее",
     readyStepOpen: "Откройте {name}.",

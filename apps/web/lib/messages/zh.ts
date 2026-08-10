@@ -222,6 +222,9 @@ export const messages: Messages = {
     extensionLabel: "文件",
     limitationsLabel: "限制",
     viewInstructionsNamed: "查看 {name} 导入说明",
+    loadProfilesTitle: "如何将配置文件载入切片软件",
+    loadProfilesIntro:
+      "OpenFilament 会下载一个用户耗材预设文件。切片软件不会自动接收它；请先导入一次该文件，然后在项目中选择新的耗材预设。",
     readyTitle: "你的 {name} 耗材预设已就绪",
     readyNext: "下一步",
     readyStepOpen: "打开 {name}。",

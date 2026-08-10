@@ -221,6 +221,9 @@ export const messages: Messages = {
     extensionLabel: "Datei",
     limitationsLabel: "Einschränkungen",
     viewInstructionsNamed: "{name}-Anleitung anzeigen",
+    loadProfilesTitle: "So laden Sie das Profil in Ihren Slicer",
+    loadProfilesIntro:
+      "OpenFilament lädt eine Benutzer-Filamentvorgabe herunter. Ihr Slicer erhält sie nicht automatisch; importieren Sie die Datei einmal und wählen Sie danach die neue Filamentvorgabe im Projekt aus.",
     readyTitle: "Ihr {name}-Filament-Preset ist fertig",
     readyNext: "Weiter",
     readyStepOpen: "Öffnen Sie {name}.",

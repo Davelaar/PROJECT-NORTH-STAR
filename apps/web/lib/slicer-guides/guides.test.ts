@@ -61,6 +61,8 @@ describe("locale export keys", () => {
       const m = getMessages(locale);
       expect(m.export.downloadForSlicer.length).toBeGreaterThan(0);
       expect(m.export.supportedSlicersLink.length).toBeGreaterThan(0);
+      expect(m.export.loadProfilesTitle.length).toBeGreaterThan(0);
+      expect(m.export.loadProfilesIntro.length).toBeGreaterThan(0);
       expect(m.export.readyTitle).toContain("{name}");
     }
   });

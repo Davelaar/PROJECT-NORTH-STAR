@@ -222,6 +222,9 @@ export const messages: Messages = {
     extensionLabel: "File",
     limitationsLabel: "Limitations",
     viewInstructionsNamed: "View {name} instructions",
+    loadProfilesTitle: "How to load the profile in your slicer",
+    loadProfilesIntro:
+      "OpenFilament downloads a user filament preset file. Your slicer does not receive it automatically; import the file once and then select the new filament preset in your project.",
     readyTitle: "Your {name} filament preset is ready",
     readyNext: "Next",
     readyStepOpen: "Open {name}.",

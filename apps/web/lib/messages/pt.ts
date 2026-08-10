@@ -221,6 +221,9 @@ export const messages: Messages = {
     extensionLabel: "Ficheiro",
     limitationsLabel: "Limitações",
     viewInstructionsNamed: "Ver instruções de {name}",
+    loadProfilesTitle: "Como carregar o perfil no seu slicer",
+    loadProfilesIntro:
+      "OpenFilament descarrega um preset de filamento de utilizador. O seu slicer não o recebe automaticamente; importe o ficheiro uma vez e depois selecione o novo preset de filamento no projeto.",
     readyTitle: "O seu preset de filamento {name} está pronto",
     readyNext: "Seguinte",
     readyStepOpen: "Abra o {name}.",
