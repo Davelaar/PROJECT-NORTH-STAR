@@ -1,0 +1,17 @@
+---
+description: Always commit (when asked or after meaningful work) and deploy OpenFilament to production immediately
+alwaysApply: true
+---
+
+# Always deploy OpenFilament
+
+When finishing implementation work for this repo:
+
+1. Commit when the user asked to ship/deploy, or when they established standing instruction to deploy (treat “altijd direct deploy” as standing).
+2. Push `main` to `origin`.
+3. Deploy to production VPS without waiting for a second confirmation:
+   - `rsync` to `root@212.227.245.191:/srv/open-filament/` (exclude `node_modules`, `.next`, sqlite, `.env`, `.git`, bridge `target`)
+   - On the server: install (stdin closed for pnpm), build packages + api + web, migrate DB if needed, restart `openfilament-api` and `openfilament-web`
+   - Smoke-check `https://openfilament.nl` (and key new routes)
+4. Never commit secrets (`.env`, Stripe `sk_*`, session secrets).
+5. Keep production `/etc/open-filament/env` updated for new non-secret public env vars; secrets only via server env.
