@@ -160,6 +160,43 @@ export async function registerRoutes(app: FastifyInstance) {
     },
   });
 
+  app.post<{ Params: { uuid: string } }>(
+    "/api/v1/community/variants/:uuid/purchase-links",
+    {
+      config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+      handler: async (req, reply) => {
+        const body = z
+          .object({
+            storeName: z.string().min(1).max(120),
+            url: z.string().min(1).max(2000),
+          })
+          .safeParse(req.body);
+        if (!body.success) {
+          return badRequest(reply, "Invalid body", body.error.flatten());
+        }
+        try {
+          const { addPurchaseLinkToVariant } = await import("@open-filament/db");
+          const result = addPurchaseLinkToVariant(db(), {
+            variantUuid: req.params.uuid,
+            storeName: body.data.storeName,
+            url: body.data.url,
+          });
+          return reply.status(result.created ? 201 : 200).send({
+            ...result,
+            purchaseLinks: applyAmazonAffiliateToPurchaseLinks(
+              result.purchaseLinks,
+            ),
+          });
+        } catch (e) {
+          return badRequest(
+            reply,
+            e instanceof Error ? e.message : "Could not add shop link",
+          );
+        }
+      },
+    },
+  );
+
   app.get<{ Params: { uuid: string } }>(
     "/api/v1/manufacturers/:uuid",
     async (req, reply) => {
@@ -1509,7 +1546,7 @@ function parsePurchaseLinks(
               typeof (x as { url?: unknown }).url === "string",
           ),
       )
-      .slice(0, 12);
+      .slice(0, 48);
   } catch {
     return [];
   }

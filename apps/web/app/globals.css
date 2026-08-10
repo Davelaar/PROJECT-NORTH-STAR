@@ -1510,6 +1510,20 @@ pre {
   background: color-mix(in srgb, var(--accent, #0d6b56) 10%, transparent);
 }
 
+.buy-link-form {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+.buy-link-form-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.buy-links.panel {
+  margin-top: 0.75rem;
+}
+
 .my-spools .spool-list {
   list-style: none;
   padding: 0;

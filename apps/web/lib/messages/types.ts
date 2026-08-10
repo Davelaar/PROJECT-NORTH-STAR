@@ -164,6 +164,17 @@ export type Messages = {
     ofdAttribution: string;
     openPrintTagPreview: string;
     whereToBuy: string;
+    buyLinksLead: string;
+    noBuyLinks: string;
+    addBuyLink: string;
+    storeName: string;
+    storeNamePlaceholder: string;
+    storeUrl: string;
+    addBuyLinkCta: string;
+    addingBuyLink: string;
+    addBuyLinkSuccess: string;
+    addBuyLinkAlreadyListed: string;
+    addBuyLinkError: string;
     noIdentifiers: string;
     catalogMinimums: string;
     defaultNozzle: string;
@@ -351,6 +362,8 @@ export type Messages = {
     addBrand: string;
     addProduct: string;
     addColour: string;
+    addPrinterBrand: string;
+    addPrinterModel: string;
     creating: string;
     termsAcceptPrefix: string;
     termsAcceptLink: string;

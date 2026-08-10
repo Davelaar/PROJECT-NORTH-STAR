@@ -195,3 +195,113 @@ export function resolveOrCreateFilamentVariant(
     .run();
   return { uuid: variantUuid, variantName, created: true };
 }
+
+export type PurchaseLinkRecord = {
+  storeName: string;
+  url: string;
+  storeSlug?: string;
+  source?: "catalog" | "community";
+  addedAt?: string;
+};
+
+const MAX_PURCHASE_LINKS = 48;
+
+function normalizeUrlKey(url: string): string {
+  try {
+    const u = new URL(url);
+    u.hash = "";
+    return u.toString().replace(/\/$/, "").toLowerCase();
+  } catch {
+    return url.trim().toLowerCase();
+  }
+}
+
+function parseLinksJson(raw: string | null | undefined): PurchaseLinkRecord[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (x): x is PurchaseLinkRecord =>
+        Boolean(
+          x &&
+            typeof x === "object" &&
+            typeof (x as PurchaseLinkRecord).storeName === "string" &&
+            typeof (x as PurchaseLinkRecord).url === "string",
+        ),
+    );
+  } catch {
+    return [];
+  }
+}
+
+/** Append a shop / where-to-buy link on a variant (community, no auth). */
+export function addPurchaseLinkToVariant(
+  db: AppDb,
+  input: {
+    variantUuid: string;
+    storeName: string;
+    url: string;
+  },
+): {
+  uuid: string;
+  created: boolean;
+  purchaseLinks: PurchaseLinkRecord[];
+} {
+  const storeName = input.storeName.trim().replace(/\s+/g, " ");
+  if (storeName.length < 1 || storeName.length > 120) {
+    throw new Error("Store name must be 1–120 characters");
+  }
+  const urlRaw = input.url.trim();
+  let url: string;
+  try {
+    const parsed = new URL(urlRaw);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      throw new Error("URL must be http or https");
+    }
+    url = parsed.toString();
+  } catch {
+    throw new Error("Enter a valid http(s) shop URL");
+  }
+
+  const variant = db
+    .select()
+    .from(schema.filamentVariants)
+    .where(eq(schema.filamentVariants.uuid, input.variantUuid))
+    .get();
+  if (!variant) throw new Error("Unknown colour / variant");
+
+  const existing = parseLinksJson(variant.purchaseLinksJson);
+  const key = normalizeUrlKey(url);
+  const duplicate = existing.find((l) => normalizeUrlKey(l.url) === key);
+  if (duplicate) {
+    return {
+      uuid: variant.uuid,
+      created: false,
+      purchaseLinks: existing.slice(0, MAX_PURCHASE_LINKS),
+    };
+  }
+  if (existing.length >= MAX_PURCHASE_LINKS) {
+    throw new Error(`At most ${MAX_PURCHASE_LINKS} shop links per colour`);
+  }
+
+  const next: PurchaseLinkRecord[] = [
+    ...existing,
+    {
+      storeName,
+      url,
+      source: "community",
+      addedAt: new Date().toISOString(),
+    },
+  ];
+  db.update(schema.filamentVariants)
+    .set({
+      purchaseLinksJson: JSON.stringify(next),
+      updatedAt: new Date().toISOString(),
+    })
+    .where(eq(schema.filamentVariants.id, variant.id))
+    .run();
+
+  return { uuid: variant.uuid, created: true, purchaseLinks: next };
+}
+

@@ -69,10 +69,12 @@ export {
   revokeExpiredTokens,
 } from "./account-privacy.js";
 export {
+  addPurchaseLinkToVariant,
   resolveOrCreateManufacturer,
   resolveOrCreateFilamentProduct,
   resolveOrCreateFilamentVariant,
 } from "./community-catalog.js";
+export type { PurchaseLinkRecord } from "./community-catalog.js";
 export { searchAutocomplete } from "./autocomplete.js";
 export type { AutocompleteHit } from "./autocomplete.js";
 export {

@@ -342,34 +342,59 @@ export function SubmitProfileForm() {
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
+          allowCreate
+          createLabel={(name) => fillName(m.addPrinterBrand, name)}
+          creatingText={m.creating}
+          onCreate={async (name) => {
+            const trimmed = name.trim();
+            setPrinterBrands((prev) => {
+              if (prev.some((b) => b.name.toLowerCase() === trimmed.toLowerCase())) {
+                return prev;
+              }
+              return [...prev, { name: trimmed, models: [] }].sort((a, b) =>
+                a.name.localeCompare(b.name),
+              );
+            });
+            setPrinterBrand(trimmed);
+            setPrinterModel("");
+          }}
           required
         />
-        {printerModels.length > 0 ? (
-          <SearchableSelect
-            label={m.printerModel}
-            value={printerModel}
-            onChange={setPrinterModel}
-            options={printerModels.map((name) => ({
-              value: name,
-              label: name,
-            }))}
-            placeholder={f.selectPlaceholder}
-            searchPlaceholder={f.searchPlaceholder}
-            emptyText={f.noMatches}
-            disabled={!printerBrand}
-            required
-          />
-        ) : (
-          <label>
-            {m.printerModel}
-            <input
-              value={printerModel}
-              onChange={(e) => setPrinterModel(e.target.value)}
-              required
-              disabled={!printerBrand}
-            />
-          </label>
-        )}
+        <SearchableSelect
+          label={m.printerModel}
+          value={printerModel}
+          onChange={setPrinterModel}
+          options={printerModels.map((name) => ({
+            value: name,
+            label: name,
+          }))}
+          placeholder={f.selectPlaceholder}
+          searchPlaceholder={f.searchPlaceholder}
+          emptyText={f.noMatches}
+          disabled={!printerBrand}
+          allowCreate={Boolean(printerBrand)}
+          createLabel={(name) => fillName(m.addPrinterModel, name)}
+          creatingText={m.creating}
+          onCreate={async (name) => {
+            const trimmed = name.trim();
+            setPrinterBrands((prev) =>
+              prev.map((b) => {
+                if (b.name !== printerBrand) return b;
+                if (b.models.some((row) => row.name.toLowerCase() === trimmed.toLowerCase())) {
+                  return b;
+                }
+                return {
+                  ...b,
+                  models: [...b.models, { name: trimmed }].sort((a, c) =>
+                    a.name.localeCompare(c.name),
+                  ),
+                };
+              }),
+            );
+            setPrinterModel(trimmed);
+          }}
+          required
+        />
         <label>
           {m.nozzleDiameter}
           <select

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { WhereToBuySection } from "@/app/components/where-to-buy-section";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
 import { isPlaceholderId } from "@/lib/identifiers";
@@ -319,20 +320,10 @@ export default async function VariantPage({
           ) : (
             <p className="muted">{m.noIdentifiers}</p>
           )}
-          {buyLinks.length > 0 ? (
-            <div className="buy-links">
-              <strong>{m.whereToBuy}</strong>
-              <ul>
-                {buyLinks.map((link) => (
-                  <li key={link.url}>
-                    <a href={link.url} target="_blank" rel="noreferrer">
-                      {link.storeName}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
+          <WhereToBuySection
+            variantUuid={variant.uuid}
+            initialLinks={buyLinks}
+          />
         </div>
       </div>
 
