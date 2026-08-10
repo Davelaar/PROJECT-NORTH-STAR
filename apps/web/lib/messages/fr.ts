@@ -179,6 +179,10 @@ export const messages: Messages = {
     noExactMatch: "Aucune mesure exacte pour cette imprimante et cette buse pour le moment.",
     comparableNozzleAvailable:
       "Des réglages existent pour la même taille de buse sur une autre imprimante. La température, le débit et la taille de buse restent de bons points de départ ; vérifiez le comportement propre à votre imprimante avant de vous y fier.",
+    generatedStarterProfile: "Profil de démarrage généré",
+    generatedStarterProfileBody:
+      "Aucun profil mesuré ou comparable n’existe encore. OpenFilament peut générer un préréglage de démarrage Creality Print à partir des valeurs catalogue/fabricant pour cette imprimante et cette buse. Il n’est pas mesuré ; calibrez avant les impressions de production.",
+    downloadStarterProfile: "Télécharger le profil de démarrage",
     defaultNozzleNote: "Affichage 0,4 mm par défaut tant que vous n'avez pas choisi de buse.",
     highConfidence: "Confiance élevée",
     mediumConfidence: "Confiance moyenne",

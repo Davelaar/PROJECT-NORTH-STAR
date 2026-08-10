@@ -179,6 +179,10 @@ export const messages: Messages = {
     noExactMatch: "Aún no hay una medición exacta para esta impresora y boquilla.",
     comparableNozzleAvailable:
       "Hay ajustes disponibles para el mismo tamaño de boquilla en otra impresora. Temperatura, flujo y tamaño de boquilla siguen siendo buenos puntos de partida; verifica el comportamiento específico de tu impresora antes de confiar en ellos.",
+    generatedStarterProfile: "Perfil inicial generado",
+    generatedStarterProfileBody:
+      "Aún no existe un perfil medido ni comparable. OpenFilament puede generar un preset inicial de Creality Print con valores del catálogo/fabricante para esta impresora y boquilla. No está medido; calibra antes de usarlo en impresiones de producción.",
+    downloadStarterProfile: "Descargar perfil inicial",
     defaultNozzleNote: "Mostrando 0,4 mm por defecto hasta que elijas una boquilla.",
     highConfidence: "Confianza alta",
     mediumConfidence: "Confianza media",

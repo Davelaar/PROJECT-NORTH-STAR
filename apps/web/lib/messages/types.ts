@@ -193,6 +193,9 @@ export type Messages = {
     comparablePrinterProfiles: string;
     noExactMatch: string;
     comparableNozzleAvailable: string;
+    generatedStarterProfile: string;
+    generatedStarterProfileBody: string;
+    downloadStarterProfile: string;
     defaultNozzleNote: string;
     highConfidence: string;
     mediumConfidence: string;

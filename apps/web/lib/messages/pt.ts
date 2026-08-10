@@ -179,6 +179,10 @@ export const messages: Messages = {
     noExactMatch: "Ainda sem medição exata para esta impressora e nozzle.",
     comparableNozzleAvailable:
       "Existem definições para o mesmo tamanho de nozzle noutra impressora. Temperatura, flow e tamanho de nozzle continuam a ser bons pontos de partida; valide o comportamento específico da impressora antes de confiar neles.",
+    generatedStarterProfile: "Perfil inicial gerado",
+    generatedStarterProfileBody:
+      "Ainda não existe um perfil medido ou comparável. O OpenFilament pode gerar um preset inicial do Creality Print com valores de catálogo/fabricante para esta impressora e nozzle. Não é medido; calibre antes de usar em impressões de produção.",
+    downloadStarterProfile: "Descarregar perfil inicial",
     defaultNozzleNote: "A mostrar 0,4 mm por predefinição até escolher um nozzle.",
     highConfidence: "Confiança elevada",
     mediumConfidence: "Confiança média",

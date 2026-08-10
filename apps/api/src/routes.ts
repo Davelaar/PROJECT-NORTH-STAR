@@ -28,6 +28,7 @@ import {
 import {
   toCanonicalFromRevision,
   openFilamentProfileV1Schema,
+  type OpenFilamentProfileV1,
 } from "@open-filament/canonical-profile";
 import { convertCanonicalToCrealityUserPreset, buildCrealityInfoFile, suggestCompatiblePrinter } from "@open-filament/slicer-creality";
 import { convertCanonicalToOrcaFilamentPreset } from "@open-filament/slicer-orca";
@@ -766,6 +767,43 @@ export async function registerRoutes(app: FastifyInstance) {
             notes: p.notes,
           }),
         }));
+    },
+  );
+
+  app.get<{
+    Params: { uuid: string };
+    Querystring: { printerUuid?: string; nozzleDiameterMm?: string };
+  }>(
+    "/api/v1/variants/:uuid/exports/creality-starter",
+    async (req, reply) => {
+      const nozzleDiameterMm = Number(req.query.nozzleDiameterMm ?? "0.4");
+      if (!Number.isFinite(nozzleDiameterMm) || nozzleDiameterMm <= 0) {
+        return badRequest(reply, "nozzleDiameterMm must be a positive number");
+      }
+      const profile = buildStarterCanonicalProfile(
+        db(),
+        req.params.uuid,
+        req.query.printerUuid,
+        nozzleDiameterMm,
+      );
+      if (!profile) return notFound(reply, "Variant or printer not found");
+
+      const preset = convertCanonicalToCrealityUserPreset(profile, {
+        nozzleDiameterMm,
+        printerModel: profile.context.printerModel ?? undefined,
+      });
+      const suggestedFileName = buildExportFilename({
+        formatId: "creality",
+        manufacturerName: profile.filament.manufacturerName,
+        productName: profile.filament.productName,
+        variantName: profile.filament.variantName,
+        printerModel: profile.context.printerModel,
+        nozzleDiameterMm,
+      });
+      reply
+        .header("Content-Disposition", `attachment; filename="${suggestedFileName}"`)
+        .type("application/json; charset=utf-8");
+      return JSON.stringify(preset, null, 2);
     },
   );
 
@@ -1801,6 +1839,164 @@ function escapeXml(input: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
+}
+
+function mid(min: number | null, max: number | null, fallback: number): number {
+  if (min != null && max != null) return Math.round((min + max) / 2);
+  return Math.round(min ?? max ?? fallback);
+}
+
+function defaultNozzleTemp(materialCode: string | null): number {
+  const material = (materialCode ?? "PLA").toUpperCase();
+  if (material.startsWith("PETG")) return 240;
+  if (material === "ABS" || material === "ASA") return 255;
+  if (material === "TPU") return 225;
+  return 210;
+}
+
+function defaultBedTemp(materialCode: string | null): number {
+  const material = (materialCode ?? "PLA").toUpperCase();
+  if (material.startsWith("PETG")) return 75;
+  if (material === "ABS" || material === "ASA") return 95;
+  if (material === "TPU") return 45;
+  return 60;
+}
+
+function buildStarterCanonicalProfile(
+  database: AppDb,
+  variantUuid: string,
+  printerUuid: string | undefined,
+  nozzleDiameterMm: number,
+): OpenFilamentProfileV1 | null {
+  const row = database
+    .select({
+      variant: schema.filamentVariants,
+      productName: schema.filamentProducts.productName,
+      diameterMm: schema.filamentProducts.diameterMm,
+      densityGCm3: schema.filamentProducts.densityGCm3,
+      mfrNozzleTempMinC: schema.filamentProducts.mfrNozzleTempMinC,
+      mfrNozzleTempMaxC: schema.filamentProducts.mfrNozzleTempMaxC,
+      mfrBedTempMinC: schema.filamentProducts.mfrBedTempMinC,
+      mfrBedTempMaxC: schema.filamentProducts.mfrBedTempMaxC,
+      mfrChamberTempC: schema.filamentProducts.mfrChamberTempC,
+      dryingTempC: schema.filamentProducts.dryingTempC,
+      dryingDurationHours: schema.filamentProducts.dryingDurationHours,
+      manufacturerName: schema.manufacturers.name,
+      materialCode: schema.materialFamilies.code,
+    })
+    .from(schema.filamentVariants)
+    .innerJoin(
+      schema.filamentProducts,
+      eq(schema.filamentVariants.filamentProductId, schema.filamentProducts.id),
+    )
+    .innerJoin(
+      schema.manufacturers,
+      eq(schema.filamentProducts.manufacturerId, schema.manufacturers.id),
+    )
+    .innerJoin(
+      schema.materialFamilies,
+      eq(schema.filamentProducts.materialFamilyId, schema.materialFamilies.id),
+    )
+    .where(eq(schema.filamentVariants.uuid, variantUuid))
+    .get();
+  if (!row) return null;
+
+  const printer = printerUuid
+    ? database
+        .select()
+        .from(schema.printerModels)
+        .where(eq(schema.printerModels.uuid, printerUuid))
+        .get()
+    : null;
+  if (printerUuid && !printer) return null;
+
+  const materialCode = row.materialCode ?? "PLA";
+  const nozzleTemp = mid(
+    row.mfrNozzleTempMinC,
+    row.mfrNozzleTempMaxC,
+    defaultNozzleTemp(materialCode),
+  );
+  const bedTemp = mid(
+    row.mfrBedTempMinC,
+    row.mfrBedTempMaxC,
+    defaultBedTemp(materialCode),
+  );
+
+  return {
+    schemaVersion: "openfilamentprofile-v1",
+    title: `Starter ${row.manufacturerName} ${row.productName} ${row.variant.variantName}`,
+    provenance: {
+      isSyntheticFixture: false,
+      sourceNotes:
+        "Generated starter profile from catalog/manufacturer values. Not measured; calibrate before production use.",
+      createdAt: new Date().toISOString(),
+    },
+    filament: {
+      manufacturerName: row.manufacturerName,
+      productName: row.productName,
+      variantName: row.variant.variantName,
+      materialCode,
+      diameterMm: row.diameterMm,
+      colorName: row.variant.colorName,
+      primaryColorHex: sanitizeHex(row.variant.primaryColorHex),
+      densityGCm3: row.densityGCm3,
+    },
+    context: {
+      printerManufacturer: printer?.manufacturerName ?? "Creality",
+      printerModel: printer?.model ?? "K2 Plus",
+      printerRevision: printer?.revision ?? null,
+      nozzleDiameterMm,
+      nozzleMaterial: "brass",
+      buildPlate: null,
+      slicerName: "Creality Print",
+      slicerVersion: null,
+    },
+    thermal: {
+      nozzleTempFirstLayerC: nozzleTemp,
+      nozzleTempOtherLayersC: nozzleTemp,
+      nozzleTempMinC: row.mfrNozzleTempMinC,
+      nozzleTempMaxC: row.mfrNozzleTempMaxC,
+      bedTempFirstLayerC: bedTemp,
+      bedTempOtherLayersC: bedTemp,
+      chamberTempC: row.mfrChamberTempC,
+      enclosureRecommended: null,
+    },
+    extrusion: {
+      flowRatio: 1,
+      pressureAdvance: null,
+      linearAdvance: null,
+      maxVolumetricFlowMm3s: null,
+      minVolumetricFlowMm3s: null,
+    },
+    dimensional: {
+      shrinkagePercentXy: null,
+      shrinkagePercentZ: null,
+    },
+    cooling: {
+      fanMinPercent: null,
+      fanMaxPercent: null,
+      bridgeFanPercent: null,
+      fanDisableFirstLayers: null,
+    },
+    retraction: {
+      retractionDistanceMm: null,
+      retractionSpeedMms: null,
+      deretractionSpeedMms: null,
+      wipe: null,
+      zHopMm: null,
+    },
+    preparation: {
+      dryingTempC: row.dryingTempC,
+      dryingDurationHours: row.dryingDurationHours,
+      recommendedMaxRhPercent: null,
+      prePrintDryingRequired: null,
+      annealingNotes: null,
+      postProcessingNotes: null,
+      adhesiveRecommendation: null,
+      brimRecommended: null,
+      buildSurfaceNotes: "Generated starter profile; verify adhesion on your build plate.",
+    },
+  };
 }
 
 function loadProfileBundle(database: AppDb, profileUuid: string) {

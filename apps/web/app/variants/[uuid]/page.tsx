@@ -217,6 +217,11 @@ export default async function VariantPage({
     measured[0]?.uuid ??
     profiles[0]?.uuid ??
     null;
+  const starterExportParams = new URLSearchParams({
+    nozzleDiameterMm: String(selectedNozzle),
+  });
+  if (selectedPrinter) starterExportParams.set("printerUuid", selectedPrinter);
+  const starterExportHref = `/api/v1/variants/${variant.uuid}/exports/creality-starter?${starterExportParams.toString()}`;
 
   function yesNo(v: boolean | undefined): string {
     if (v == null) return "—";
@@ -369,7 +374,11 @@ export default async function VariantPage({
             >
               {messages.export.downloadForSlicer}
             </Link>
-          ) : null}
+          ) : (
+            <a className="button secondary" href={starterExportHref}>
+              {m.downloadStarterProfile}
+            </a>
+          )}
           <Link className="button secondary" href={`/label/${uuid}`}>
             {m.printQr}
           </Link>
@@ -559,6 +568,17 @@ export default async function VariantPage({
       {renderProfileGroup(m.compatibleAlternatives, alternatives)}
       {renderProfileGroup(m.catalogProfiles, catalogish)}
       {renderProfileGroup(m.starterProfiles, starter)}
+      {!firstExportUuid ? (
+        <section className="profile-group panel">
+          <h3>{m.generatedStarterProfile}</h3>
+          <p className="banner-warn">{m.generatedStarterProfileBody}</p>
+          <p>
+            <a className="button" href={starterExportHref}>
+              {m.downloadStarterProfile}
+            </a>
+          </p>
+        </section>
+      ) : null}
 
       {variant.sourceType === "open_filament_database" && variant.catalogLinks ? (
         <p className="muted">
