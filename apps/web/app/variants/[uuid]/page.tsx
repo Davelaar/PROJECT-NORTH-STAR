@@ -202,11 +202,21 @@ export default async function VariantPage({
     return nozzleOk && printerOk;
   });
 
-  const alternatives = measured.filter((p) => !exact.includes(p));
+  const sameNozzleAlternatives = measured.filter((p) => {
+    const nozzleOk = Math.abs(p.nozzleDiameterMm - selectedNozzle) < 0.001;
+    return nozzleOk && !exact.includes(p);
+  });
+  const alternatives = measured.filter(
+    (p) => !exact.includes(p) && !sameNozzleAlternatives.includes(p),
+  );
   const bestMatch = exact[0] ?? null;
 
   const firstExportUuid =
-    bestMatch?.uuid ?? measured[0]?.uuid ?? profiles[0]?.uuid ?? null;
+    bestMatch?.uuid ??
+    sameNozzleAlternatives[0]?.uuid ??
+    measured[0]?.uuid ??
+    profiles[0]?.uuid ??
+    null;
 
   function yesNo(v: boolean | undefined): string {
     if (v == null) return "—";
@@ -535,7 +545,13 @@ export default async function VariantPage({
           {m.noExactMatch}
         </p>
       ) : null}
+      {!bestMatch && sameNozzleAlternatives.length > 0 ? (
+        <p className="banner-warn" role="status">
+          {m.comparableNozzleAvailable}
+        </p>
+      ) : null}
       {renderProfileGroup(m.bestMatch, bestMatch ? [bestMatch] : [])}
+      {renderProfileGroup(m.comparablePrinterProfiles, sameNozzleAlternatives)}
       {renderProfileGroup(
         m.measuredProfiles,
         exact.filter((p) => p.uuid !== bestMatch?.uuid),

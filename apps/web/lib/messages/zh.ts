@@ -178,7 +178,10 @@ export const messages: Messages = {
     measuredProfiles: "社区实测配置文件",
     starterProfiles: "生成的入门配置文件",
     compatibleAlternatives: "兼容替代方案",
+    comparablePrinterProfiles: "相近打印机配置",
     noExactMatch: "该打印机和喷嘴暂无精确实测匹配。",
+    comparableNozzleAvailable:
+      "已有相同喷嘴尺寸但来自另一台打印机的设置。温度、流量和喷嘴尺寸仍然是有用的起点；正式依赖前请验证你的打印机特性。",
     defaultNozzleNote: "在你选择喷嘴之前，默认显示 0.4 mm。",
     highConfidence: "高可信度",
     mediumConfidence: "中可信度",

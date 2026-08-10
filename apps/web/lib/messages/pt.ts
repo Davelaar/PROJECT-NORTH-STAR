@@ -175,7 +175,10 @@ export const messages: Messages = {
     measuredProfiles: "Perfis comunitários medidos",
     starterProfiles: "Perfis iniciais gerados",
     compatibleAlternatives: "Alternativas compatíveis",
+    comparablePrinterProfiles: "Configuração de impressora comparável",
     noExactMatch: "Ainda sem medição exata para esta impressora e nozzle.",
+    comparableNozzleAvailable:
+      "Existem definições para o mesmo tamanho de nozzle noutra impressora. Temperatura, flow e tamanho de nozzle continuam a ser bons pontos de partida; valide o comportamento específico da impressora antes de confiar neles.",
     defaultNozzleNote: "A mostrar 0,4 mm por predefinição até escolher um nozzle.",
     highConfidence: "Confiança elevada",
     mediumConfidence: "Confiança média",

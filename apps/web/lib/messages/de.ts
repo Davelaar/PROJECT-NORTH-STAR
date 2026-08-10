@@ -175,7 +175,10 @@ export const messages: Messages = {
     measuredProfiles: "Gemessene Community-Profile",
     starterProfiles: "Generierte Starterprofile",
     compatibleAlternatives: "Kompatible Alternativen",
+    comparablePrinterProfiles: "Vergleichbares Drucker-Setup",
     noExactMatch: "Noch kein exakter gemessener Treffer für diesen Drucker und diese Düse.",
+    comparableNozzleAvailable:
+      "Für dieselbe Düsengröße auf einem anderen Drucker sind Einstellungen verfügbar. Temperatur, Flow und Düsengröße sind weiterhin brauchbare Ausgangspunkte; prüfen Sie druckerspezifisches Verhalten, bevor Sie sich darauf verlassen.",
     defaultNozzleNote: "Zeigt standardmäßig 0,4 mm an, bis Sie eine Düse wählen.",
     highConfidence: "Hohe Zuverlässigkeit",
     mediumConfidence: "Mittlere Zuverlässigkeit",

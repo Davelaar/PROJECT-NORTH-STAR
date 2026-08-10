@@ -190,7 +190,9 @@ export type Messages = {
     measuredProfiles: string;
     starterProfiles: string;
     compatibleAlternatives: string;
+    comparablePrinterProfiles: string;
     noExactMatch: string;
+    comparableNozzleAvailable: string;
     defaultNozzleNote: string;
     highConfidence: string;
     mediumConfidence: string;

@@ -175,7 +175,10 @@ export const messages: Messages = {
     measuredProfiles: "Gemeten community-profielen",
     starterProfiles: "Gegenereerde startprofielen",
     compatibleAlternatives: "Compatibele alternatieven",
+    comparablePrinterProfiles: "Vergelijkbare printeropstelling",
     noExactMatch: "Nog geen exacte gemeten match voor deze printer en nozzle.",
+    comparableNozzleAvailable:
+      "Er zijn instellingen beschikbaar voor dezelfde nozzlemaat op een andere printer. Temperatuur, flow en nozzlemaat zijn nog steeds bruikbare startpunten; controleer printerspecifiek gedrag voordat je erop vertrouwt.",
     defaultNozzleNote: "Standaard 0,4 mm totdat je een nozzle kiest.",
     highConfidence: "Hoge betrouwbaarheid",
     mediumConfidence: "Gemiddelde betrouwbaarheid",

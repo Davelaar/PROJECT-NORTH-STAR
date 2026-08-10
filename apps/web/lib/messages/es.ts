@@ -175,7 +175,10 @@ export const messages: Messages = {
     measuredProfiles: "Perfiles comunitarios medidos",
     starterProfiles: "Perfiles iniciales generados",
     compatibleAlternatives: "Alternativas compatibles",
+    comparablePrinterProfiles: "Configuración de impresora comparable",
     noExactMatch: "Aún no hay una medición exacta para esta impresora y boquilla.",
+    comparableNozzleAvailable:
+      "Hay ajustes disponibles para el mismo tamaño de boquilla en otra impresora. Temperatura, flujo y tamaño de boquilla siguen siendo buenos puntos de partida; verifica el comportamiento específico de tu impresora antes de confiar en ellos.",
     defaultNozzleNote: "Mostrando 0,4 mm por defecto hasta que elijas una boquilla.",
     highConfidence: "Confianza alta",
     mediumConfidence: "Confianza media",

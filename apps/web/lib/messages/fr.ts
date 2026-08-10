@@ -175,7 +175,10 @@ export const messages: Messages = {
     measuredProfiles: "Profils communautaires mesurés",
     starterProfiles: "Profils de démarrage générés",
     compatibleAlternatives: "Alternatives compatibles",
+    comparablePrinterProfiles: "Configuration d’imprimante comparable",
     noExactMatch: "Aucune mesure exacte pour cette imprimante et cette buse pour le moment.",
+    comparableNozzleAvailable:
+      "Des réglages existent pour la même taille de buse sur une autre imprimante. La température, le débit et la taille de buse restent de bons points de départ ; vérifiez le comportement propre à votre imprimante avant de vous y fier.",
     defaultNozzleNote: "Affichage 0,4 mm par défaut tant que vous n'avez pas choisi de buse.",
     highConfidence: "Confiance élevée",
     mediumConfidence: "Confiance moyenne",
