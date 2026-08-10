@@ -1,0 +1,14 @@
+---
+description: Keep all nine locales updated with every user-facing copy change
+alwaysApply: true
+---
+
+# Translations with every UI change
+
+When adding or changing user-facing strings in OpenFilament:
+
+1. Update `apps/web/lib/messages/types.ts` and **all nine locales**: `en`, `nl`, `de`, `fr`, `es`, `pt`, `ru`, `uk`, `zh`.
+2. Do not leave non-English locales falling back to English for new keys.
+3. Keep product names untranslated where required (OpenFilament, My Spools, Stripe, QR, RFID, slicer names, etc.).
+4. Run `pnpm --filter @open-filament/web exec vitest run lib/messages` before considering the change done.
+5. Prefer natural UI wording over literal word-for-word translation.

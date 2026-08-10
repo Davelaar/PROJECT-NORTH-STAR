@@ -1,6 +1,6 @@
 /**
  * Parse OpenFilament QR payloads into a variant UUID.
- * Accepts full URLs (.../f/{uuid}), openfilament://spool|{variant}/{uuid}, or bare UUIDs.
+ * Accepts /f/{uuid}, /variants/{uuid}, openfilament://…, absolute site URLs, or bare UUIDs.
  */
 export function parseOpenFilamentQrPayload(raw: string): string | null {
   const text = raw.trim();
@@ -12,16 +12,32 @@ export function parseOpenFilamentQrPayload(raw: string): string | null {
   const fMatch = text.match(/\/f\/([0-9a-f-]{36})/i);
   if (fMatch?.[1]) return fMatch[1].toLowerCase();
 
+  const variantPath = text.match(/\/variants\/([0-9a-f-]{36})/i);
+  if (variantPath?.[1]) return variantPath[1].toLowerCase();
+
   const schemeMatch = text.match(
     /^openfilament:\/\/(?:spool|variant)\/([0-9a-f-]{36})$/i,
   );
   if (schemeMatch?.[1]) return schemeMatch[1].toLowerCase();
 
-  const bare = text.match(uuidRe);
-  if (bare && bare[0].length === text.replace(/\s+/g, "").length) {
-    return bare[0].toLowerCase();
+  const compact = text.replace(/\s+/g, "");
+  if (/^[0-9a-f-]{36}$/i.test(compact)) return compact.toLowerCase();
+
+  // Absolute OpenFilament URLs that embed a UUID somewhere in the path.
+  try {
+    const url = new URL(text);
+    const host = url.hostname.toLowerCase();
+    if (
+      host.includes("openfilament") ||
+      host === "localhost" ||
+      host.endsWith(".local")
+    ) {
+      const inPath = url.pathname.match(uuidRe);
+      if (inPath?.[0]) return inPath[0].toLowerCase();
+    }
+  } catch {
+    /* not a URL */
   }
-  if (bare && /^[0-9a-f-]{36}$/i.test(text)) return text.toLowerCase();
 
   return null;
 }

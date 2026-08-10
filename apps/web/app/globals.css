@@ -860,6 +860,11 @@ pre {
   width: auto;
 }
 
+.qr-video-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+}
 .qr-video {
   width: 100%;
   max-width: 480px;
@@ -867,6 +872,31 @@ pre {
   background: #111;
   aspect-ratio: 4 / 3;
   object-fit: cover;
+  display: block;
+}
+.qr-video-wrap:not(.is-live) .qr-video {
+  opacity: 0;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.qr-video-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  padding: 1rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, #111 8%, var(--card, #fff));
+  border: 1px dashed var(--line);
+  text-align: center;
+}
+.qr-video-wrap.is-live .qr-video-placeholder {
+  display: none;
+}
+.scan-mode-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .qr-label-svg svg {
