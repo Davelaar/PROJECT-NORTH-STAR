@@ -114,12 +114,17 @@ export default function MySpoolsCloudPage() {
     entitlement &&
     (entitlement.status === "active" || entitlement.accessMode === "full");
   const usage = getUsageTrackingCopy(locale as Locale);
-  const checkoutUnavailableMessage =
-    offer?.stripeMode === "test"
+  const checkoutStatusMessage = !offer
+    ? null
+    : offer.stripeMode === "test"
       ? m.cloud.checkoutTestMode
-      : offer?.stripeMode === "live" && offer.livePaymentsEnabled === false
+      : !offer.checkoutAvailable &&
+          offer.stripeMode === "live" &&
+          offer.livePaymentsEnabled === false
         ? m.cloud.checkoutLiveBlocked
-        : m.cloud.checkoutMissingConfig;
+        : !offer.checkoutAvailable
+          ? m.cloud.checkoutMissingConfig
+          : null;
 
   return (
     <article className="prose cloud-page">
@@ -254,8 +259,10 @@ export default function MySpoolsCloudPage() {
         )}
         {!offer ? (
           <p className="muted">{m.common.loading}</p>
-        ) : !offer.checkoutAvailable ? (
-          <p className="muted">{checkoutUnavailableMessage}</p>
+        ) : checkoutStatusMessage ? (
+          <p className="muted" role="note">
+            {checkoutStatusMessage}
+          </p>
         ) : null}
         {error ? (
           <p className="error" role="alert">
