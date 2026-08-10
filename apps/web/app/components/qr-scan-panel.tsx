@@ -247,7 +247,14 @@ export function QrScanPanel() {
             openVariant(uuid);
             return;
           }
-          if (raw && activeRef.current) {
+          if (
+            raw &&
+            activeRef.current &&
+            (/https?:\/\//i.test(raw) ||
+              /openfilament/i.test(raw) ||
+              /\/f\//i.test(raw) ||
+              /[0-9a-f-]{36}/i.test(raw))
+          ) {
             setStatus(`${s.unrecognizedQr} ${raw.slice(0, 96)}`);
           }
         } catch {
