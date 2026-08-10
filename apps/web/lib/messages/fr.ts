@@ -1,11 +1,11 @@
 import type { Messages } from "./types";
 import {
-  accountEn,
-  consentEn,
-  footerEn,
-  legalPagesEn,
-  spoolsEn,
-} from "./prod-en";
+  accountFr,
+  consentFr,
+  footerFr,
+  legalPagesFr,
+  spoolsFr,
+} from "./prod-fr";
 
 export const messages: Messages = {
   brand: "OpenFilament",
@@ -463,11 +463,11 @@ export const messages: Messages = {
     yes: "oui",
     no: "non",
   },
-  consent: consentEn,
-  footer: footerEn,
-  spools: spoolsEn,
-  account: accountEn,
-  legalPages: legalPagesEn,
+  consent: consentFr,
+  footer: footerFr,
+  spools: spoolsFr,
+  account: accountFr,
+  legalPages: legalPagesFr,
   cloud: {
     navLink: "Cloud",
     billingLink: "Historique de paiement",
@@ -541,6 +541,9 @@ export const messages: Messages = {
     backToSpools: "Retour à My Spools",
     syncRequiresCloud:
       "La sync Cloud est optionnelle et nécessite une période Cloud prépayée active (ou de grâce). L’inventaire local reste gratuit et complet sans Cloud.",
+    billingColDate: "Date",
+    billingColAmount: "Montant",
+    billingColStatus: "Statut",
     paymentStatusCreated: "Créé",
     paymentStatusPending: "En attente",
     paymentStatusPaid: "Payé",

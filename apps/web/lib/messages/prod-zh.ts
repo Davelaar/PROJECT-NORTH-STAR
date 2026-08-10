@@ -1,0 +1,98 @@
+/** Shared Simplified Chinese copy. */
+export const consentZh = {
+  bannerAria: "Cookie 同意",
+  bannerText:
+    "我们使用必要存储以保障网站运行。可选的分析功能用于改进 OpenFilament。你可以拒绝非必要 Cookie，同时继续使用搜索、My Spools、下载、QR 与 RFID。",
+  acceptAll: "全部接受",
+  rejectNonEssential: "拒绝非必要",
+  manage: "管理偏好",
+  cookiePolicy: "Cookie 政策",
+  privacyPolicy: "隐私政策",
+  prefsTitle: "Cookie 偏好",
+  prefsLead: "必要存储保持开启。分析与营销默认关闭，除非你主动启用。",
+  necessary: "必要",
+  necessaryHelp: "会话、安全、同意选择、语言、本地 My Spools。",
+  preferences: "偏好",
+  preferencesHelp: "记住非必要的界面偏好。",
+  analytics: "分析",
+  analyticsHelp: "仅在同意后启用注重隐私的 Google Analytics 4。",
+  marketing: "营销",
+  marketingHelp: "未使用。保持关闭。",
+  savePrefs: "保存偏好",
+  cancel: "取消",
+};
+
+export const footerZh = {
+  navAria: "站点与法律",
+  privacy: "隐私",
+  cookies: "Cookie",
+  cookieSettings: "Cookie 设置",
+  terms: "条款",
+  security: "安全",
+  trust: "Trust center",
+  mySpools: "My Spools",
+  tagline: "OpenFilament — 浏览器优先的耗材信息。",
+  legalPlaceholderWarn:
+    "运营方法律信息仍为占位符 — 上线前请参阅 docs/PRODUCTION_LAUNCH_CHECKLIST.md。",
+};
+
+export const spoolsZh = {
+  heading: "My Spools",
+  lead: "在此设备跟踪实体线轴。云同步为可选项，不会仅因登录而自动开始。",
+  localMode: "仅本地（此浏览器）",
+  localWarn: "清除网站数据或更换设备可能导致本地数据丢失。请定期导出备份。",
+  cloudMode: "云同步（账户）",
+  create: "添加线轴",
+  export: "导出 JSON",
+  import: "导入 JSON",
+  clearAll: "清除全部本地数据",
+  clearConfirm: "删除此设备上的全部本地线轴记录？此操作无法撤销。",
+  syncPreview: "预览同步",
+  syncConfirm: "上传所选线轴",
+  syncKeepLocal: "同步后保留本地副本",
+  syncRemoveLocal: "同步后删除本地副本",
+  empty: "还没有线轴。添加你的第一卷。",
+  status: "状态",
+  weight: "当前重量（g）",
+  tare: "皮重 / 空轴（g）",
+  initial: "初始净重（g）",
+  remaining: "剩余 %",
+  location: "存放位置",
+  notes: "备注（私密）",
+  batch: "批次 / 批号",
+  purchase: "购买日期",
+  opened: "开封日期",
+  archive: "归档",
+  restore: "恢复",
+  delete: "删除",
+  duplicate: "为新卷复制",
+  drying: "添加烘干记录",
+  qr: "关联 QR 身份",
+  rfid: "关联 RFID 身份",
+  save: "保存线轴",
+  syncNeverAuto: "登录不会上传本地线轴。你必须明确确认同步。",
+  conflictPolicy: "冲突按同步版本采用 last-write-wins。重新导入会跳过较旧的重复项。",
+};
+
+export const accountZh = {
+  heading: "账户",
+  sessions: "活跃会话",
+  revokeOthers: "撤销其他会话",
+  exportData: "导出我的数据",
+  deleteAccount: "删除我的账户",
+  deleteWarn:
+    "这将永久删除私密线轴与会话。公开贡献可能会被匿名化而非删除。",
+  deleteConfirmLabel: "输入 DELETE 以确认",
+  privacyPrefs: "隐私偏好",
+  register: "创建账户",
+};
+
+export const legalPagesZh = {
+  privacyTitle: "隐私政策",
+  cookiesTitle: "Cookie 政策",
+  termsTitle: "使用条款",
+  securityTitle: "安全",
+  trustTitle: "Trust center",
+  placeholderNotice: "此页包含明确标记的运营方占位符。替换前会阻止正式上线。",
+  effective: "生效日期",
+};

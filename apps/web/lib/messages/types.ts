@@ -608,6 +608,9 @@ export type Messages = {
     exportCloud: string;
     backToSpools: string;
     syncRequiresCloud: string;
+    billingColDate: string;
+    billingColAmount: string;
+    billingColStatus: string;
     paymentStatusCreated: string;
     paymentStatusPending: string;
     paymentStatusPaid: string;

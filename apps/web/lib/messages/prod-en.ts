@@ -176,6 +176,9 @@ export const cloudEn = {
   backToSpools: "Back to My Spools",
   syncRequiresCloud:
     "Cloud sync is optional and needs an active prepaid Cloud period (or grace). Local inventory stays free and complete without Cloud.",
+  billingColDate: "Date",
+  billingColAmount: "Amount",
+  billingColStatus: "Status",
   paymentStatusCreated: "Created",
   paymentStatusPending: "Pending",
   paymentStatusPaid: "Paid",

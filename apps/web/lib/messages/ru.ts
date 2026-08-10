@@ -1,11 +1,11 @@
 import type { Messages } from "./types";
 import {
-  accountEn,
-  consentEn,
-  footerEn,
-  legalPagesEn,
-  spoolsEn,
-} from "./prod-en";
+  accountRu,
+  consentRu,
+  footerRu,
+  legalPagesRu,
+  spoolsRu,
+} from "./prod-ru";
 
 export const messages: Messages = {
   brand: "OpenFilament",
@@ -463,11 +463,11 @@ export const messages: Messages = {
     yes: "да",
     no: "нет",
   },
-  consent: consentEn,
-  footer: footerEn,
-  spools: spoolsEn,
-  account: accountEn,
-  legalPages: legalPagesEn,
+  consent: consentRu,
+  footer: footerRu,
+  spools: spoolsRu,
+  account: accountRu,
+  legalPages: legalPagesRu,
   cloud: {
     navLink: "Cloud",
     billingLink: "История платежей",
@@ -539,6 +539,9 @@ export const messages: Messages = {
     backToSpools: "Назад к My Spools",
     syncRequiresCloud:
       "Синхронизация Cloud опциональна и требует активного предоплаченного периода Cloud (или льготного). Локальный инвентарь остаётся бесплатным и полным без Cloud.",
+    billingColDate: "Дата",
+    billingColAmount: "Сумма",
+    billingColStatus: "Статус",
     paymentStatusCreated: "Создан",
     paymentStatusPending: "Ожидает",
     paymentStatusPaid: "Оплачен",

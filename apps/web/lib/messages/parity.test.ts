@@ -76,7 +76,7 @@ describe("locale key parity", () => {
     }
   });
 
-  it("flags long identical English sentences in cloud and submit for non-en", () => {
+  it("flags long identical English sentences in cloud, consent, and submit for non-en", () => {
     for (const locale of LOCALES) {
       if (locale === "en") continue;
       const m = getMessages(locale);
@@ -96,6 +96,18 @@ describe("locale key parity", () => {
       expect(suspects, `${locale} untranslated cloud`).toEqual([]);
       expect(m.submitProfile.addBrand).not.toEqual(en.submitProfile.addBrand);
       expect(m.cloud.optionalBadge).not.toEqual(en.cloud.optionalBadge);
+      expect(m.consent.acceptAll).not.toEqual(en.consent.acceptAll);
+      expect(m.consent.bannerText).not.toEqual(en.consent.bannerText);
+      expect(m.spools.lead).not.toEqual(en.spools.lead);
+      expect(m.account.deleteAccount).not.toEqual(en.account.deleteAccount);
     }
+  });
+
+  it("russian and ukrainian shared prod blocks are not identical copies", () => {
+    const ru = getMessages("ru");
+    const uk = getMessages("uk");
+    expect(ru.consent.bannerText).not.toEqual(uk.consent.bannerText);
+    expect(ru.spools.lead).not.toEqual(uk.spools.lead);
+    expect(ru.cloud.pageLead).not.toEqual(uk.cloud.pageLead);
   });
 });

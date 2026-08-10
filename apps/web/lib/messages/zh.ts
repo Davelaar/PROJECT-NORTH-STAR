@@ -1,11 +1,11 @@
 import type { Messages } from "./types";
 import {
-  accountEn,
-  consentEn,
-  footerEn,
-  legalPagesEn,
-  spoolsEn,
-} from "./prod-en";
+  accountZh,
+  consentZh,
+  footerZh,
+  legalPagesZh,
+  spoolsZh,
+} from "./prod-zh";
 
 /**
  * Simplified Chinese (简体中文) — written for mainland CN makers and OEM brands.
@@ -470,11 +470,11 @@ export const messages: Messages = {
     yes: "是",
     no: "否",
   },
-  consent: consentEn,
-  footer: footerEn,
-  spools: spoolsEn,
-  account: accountEn,
-  legalPages: legalPagesEn,
+  consent: consentZh,
+  footer: footerZh,
+  spools: spoolsZh,
+  account: accountZh,
+  legalPages: legalPagesZh,
   cloud: {
     navLink: "Cloud",
     billingLink: "账单记录",
@@ -537,6 +537,9 @@ export const messages: Messages = {
     exportCloud: "导出 Cloud 线轴（JSON）",
     backToSpools: "返回 My Spools",
     syncRequiresCloud: "Cloud 同步为可选，需要有效的预付 Cloud 期限（或宽限期）。本地库存无需 Cloud 仍免费且完整。",
+    billingColDate: "日期",
+    billingColAmount: "金额",
+    billingColStatus: "状态",
     paymentStatusCreated: "已创建",
     paymentStatusPending: "待处理",
     paymentStatusPaid: "已付款",

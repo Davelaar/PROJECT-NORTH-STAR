@@ -541,6 +541,9 @@ export const messages: Messages = {
     backToSpools: "Terug naar My Spools",
     syncRequiresCloud:
       "Cloud-sync is optioneel en vraagt een actieve prepaid Cloud-periode (of respijt). Lokale inventaris blijft gratis en volledig zonder Cloud.",
+    billingColDate: "Datum",
+    billingColAmount: "Bedrag",
+    billingColStatus: "Status",
     paymentStatusCreated: "Aangemaakt",
     paymentStatusPending: "In behandeling",
     paymentStatusPaid: "Betaald",

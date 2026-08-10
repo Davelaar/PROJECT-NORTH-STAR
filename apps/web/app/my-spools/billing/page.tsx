@@ -18,12 +18,32 @@ type PaymentRow = {
   automaticRenewal: false;
 };
 
+function paymentStatusLabel(
+  status: string,
+  cloud: ReturnType<typeof useMessages>["cloud"],
+) {
+  const map: Record<string, string> = {
+    created: cloud.paymentStatusCreated,
+    pending: cloud.paymentStatusPending,
+    paid: cloud.paymentStatusPaid,
+    failed: cloud.paymentStatusFailed,
+    expired: cloud.paymentStatusExpired,
+    refunded: cloud.paymentStatusRefunded,
+    partial_refund: cloud.paymentStatusPartialRefund,
+    disputed: cloud.paymentStatusDisputed,
+    cancelled: cloud.paymentStatusCancelled,
+  };
+  return map[status] ?? status;
+}
+
 export default function CloudBillingPage() {
   const m = useMessages();
   const [rows, setRows] = useState<PaymentRow[]>([]);
   const [error, setError] = useState("");
+  const [locale, setLocale] = useState("en");
 
   useEffect(() => {
+    setLocale(document.documentElement.lang || "en");
     const auth = loadAuth();
     if (!auth) {
       setError(m.cloud.loginRequired);
@@ -49,9 +69,9 @@ export default function CloudBillingPage() {
         <table>
           <thead>
             <tr>
-              <th scope="col">Date</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Status</th>
+              <th scope="col">{m.cloud.billingColDate}</th>
+              <th scope="col">{m.cloud.billingColAmount}</th>
+              <th scope="col">{m.cloud.billingColStatus}</th>
               <th scope="col">{m.cloud.accessPeriod}</th>
               <th scope="col">{m.cloud.receipt}</th>
             </tr>
@@ -61,16 +81,19 @@ export default function CloudBillingPage() {
               <tr key={r.uuid}>
                 <td>
                   {r.paidAt
-                    ? new Date(r.paidAt).toLocaleDateString()
+                    ? new Date(r.paidAt).toLocaleDateString(locale)
                     : "—"}
                 </td>
                 <td>
-                  €{(r.amountCents / 100).toFixed(2)} {r.currency.toUpperCase()}
+                  {new Intl.NumberFormat(locale, {
+                    style: "currency",
+                    currency: (r.currency || "eur").toUpperCase(),
+                  }).format(r.amountCents / 100)}
                 </td>
-                <td>{r.status}</td>
+                <td>{paymentStatusLabel(r.status, m.cloud)}</td>
                 <td>
                   {r.accessStartsAt && r.accessEndsAt
-                    ? `${new Date(r.accessStartsAt).toLocaleDateString()} → ${new Date(r.accessEndsAt).toLocaleDateString()}`
+                    ? `${new Date(r.accessStartsAt).toLocaleDateString(locale)} → ${new Date(r.accessEndsAt).toLocaleDateString(locale)}`
                     : "—"}
                 </td>
                 <td>
