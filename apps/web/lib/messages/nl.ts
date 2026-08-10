@@ -5,6 +5,7 @@ import {
   footerEn,
   legalPagesEn,
   spoolsEn,
+  cloudEn,
 } from "./prod-en";
 
 export const messages: Messages = {
@@ -460,4 +461,61 @@ export const messages: Messages = {
   spools: spoolsEn,
   account: accountEn,
   legalPages: legalPagesEn,
+  cloud: {
+    navLink: "Cloud",
+    billingLink: "Betaalgeschiedenis",
+    pageTitle: "Mijn spoelen Cloud",
+    pageLead:
+      "Veilige cloudopslag en synchronisatie tussen apparaten. Lokale Mijn spoelen blijft gratis op dit apparaat.",
+    localTitle: "Mijn spoelen Lokaal — gratis",
+    localBody:
+      "Volledige inventaris op dit apparaat (IndexedDB). Geen account nodig. Exporteer regelmatig — browsergegevens wissen kan lokale data verwijderen.",
+    cloudTitle: "Mijn spoelen Cloud — €19,99 voor 12 maanden",
+    priceLine: "€19,99 voor 12 maanden",
+    oneTime: "Eenmalige betaling",
+    noAutoRenewal: "Geen automatische verlenging",
+    neverCharge:
+      "We brengen je nooit opnieuw in rekening tenzij je zelf opnieuw 12 maanden koopt.",
+    includesTitle: "Inbegrepen bij Cloud",
+    includeSync: "Synchronisatie tussen apparaten",
+    includeBackup: "Serverback-ups op onze VPS",
+    includeRecovery: "Accountherstel voor Cloud-inventaris",
+    includeExport: "Cloud JSON-export tijdens toegang, grace en retentie",
+    statusLabel: "Cloudstatus",
+    validUntil: "Cloudtoegang geldig tot",
+    graceUntil: "Grace-periode tot",
+    readOnlyFrom: "Alleen-lezen vanaf",
+    deletionAt: "Verwijdering Cloud-data gepland rond",
+    buyCta: "Koop 12 maanden Cloud — €19,99",
+    extendCta: "Verleng Cloud met 12 maanden — €19,99",
+    extendHint:
+      "Nog 12 maanden kopen verlengt de toegang vanaf de huidige einddatum.",
+    loginRequired: "Log in om Cloud te kopen of te beheren.",
+    checkoutUnavailable: "Afrekenen is nog niet beschikbaar (configuratie ontbreekt).",
+    termsLink: "Voorwaarden",
+    privacyLink: "Privacy",
+    retentionHint:
+      "Na afloop: grace-periode, daarna alleen-lezen exportvenster, daarna Cloud-inventaris verwijderen. Lokaal blijft bruikbaar.",
+    vatUnspecified:
+      "BTW-weergave is nog niet door de exploitant geconfigureerd.",
+    successTitle: "Betalingsstatus",
+    verifying:
+      "We verifiëren je betaling bij Stripe. Cloud wordt actief na bevestiging.",
+    activatedTitle: "Mijn spoelen Cloud is actief",
+    paidOnce: "Eenmalig betaald",
+    autoRenewalOff: "Automatische verlenging: Uit",
+    pendingPayment:
+      "Je betaling wordt nog verwerkt. Cloud activeert na Stripe-bevestiging.",
+    failedPayment:
+      "Betaling niet voltooid. Geen Cloud toegevoegd en geen toekomstige betaling wordt geprobeerd.",
+    billingTitle: "Cloud-betaalgeschiedenis",
+    billingLead:
+      "Alleen eenmalige betalingen. Geen terugkerende facturen. OpenFilament bewaart geen kaartgegevens.",
+    receipt: "Bon",
+    accessPeriod: "Toegangsperiode",
+    exportCloud: "Exporteer Cloud-spoelen (JSON)",
+    backToSpools: "Terug naar Mijn spoelen",
+    syncRequiresCloud:
+      "Cloud-sync vereist een actieve prepaid Cloud-periode (of grace). Lokale inventaris blijft gratis.",
+  },
 };

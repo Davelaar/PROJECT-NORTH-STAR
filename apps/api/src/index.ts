@@ -53,6 +53,21 @@ export async function buildServer(options?: { dbPath?: string }) {
   const app = Fastify({ logger: true });
   app.decorate("db", database as AppDb);
 
+  // Preserve raw JSON body for Stripe webhook signature verification.
+  app.addContentTypeParser(
+    "application/json",
+    { parseAs: "buffer" },
+    (req, body, done) => {
+      const buf = body as Buffer;
+      (req as { rawBody?: Buffer }).rawBody = buf;
+      try {
+        done(null, JSON.parse(buf.toString("utf8")));
+      } catch (err) {
+        done(err as Error, undefined);
+      }
+    },
+  );
+
   const webOrigin = process.env.WEB_ORIGIN ?? "http://127.0.0.1:3000";
   await app.register(cors, {
     origin: webOrigin.split(",").map((s) => s.trim()),
@@ -71,6 +86,8 @@ export async function buildServer(options?: { dbPath?: string }) {
     "./routes-privacy-spools.js"
   );
   await registerPrivacySpoolRoutes(app);
+  const { registerCloudBillingRoutes } = await import("./routes-cloud.js");
+  await registerCloudBillingRoutes(app);
 
   // Friendly root — browsers often open the API port and hit Fastify's bare 404.
   app.get("/", async (req, reply) => {

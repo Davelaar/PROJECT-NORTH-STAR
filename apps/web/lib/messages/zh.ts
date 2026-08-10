@@ -5,6 +5,7 @@ import {
   footerEn,
   legalPagesEn,
   spoolsEn,
+  cloudEn,
 } from "./prod-en";
 
 /**
@@ -467,4 +468,5 @@ export const messages: Messages = {
   spools: spoolsEn,
   account: accountEn,
   legalPages: legalPagesEn,
+  cloud: cloudEn,
 };

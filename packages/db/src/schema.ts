@@ -777,3 +777,201 @@ export const contributionTermsAcceptances = sqliteTable(
     contributionRef: text("contribution_ref"),
   },
 );
+
+/** Prepaid My Spools Cloud — never an auto-renewing subscription. */
+export const CLOUD_ENTITLEMENT_STATUSES = [
+  "inactive",
+  "pending",
+  "active",
+  "grace_period",
+  "read_only",
+  "expired",
+  "refunded",
+  "disputed",
+  "revoked",
+] as const;
+
+export type CloudEntitlementStatus =
+  (typeof CLOUD_ENTITLEMENT_STATUSES)[number];
+
+export const CLOUD_PAYMENT_STATUSES = [
+  "created",
+  "pending",
+  "paid",
+  "failed",
+  "expired",
+  "refunded",
+  "partially_refunded",
+  "disputed",
+  "cancelled",
+] as const;
+
+export type CloudPaymentStatus = (typeof CLOUD_PAYMENT_STATUSES)[number];
+
+export const cloudEntitlements = sqliteTable(
+  "cloud_entitlements",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status", { enum: CLOUD_ENTITLEMENT_STATUSES })
+      .notNull()
+      .default("inactive"),
+    startsAt: text("starts_at"),
+    paidUntil: text("paid_until"),
+    graceUntil: text("grace_until"),
+    readOnlyFrom: text("read_only_from"),
+    deletionScheduledAt: text("deletion_scheduled_at"),
+    deletedAt: text("deleted_at"),
+    reminder30SentAt: text("reminder_30_sent_at"),
+    reminder7SentAt: text("reminder_7_sent_at"),
+    reminderExpiredSentAt: text("reminder_expired_sent_at"),
+    reminderDeletionSentAt: text("reminder_deletion_sent_at"),
+    expiryRemindersEnabled: integer("expiry_reminders_enabled", {
+      mode: "boolean",
+    })
+      .notNull()
+      .default(true),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [
+    index("cloud_entitlements_paid_until_idx").on(t.paidUntil),
+    index("cloud_entitlements_status_idx").on(t.status),
+  ],
+);
+
+export const cloudPayments = sqliteTable(
+  "cloud_payments",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull().default("stripe"),
+    providerCheckoutId: text("provider_checkout_id"),
+    providerPaymentId: text("provider_payment_id"),
+    providerCustomerId: text("provider_customer_id"),
+    providerReceiptUrl: text("provider_receipt_url"),
+    amountCents: integer("amount_cents").notNull(),
+    currency: text("currency").notNull().default("eur"),
+    accessMonths: integer("access_months").notNull().default(12),
+    status: text("status", { enum: CLOUD_PAYMENT_STATUSES })
+      .notNull()
+      .default("created"),
+    paidAt: text("paid_at"),
+    refundedAt: text("refunded_at"),
+    disputedAt: text("disputed_at"),
+    rawProviderStatus: text("raw_provider_status"),
+    idempotencyKey: text("idempotency_key").notNull(),
+    adminReviewRequired: integer("admin_review_required", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    adminReviewNote: text("admin_review_note"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [
+    uniqueIndex("cloud_payments_idempotency_unique").on(t.idempotencyKey),
+    uniqueIndex("cloud_payments_checkout_unique").on(t.providerCheckoutId),
+    uniqueIndex("cloud_payments_payment_id_unique").on(t.providerPaymentId),
+    index("cloud_payments_user_idx").on(t.userId),
+    index("cloud_payments_status_idx").on(t.status),
+  ],
+);
+
+export const cloudEntitlementGrants = sqliteTable(
+  "cloud_entitlement_grants",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    paymentId: integer("payment_id").references(() => cloudPayments.id, {
+      onDelete: "set null",
+    }),
+    startsAt: text("starts_at").notNull(),
+    endsAt: text("ends_at").notNull(),
+    status: text("status", {
+      enum: ["active", "revoked", "superseded"],
+    })
+      .notNull()
+      .default("active"),
+    revokedAt: text("revoked_at"),
+    revocationReason: text("revocation_reason"),
+    source: text("source").notNull().default("payment"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+    updatedAt: text("updated_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [
+    uniqueIndex("cloud_grants_payment_unique").on(t.paymentId),
+    index("cloud_grants_user_idx").on(t.userId),
+    index("cloud_grants_ends_idx").on(t.endsAt),
+  ],
+);
+
+export const processedWebhookEvents = sqliteTable(
+  "processed_webhook_events",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    provider: text("provider").notNull(),
+    providerEventId: text("provider_event_id").notNull(),
+    eventType: text("event_type").notNull(),
+    receivedAt: text("received_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+    processedAt: text("processed_at"),
+    processingStatus: text("processing_status", {
+      enum: ["received", "processed", "ignored", "failed"],
+    })
+      .notNull()
+      .default("received"),
+    errorSummary: text("error_summary"),
+  },
+  (t) => [
+    uniqueIndex("processed_webhook_provider_event_unique").on(
+      t.provider,
+      t.providerEventId,
+    ),
+    index("processed_webhook_type_idx").on(t.eventType),
+  ],
+);
+
+export const cloudAdminAuditLog = sqliteTable(
+  "cloud_admin_audit_log",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    adminUserId: integer("admin_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    targetUserId: integer("target_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    action: text("action").notNull(),
+    reason: text("reason").notNull(),
+    beforeJson: text("before_json"),
+    afterJson: text("after_json"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [index("cloud_admin_audit_target_idx").on(t.targetUserId)],
+);

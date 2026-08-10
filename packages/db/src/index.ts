@@ -70,3 +70,41 @@ export {
 } from "./account-privacy.js";
 export { searchAutocomplete } from "./autocomplete.js";
 export type { AutocompleteHit } from "./autocomplete.js";
+export {
+  addCalendarMonthsUtc,
+  addDaysUtc,
+  applyPaidCloudPayment,
+  createPendingCloudPayment,
+  deriveEntitlementStatus,
+  ensureCloudEntitlementRow,
+  findOpenPendingCheckout,
+  getCloudEntitlementView,
+  getPaymentByCheckoutId,
+  getPaymentByUuid,
+  grantManualCloudAccess,
+  listCloudEntitlementsForAdmin,
+  listCloudPaymentsForAdmin,
+  listCloudPaymentsForUser,
+  loadCloudConfigFromEnv,
+  markPaymentDisputed,
+  markPaymentRefunded,
+  recomputeCloudEntitlement,
+  recordAdminCloudAction,
+  revokeGrantForPayment,
+  revokeManualCloudAccess,
+} from "./cloud-entitlement.js";
+export type {
+  CloudAccessMode,
+  CloudConfig,
+  CloudEntitlementView,
+} from "./cloud-entitlement.js";
+export {
+  beginWebhookEvent,
+  countCloudSpools,
+  finishWebhookEvent,
+  listEntitlementsNeedingReminders,
+  markReminderSent,
+  purgeExpiredCloudInventories,
+} from "./cloud-lifecycle.js";
+export type { ReminderKind } from "./cloud-lifecycle.js";
+

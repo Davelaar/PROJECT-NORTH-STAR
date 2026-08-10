@@ -69,9 +69,15 @@ export default async function PrivacyPage() {
 
       <h2>Cloud My Spools</h2>
       <p>
-        Optional sync requires an account and an explicit confirmation step. Ownership
-        checks apply to every read and write. Private notes, storage locations and
-        identities are not exposed via public QR resolution.
+        My Spools Cloud is optional prepaid hosting (€19.99 for 12 months, one-time
+        Stripe Checkout in payment mode). It does not renew automatically and OpenFilament
+        cannot charge you again unless you start a new payment. Sync requires an account,
+        active (or grace) entitlement, and an explicit confirmation step. Ownership checks
+        apply to every read and write. Private notes, storage locations and identities are
+        not exposed via public QR resolution. Stripe processes payment details; we do not
+        store card numbers. After expiry: grace, then read-only export, then Cloud inventory
+        deletion per retention settings. Payment/accounting records may remain after inventory
+        deletion.
       </p>
 
       <h2>Your rights</h2>

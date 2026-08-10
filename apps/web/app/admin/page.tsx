@@ -41,6 +41,9 @@ export default function AdminPage() {
           </div>
         ))}
       </dl>
+      <p>
+        <Link href="/admin/cloud">Cloud payments & entitlements</Link>
+      </p>
     </div>
   );
 }

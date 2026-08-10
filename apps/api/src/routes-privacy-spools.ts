@@ -23,6 +23,7 @@ import {
 } from "@open-filament/db";
 import { resolveBearerUser, type AuthUser } from "./auth.js";
 import { badRequest, notFound, unauthorized } from "./errors.js";
+import { assertCloudWriteAccess } from "./payments/access.js";
 
 function db(app: FastifyInstance): AppDb {
   return app.db;
@@ -151,6 +152,12 @@ export async function registerPrivacySpoolRoutes(app: FastifyInstance) {
     handler: async (req, reply) => {
       const user = await requireUser(req, reply);
       if (!user) return;
+      const access = assertCloudWriteAccess(db(app), user.id);
+      if (!access.ok) {
+        return reply.status(access.status).send({
+          error: { code: "cloud_access_required", message: access.message },
+        });
+      }
       const parsed = spoolBodySchema.safeParse(req.body);
       if (!parsed.success) {
         return badRequest(reply, "Invalid spool", parsed.error.flatten());
@@ -165,6 +172,12 @@ export async function registerPrivacySpoolRoutes(app: FastifyInstance) {
     async (req, reply) => {
       const user = await requireUser(req, reply);
       if (!user) return;
+      const access = assertCloudWriteAccess(db(app), user.id);
+      if (!access.ok) {
+        return reply.status(access.status).send({
+          error: { code: "cloud_access_required", message: access.message },
+        });
+      }
       const parsed = spoolBodySchema.safeParse(req.body);
       if (!parsed.success) {
         return badRequest(reply, "Invalid spool", parsed.error.flatten());
@@ -183,6 +196,12 @@ export async function registerPrivacySpoolRoutes(app: FastifyInstance) {
     handler: async (req, reply) => {
       const user = await requireUser(req, reply);
       if (!user) return;
+      const access = assertCloudWriteAccess(db(app), user.id);
+      if (!access.ok) {
+        return reply.status(access.status).send({
+          error: { code: "cloud_access_required", message: access.message },
+        });
+      }
       const body = z
         .object({
           spools: z.array(spoolBodySchema).max(200),
@@ -208,6 +227,12 @@ export async function registerPrivacySpoolRoutes(app: FastifyInstance) {
     async (req, reply) => {
       const user = await requireUser(req, reply);
       if (!user) return;
+      const access = assertCloudWriteAccess(db(app), user.id);
+      if (!access.ok) {
+        return reply.status(access.status).send({
+          error: { code: "cloud_access_required", message: access.message },
+        });
+      }
       const hard = (req.query as { hard?: string }).hard === "1";
       const ok = hard
         ? hardDeleteUserSpool(db(app), user.id, req.params.uuid)

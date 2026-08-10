@@ -33,9 +33,17 @@ export default async function TermsPage() {
       </p>
       <h2>Accounts and My Spools</h2>
       <p>
-        Accounts are optional for browsing and downloads. Cloud My Spools require an
-        account. Abuse, scraping that harms the service, or attempts to access other users’
-        private data are prohibited.
+        Accounts are optional for browsing and downloads. My Spools Local is free and
+        stored in your browser. My Spools Cloud is an optional prepaid service:
+        €19.99 for 12 months as a one-time Stripe payment. There is no automatic
+        renewal, no stored payment mandate for future charges, and no charge without
+        you starting a new Checkout. After expiry, a grace period and read-only export
+        window apply before Cloud inventory deletion; Local My Spools remains usable.
+      </p>
+      <p>
+        Refunds and disputes are handled according to the Cloud refund policy. Payment
+        records may be retained for accounting after Cloud inventory is deleted.
+        Stripe processes payment data; OpenFilament does not store card numbers.
       </p>
       <h2>Contributions</h2>
       <p>

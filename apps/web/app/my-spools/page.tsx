@@ -104,6 +104,12 @@ export default function MySpoolsPage() {
       <p>{m.spools.lead}</p>
       <p className="muted">{m.spools.localWarn}</p>
       <p className="muted">{m.spools.syncNeverAuto}</p>
+      <p>
+        <Link href="/my-spools/cloud">{m.cloud.pageTitle}</Link>
+        {" · "}
+        <Link href="/my-spools/billing">{m.cloud.billingLink}</Link>
+      </p>
+      <p className="muted">{m.cloud.syncRequiresCloud}</p>
 
       <div className="row gap">
         <button type="button" className="btn" onClick={() => setEditing({ status: "sealed" })}>

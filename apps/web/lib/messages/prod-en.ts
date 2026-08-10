@@ -102,3 +102,61 @@ export const legalPagesEn = {
     "This page includes owner placeholders marked clearly. They are release blockers until replaced.",
   effective: "Effective date",
 };
+
+export const cloudEn = {
+  navLink: "Cloud",
+  billingLink: "Billing history",
+  pageTitle: "My Spools Cloud",
+  pageLead:
+    "Secure cloud storage and cross-device sync for your spool inventory. Local My Spools stays free on this device.",
+  localTitle: "My Spools Local — free",
+  localBody:
+    "Complete inventory on this device (IndexedDB). No account required. Export backups regularly — clearing browser data can remove local inventory.",
+  cloudTitle: "My Spools Cloud — €19.99 for 12 months",
+  priceLine: "€19.99 for 12 months",
+  oneTime: "One-time payment",
+  noAutoRenewal: "No automatic renewal",
+  neverCharge:
+    "We will never charge you again unless you choose to purchase another 12 months.",
+  includesTitle: "Included with Cloud",
+  includeSync: "Synchronisation across devices",
+  includeBackup: "Server-side backups on our VPS",
+  includeRecovery: "Account recovery for Cloud inventory",
+  includeExport: "Cloud JSON export anytime during access, grace and retention",
+  statusLabel: "Cloud status",
+  validUntil: "Cloud access valid until",
+  graceUntil: "Grace period until",
+  readOnlyFrom: "Read-only from",
+  deletionAt: "Cloud data deletion scheduled around",
+  buyCta: "Buy 12 months of Cloud — €19.99",
+  extendCta: "Extend Cloud by 12 months — €19.99",
+  extendHint:
+    "Purchasing another 12 months extends access from the current expiry date.",
+  loginRequired: "Sign in to buy or manage My Spools Cloud.",
+  checkoutUnavailable: "Checkout is not available yet (configuration pending).",
+  termsLink: "Terms",
+  privacyLink: "Privacy",
+  retentionHint:
+    "After expiry: grace period, then read-only export window, then Cloud inventory deletion. Local My Spools remains fully usable.",
+  vatUnspecified:
+    "Tax presentation is not yet configured by the operator (VAT inclusive/exclusive).",
+  successTitle: "Payment status",
+  verifying:
+    "We are verifying your payment with Stripe. Cloud access will activate after payment confirmation.",
+  activatedTitle: "My Spools Cloud is active",
+  paidOnce: "Paid once",
+  autoRenewalOff: "Automatic renewal: Off",
+  pendingPayment:
+    "Your payment is still processing. We will activate Cloud after Stripe confirms it.",
+  failedPayment:
+    "Payment was not completed. No Cloud access was added and no future payment will be attempted.",
+  billingTitle: "Cloud billing history",
+  billingLead:
+    "One-time payments only. These are not recurring invoices. OpenFilament does not store card details.",
+  receipt: "Receipt",
+  accessPeriod: "Access period",
+  exportCloud: "Export Cloud spools (JSON)",
+  backToSpools: "Back to My Spools",
+  syncRequiresCloud:
+    "Cloud sync requires an active prepaid Cloud period (or grace). Local inventory stays free.",
+};

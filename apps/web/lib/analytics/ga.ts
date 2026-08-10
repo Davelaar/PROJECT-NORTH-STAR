@@ -97,6 +97,8 @@ export type SafeAnalyticsEvent =
   | "rfid_workflow_opened"
   | "local_spool_created"
   | "cloud_sync_enabled"
+  | "cloud_checkout_started"
+  | "cloud_payment_confirmed"
   | "contribution_started"
   | "contribution_completed";
 
