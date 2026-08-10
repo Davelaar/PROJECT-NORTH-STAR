@@ -31,7 +31,11 @@ export function buildOpenApiDocument(baseUrl: string) {
         get: { summary: "Community recommendation aggregation", responses: ok },
       },
       "/api/v1/variants/{uuid}/qr": {
-        get: { summary: "QR code data URL for variant short link", responses: ok },
+        get: {
+          summary:
+            "Label metadata + path/identityUri for client-side QR (no fixed domain)",
+          responses: ok,
+        },
       },
       "/api/v1/profiles/{uuid}": { get: { summary: "Get calibration profile", responses: ok } },
       "/api/v1/profiles/{uuid}/revisions": { get: { summary: "List revisions", responses: ok } },
@@ -73,6 +77,15 @@ export function buildOpenApiDocument(baseUrl: string) {
         },
       },
       "/api/v1/printers": { get: { summary: "List printers", responses: ok } },
+      "/api/v1/printer-brands": {
+        get: { summary: "List printer brands and models", responses: ok },
+      },
+      "/api/v1/printers/resolve": {
+        post: {
+          summary: "Resolve or create printer + toolhead (auth)",
+          responses: ok,
+        },
+      },
       "/api/v1/printers/{uuid}": { get: { summary: "Get printer", responses: ok } },
       "/api/v1/toolheads": { get: { summary: "List toolheads", responses: ok } },
       "/api/v1/build-plates": { get: { summary: "List build plates", responses: ok } },
@@ -99,6 +112,19 @@ export function buildOpenApiDocument(baseUrl: string) {
           responses: ok,
         },
       },
+      "/api/v1/variants/{uuid}/openprinttag": {
+        get: {
+          summary:
+            "Map variant catalog fields to OpenPrintTag main payload (encode planned)",
+          responses: ok,
+        },
+      },
+      "/api/v1/variants/{uuid}/swatch.svg": {
+        get: {
+          summary: "SVG color swatch preview for a filament variant",
+          responses: ok,
+        },
+      },
       "/api/v1/exports/creality": {
         post: {
           summary: "Export Creality Print user preset + bridge install payload",
@@ -108,6 +134,18 @@ export function buildOpenApiDocument(baseUrl: string) {
       "/api/v1/exports/orca": {
         post: {
           summary: "Export OrcaSlicer filament preset + bridge install payload",
+          responses: ok,
+        },
+      },
+      "/api/v1/exports/prusaslicer": {
+        post: {
+          summary: "Export PrusaSlicer filament INI / config bundle",
+          responses: ok,
+        },
+      },
+      "/api/v1/exports/bambu": {
+        post: {
+          summary: "Export Bambu Studio filament preset + bridge install payload",
           responses: ok,
         },
       },

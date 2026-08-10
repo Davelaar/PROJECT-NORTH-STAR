@@ -1,7 +1,9 @@
 import { RfidForm } from "./rfid-form";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
-export default function RfidPage() {
+export default async function RfidPage() {
+  const { messages } = await getLocaleMessages();
+
   return (
     <div>
       <h1>{messages.rfid.heading}</h1>

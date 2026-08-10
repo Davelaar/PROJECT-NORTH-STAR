@@ -136,22 +136,35 @@ export const filamentProducts = sqliteTable(
     slug: text("slug").notNull(),
     description: text("description"),
     diameterMm: real("diameter_mm").notNull().default(1.75),
+    diameterToleranceMm: real("diameter_tolerance_mm"),
+    minNozzleDiameterMm: real("min_nozzle_diameter_mm"),
     nominalSpoolWeightG: real("nominal_spool_weight_g"),
     densityGCm3: real("density_g_cm3"),
     datasheetUrl: text("datasheet_url"),
+    safetySheetUrl: text("safety_sheet_url"),
     mfrNozzleTempMinC: real("mfr_nozzle_temp_min_c"),
     mfrNozzleTempMaxC: real("mfr_nozzle_temp_max_c"),
     mfrBedTempMinC: real("mfr_bed_temp_min_c"),
     mfrBedTempMaxC: real("mfr_bed_temp_max_c"),
     mfrChamberTempC: real("mfr_chamber_temp_c"),
+    mfrChamberTempMinC: real("mfr_chamber_temp_min_c"),
+    mfrChamberTempMaxC: real("mfr_chamber_temp_max_c"),
+    mfrPreheatTempC: real("mfr_preheat_temp_c"),
     dryingTempC: real("drying_temp_c"),
     dryingDurationHours: real("drying_duration_hours"),
+    /** Manufacturer / catalog shrinkage claims (%). Community values live on revisions. */
+    shrinkagePercentXy: real("shrinkage_percent_xy"),
+    shrinkagePercentZ: real("shrinkage_percent_z"),
+    shoreHardnessA: real("shore_hardness_a"),
+    shoreHardnessD: real("shore_hardness_d"),
     storageRecommendation: text("storage_recommendation"),
     abrasive: integer("abrasive", { mode: "boolean" }).notNull().default(false),
     hygroscopicRating: text("hygroscopic_rating"),
     foodContactDocumented: integer("food_contact_documented", {
       mode: "boolean",
     }),
+    /** JSON: OFD/material slicer hint blobs (temps, profile names) — not calibrations. */
+    catalogSlicerHintsJson: text("catalog_slicer_hints_json"),
     sourceType: text("source_type"),
     sourceReference: text("source_reference"),
     verified: integer("verified", { mode: "boolean" }).notNull().default(false),
@@ -206,6 +219,10 @@ export const filamentVariants = sqliteTable(
     ean: text("ean"),
     upc: text("upc"),
     gtin: text("gtin"),
+    /** Optional product photo URL (HTTPS). Color swatch is the fallback preview. */
+    previewImageUrl: text("preview_image_url"),
+    /** JSON array: { storeName, url, storeSlug? }[] from catalog buy links. */
+    purchaseLinksJson: text("purchase_links_json"),
     spoolWeightG: real("spool_weight_g"),
     spoolMaterial: text("spool_material"),
     notes: text("notes"),
@@ -240,6 +257,22 @@ export const printerModels = sqliteTable(
     buildVolumeZMm: real("build_volume_z_mm"),
     firmwareFamily: text("firmware_family"),
     kinematics: text("kinematics"),
+    /** Printing technology: fff | resin | sls | other */
+    technology: text("technology"),
+    /** Upstream catalog status e.g. current / discontinued */
+    catalogStatus: text("catalog_status"),
+    powerW: real("power_w"),
+    heaterPowerW: real("heater_power_w"),
+    maxSpeedMmS: real("max_speed_mm_s"),
+    pixelSizeUm: real("pixel_size_um"),
+    resolutionX: integer("resolution_x"),
+    resolutionY: integer("resolution_y"),
+    typicalNozzleTempC: real("typical_nozzle_temp_c"),
+    typicalBedTempC: real("typical_bed_temp_c"),
+    sourceType: text("source_type"),
+    sourceReference: text("source_reference"),
+    /** JSON extras (cost, sources list, full_name, …) */
+    metadataJson: text("metadata_json"),
     maxNozzleTempC: real("max_nozzle_temp_c"),
     maxBedTempC: real("max_bed_temp_c"),
     chamberCapable: integer("chamber_capable", { mode: "boolean" })
@@ -375,6 +408,10 @@ export const calibrationRevisions = sqliteTable(
     bedTempOtherLayersC: real("bed_temp_other_layers_c"),
     chamberTempC: real("chamber_temp_c"),
     enclosureRecommended: integer("enclosure_recommended", { mode: "boolean" }),
+    /** True when an active chamber heater was used during the test. */
+    chamberHeaterActive: integer("chamber_heater_active", { mode: "boolean" })
+      .notNull()
+      .default(false),
     // Extrusion
     flowRatio: real("flow_ratio"),
     pressureAdvance: real("pressure_advance"),
@@ -395,6 +432,9 @@ export const calibrationRevisions = sqliteTable(
     // Speed limits (filament-specific)
     recommendedOuterWallMaxMms: real("recommended_outer_wall_max_mms"),
     recommendedBridgeSpeedMms: real("recommended_bridge_speed_mms"),
+    // Dimensional (slicer filament shrinkage)
+    shrinkagePercentXy: real("shrinkage_percent_xy"),
+    shrinkagePercentZ: real("shrinkage_percent_z"),
     // Preparation
     dryingTempC: real("drying_temp_c"),
     dryingDurationHours: real("drying_duration_hours"),

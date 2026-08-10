@@ -49,6 +49,8 @@ export type RevisionSource = {
   deretractionSpeedMms?: number | null;
   wipe?: boolean | null;
   zHopMm?: number | null;
+  shrinkagePercentXy?: number | null;
+  shrinkagePercentZ?: number | null;
   dryingTempC?: number | null;
   dryingDurationHours?: number | null;
   recommendedMaxRhPercent?: number | null;
@@ -116,6 +118,10 @@ export function toCanonicalFromRevision(
       linearAdvance: n(source.linearAdvance),
       maxVolumetricFlowMm3s: n(source.maxVolumetricFlowMm3s),
       minVolumetricFlowMm3s: n(source.minVolumetricFlowMm3s),
+    },
+    dimensional: {
+      shrinkagePercentXy: n(source.shrinkagePercentXy),
+      shrinkagePercentZ: n(source.shrinkagePercentZ),
     },
     cooling: {
       fanMinPercent: n(source.fanMinPercent),

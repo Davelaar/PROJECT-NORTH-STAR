@@ -1,13 +1,15 @@
 # Deployment
 
-OpenFilament has two runtime layers:
+OpenFilament’s **standard** deployment is the **web app + API** behind HTTPS. The local bridge is optional and must stay on workstations.
 
 | Layer | Where it runs | Why |
 |-------|---------------|-----|
-| **Web + API** | A web server / VPS / Docker | Public catalog, profiles, search, docs |
-| **Local bridge** | Your Mac/PC (`127.0.0.1:8788`) | Creality/Orca install + RFID writer (must stay local) |
+| **Web / PWA + API** | VPS / Docker + Caddy | Public catalog, profiles, search, downloads, docs |
+| **Optional helper** | Your Mac/PC (`127.0.0.1:8788`) | Only for PC/SC RFID or allowlisted slicer-dir install |
 
-Do **not** expose the bridge on the public internet.
+Do **not** expose the helper on the public internet. Do **not** require users to run it for core website use.
+
+**Production domain:** [https://openfilament.nl](https://openfilament.nl) (and `www`).
 
 ---
 
@@ -16,45 +18,48 @@ Do **not** expose the bridge on the public internet.
 Background processes with logs under `.run/`:
 
 ```bash
-./scripts/start-stack.sh   # API :8787, Web :3000, Bridge :8788
+./scripts/start-stack.sh   # API :8787, Web :3000, Bridge :8788 (helper optional)
 ./scripts/stop-stack.sh
 ```
 
-Open **http://127.0.0.1:3000** (not the API port).
-
-The browser talks to `/api/*` on the same origin; Next.js rewrites to the API.
+Open **http://127.0.0.1:3000**. The browser talks to `/api/*` on the same origin; Next.js rewrites to the API.
 
 ---
 
-## Web server via Docker Compose
+## Production via Docker Compose (HTTPS)
 
-On a VPS with Docker installed:
+On the VPS (DNS A/AAAA for `openfilament.nl` / `www` already pointed at the host):
 
 ```bash
 git clone git@github.com:Davelaar/PROJECT-NORTH-STAR.git
 cd PROJECT-NORTH-STAR
 
-# optional: set secrets
-export SESSION_SECRET='long-random-string'
-export WEB_ORIGIN='https://your.domain'
+export SESSION_SECRET="$(openssl rand -hex 32)"
+export WEB_ORIGIN='https://openfilament.nl,https://www.openfilament.nl'
+export ACME_EMAIL='admin@openfilament.nl'
 
-docker compose up -d --build
+# Public ports 80/443 via Caddy; web stays on loopback :3000
+docker compose --profile proxy up -d --build
 ```
 
-- Site: `http://SERVER:3000`
-- With Caddy on port 80: `docker compose --profile proxy up -d --build`
+Caddy (`deploy/Caddyfile`) obtains Let’s Encrypt certificates, redirects HTTP→HTTPS for public hosts, and sets HSTS + baseline security headers.
 
-Data (SQLite) persists in the `of-data` volume.
+### Import the filament catalog (required for eSUN etc.)
 
-### First seed inside API container
+A fresh seed only creates demo fixtures (Flashforge / Creality). The real catalog comes from [openfilamentdatabase.org](https://openfilamentdatabase.org):
 
 ```bash
-docker compose exec api pnpm --filter @open-filament/db seed
-# or reset:
-docker compose exec api pnpm --filter @open-filament/db reset
+# on the VPS, inside the repo / API container:
+./scripts/bootstrap-catalog.sh
+# or:
+docker compose exec api ./scripts/bootstrap-catalog.sh
 ```
 
-Ensure `DATABASE_URL=file:/data/open-filament.sqlite` (compose default).
+That downloads `all.json.gz` and runs `pnpm db:import-ofd` (~150 brands / ~14k variants, including **eSUN 3D**).
+
+Check: `curl -s https://openfilament.nl/api/v1/search?q=esun | head`
+
+`GET /api/v1/health` reports `catalog.fixtureOnly: true` until OFD is imported.
 
 ---
 
@@ -62,13 +67,27 @@ Ensure `DATABASE_URL=file:/data/open-filament.sqlite` (compose default).
 
 | Variable | Service | Notes |
 |----------|---------|-------|
-| `WEB_ORIGIN` | API | CORS allowlist (comma-separated) |
+| `WEB_ORIGIN` | API | CORS allowlist (comma-separated). Production: `https://openfilament.nl,https://www.openfilament.nl` |
 | `API_HOST` | API | Use `0.0.0.0` in containers |
 | `DATABASE_URL` | API | `file:/data/...` in Docker |
 | `API_INTERNAL_URL` / `API_REWRITE_TARGET` | Web | `http://api:8787` in Compose |
 | `NEXT_PUBLIC_API_URL` | Web | Leave empty for same-origin `/api` |
-| `SESSION_SECRET` | API | Change in production |
-| `OF_BRIDGE_TOKEN` | Bridge (local only) | Matches web bridge calls |
+| `SESSION_SECRET` | Compose | Required for production compose; rotate regularly |
+| `ACME_EMAIL` | Caddy | Let’s Encrypt contact |
+| `AMAZON_AFFILIATE_TAG` | API / OFD import | Default `3dapeldoorn-21` — appended as `tag=` on Amazon where-to-buy links |
+| `OF_BRIDGE_TOKEN` | Optional helper (local only) | Matches advanced web helper calls |
+
+---
+
+## Security checklist (public site)
+
+1. Only expose **80/443** publicly (Caddy). Keep API on the Docker network; do not publish `:8787`.
+2. Set `WEB_ORIGIN` to your HTTPS origins only.
+3. Change seed credentials (`admin` / `fixture_contributor`).
+4. Never run `apps/bridge` on the VPS public interface.
+5. Prefer `docker compose --profile proxy` so the Next port is loopback-only.
+
+See [`SECURITY.md`](./SECURITY.md).
 
 ---
 
@@ -78,12 +97,12 @@ Any Node 22 host works:
 
 1. `pnpm install && pnpm -r --filter './packages/*' build`
 2. `pnpm --filter @open-filament/api build && pnpm --filter @open-filament/web build`
-3. Run API (`API_HOST=0.0.0.0`) and Web (`next start`) under systemd / PM2 / Railway / Fly / Render
-4. Point a reverse proxy at the web process (port 3000)
-5. Keep the Rust bridge on each workstation that installs presets / writes RFID
+3. Run API (`API_HOST=0.0.0.0`) and Web (`next start`) under systemd / PM2
+4. Point Caddy/nginx at the web process with TLS
+5. Optionally run the Rust helper on workstations that need PC/SC RFID or allowlisted installs
 
 ---
 
-## Why it “keeps dying” in Cursor
+## Why local `pnpm dev` “keeps dying” in Cursor
 
-`pnpm dev` started from a chat/agent shell is often killed when that session ends (exit 137). Use `./scripts/start-stack.sh` so processes are detached with `nohup`, or deploy web+API to a VPS.
+`pnpm dev` started from a chat/agent shell is often killed when that session ends (exit 137). Use `./scripts/start-stack.sh` so processes are detached with `nohup`, or deploy web+API to the VPS.

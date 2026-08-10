@@ -17,6 +17,8 @@ SQLite file store via Drizzle ORM (`packages/db`). Path from `DATABASE_URL` or d
 
 Public IDs are UUIDs; internal PKs are integers.
 
+Catalog + calibration parameter details: [`FILAMENT_PARAMETERS.md`](./FILAMENT_PARAMETERS.md). Default nozzle size for profiles: **0.4 mm**.
+
 ## Commands
 
 ```bash
@@ -24,6 +26,7 @@ pnpm db:generate   # drizzle-kit generate
 pnpm db:migrate
 pnpm db:seed       # no-op if already seeded
 pnpm db:reset      # delete file + migrate + seed
+pnpm db:fetch-ofd && pnpm db:import-ofd
 ```
 
 Startup of the API calls `ensureMigrated` and seeds when the catalog is empty.

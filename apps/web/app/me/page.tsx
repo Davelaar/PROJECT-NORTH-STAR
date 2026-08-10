@@ -1,12 +1,14 @@
 "use client";
 
+import { useMessages } from "@/app/components/messages-provider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { loadAuth } from "@/lib/auth";
-import { messages } from "@/lib/messages/en";
 
 export default function MePage() {
+  const messages = useMessages();
+
   const [data, setData] = useState<{
     user: { uuid: string; username: string; role: string };
     profiles: Array<{ uuid: string; title: string }>;

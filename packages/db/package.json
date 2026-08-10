@@ -19,7 +19,12 @@
     "reset": "tsx src/reset.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
-    "lint": "tsc -p tsconfig.json --noEmit"
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "import-ofd": "tsx src/import-ofd.ts",
+    "import-ofd-starters": "tsx src/import-ofd-starter-profiles.ts",
+    "seed-printers": "tsx src/printer-catalog.ts",
+    "import-open-printers": "tsx src/import-open-printers.ts",
+    "dedupe-brands": "tsx src/dedupe-brands.ts"
   },
   "dependencies": {
     "@open-filament/domain": "workspace:*",

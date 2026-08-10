@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
 type Profile = {
   uuid: string;
@@ -19,6 +19,8 @@ export default async function ComparePage({
 }: {
   searchParams: Promise<{ ids?: string }>;
 }) {
+  const { messages } = await getLocaleMessages();
+  const sp = messages.specs;
   const { ids = "" } = await searchParams;
   const list = ids.split(",").map((s) => s.trim()).filter(Boolean);
   if (list.length < 2) {
@@ -44,15 +46,15 @@ export default async function ComparePage({
               <Link href={`/profiles/${p.uuid}`}>{p.title}</Link>
             </h3>
             <dl className="kv">
-              <dt>Nozzle</dt>
+              <dt>{sp.nozzleTemp}</dt>
               <dd>{p.currentRevision?.nozzleTempOtherLayersC ?? "—"}</dd>
-              <dt>Bed</dt>
+              <dt>{sp.bedTemp}</dt>
               <dd>{p.currentRevision?.bedTempOtherLayersC ?? "—"}</dd>
-              <dt>Flow</dt>
+              <dt>{sp.flow}</dt>
               <dd>{p.currentRevision?.flowRatio ?? "—"}</dd>
-              <dt>PA</dt>
+              <dt>{sp.pressureAdvance}</dt>
               <dd>{p.currentRevision?.pressureAdvance ?? "—"}</dd>
-              <dt>Max VF</dt>
+              <dt>{sp.maxVolumetric}</dt>
               <dd>{p.currentRevision?.maxVolumetricFlowMm3s ?? "—"}</dd>
             </dl>
           </section>

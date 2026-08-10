@@ -2,3 +2,8 @@ export * from "./validation.js";
 export * from "./aggregation.js";
 export * from "./quality.js";
 export * from "./color.js";
+export * from "./color-query.js";
+export * from "./catalog-sort.js";
+export * from "./amazon-affiliate.js";
+export * from "./name-match.js";
+export * from "./slicer-registry.js";

@@ -1,4 +1,4 @@
-//! Detect local Creality Print / OrcaSlicer filament directories.
+//! Detect local Creality Print / OrcaSlicer / PrusaSlicer / Bambu Studio dirs.
 
 use serde::Serialize;
 use std::path::{Path, PathBuf};
@@ -20,15 +20,10 @@ fn home_dir() -> Option<PathBuf> {
 
 fn creality_candidates(home: &Path) -> Vec<PathBuf> {
     let mut out = Vec::new();
-    // macOS
-    out.push(
-        home.join("Library/Application Support/Creality/Creality Print"),
-    );
-    // Windows
+    out.push(home.join("Library/Application Support/Creality/Creality Print"));
     if let Some(appdata) = std::env::var_os("APPDATA") {
         out.push(PathBuf::from(appdata).join("Creality/Creality Print"));
     }
-    // Linux
     out.push(home.join(".config/Creality/Creality Print"));
     out.push(home.join(".local/share/Creality/Creality Print"));
     out
@@ -44,6 +39,31 @@ fn orca_candidates(home: &Path) -> Vec<PathBuf> {
     out
 }
 
+fn bambu_candidates(home: &Path) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    out.push(home.join("Library/Application Support/BambuStudio"));
+    out.push(home.join("Library/Application Support/BambuStudioBeta"));
+    if let Some(appdata) = std::env::var_os("APPDATA") {
+        out.push(PathBuf::from(&appdata).join("BambuStudio"));
+        out.push(PathBuf::from(&appdata).join("BambuStudioBeta"));
+    }
+    out.push(home.join(".config/BambuStudio"));
+    out
+}
+
+fn prusa_candidates(home: &Path) -> Vec<PathBuf> {
+    let mut out = Vec::new();
+    // PrusaSlicer stores user filaments under <root>/filament (INI files)
+    out.push(home.join("Library/Application Support/PrusaSlicer"));
+    out.push(home.join("Library/Application Support/PrusaSlicer-alpha"));
+    out.push(home.join("Library/Application Support/PrusaSlicer-beta"));
+    if let Some(appdata) = std::env::var_os("APPDATA") {
+        out.push(PathBuf::from(&appdata).join("PrusaSlicer"));
+    }
+    out.push(home.join(".config/PrusaSlicer"));
+    out
+}
+
 /// Walk `root/*/user/*/filament` and `root/user/*/filament`.
 fn find_filament_dirs(root: &Path) -> Vec<PathBuf> {
     let mut found = Vec::new();
@@ -51,7 +71,6 @@ fn find_filament_dirs(root: &Path) -> Vec<PathBuf> {
         return found;
     }
 
-    // Versioned Creality: <root>/<ver>/user/<id>/filament
     if let Ok(entries) = std::fs::read_dir(root) {
         for entry in entries.flatten() {
             let ver = entry.path();
@@ -60,7 +79,6 @@ fn find_filament_dirs(root: &Path) -> Vec<PathBuf> {
         }
     }
 
-    // Orca: <root>/user/default/filament
     collect_user_filament(&root.join("user"), &mut found);
 
     found.sort();
@@ -82,9 +100,34 @@ fn collect_user_filament(user_root: &Path, found: &mut Vec<PathBuf>) {
     }
 }
 
+/// Prusa: `<config>/filament` directory of .ini presets.
+fn find_prusa_filament_dirs(root: &Path) -> Vec<PathBuf> {
+    let mut found = Vec::new();
+    if !root.exists() {
+        return found;
+    }
+    let filament = root.join("filament");
+    if filament.is_dir() {
+        found.push(filament);
+    } else if root.exists() {
+        // Directory may not exist yet — still report parent for create-on-install
+        found.push(filament);
+    }
+    found
+}
+
 /// When set, all install/list operations use this directory (tests / dry-run).
 pub fn filament_root_override() -> Option<PathBuf> {
     std::env::var_os("OF_BRIDGE_FILAMENT_ROOT_OVERRIDE").map(PathBuf::from)
+}
+
+fn with_override(mut dirs: Vec<PathBuf>) -> Vec<PathBuf> {
+    if let Some(over) = filament_root_override() {
+        if over.is_dir() || over.parent().is_some() {
+            dirs.insert(0, over);
+        }
+    }
+    dirs
 }
 
 pub fn detect_slicers() -> Vec<DetectedSlicer> {
@@ -102,6 +145,20 @@ pub fn detect_slicers() -> Vec<DetectedSlicer> {
                 DetectedSlicer {
                     id: "orca",
                     name: "OrcaSlicer",
+                    found: false,
+                    filament_dirs: vec![],
+                    platform_hints: vec![],
+                },
+                DetectedSlicer {
+                    id: "prusaslicer",
+                    name: "PrusaSlicer",
+                    found: false,
+                    filament_dirs: vec![],
+                    platform_hints: vec![],
+                },
+                DetectedSlicer {
+                    id: "bambu_studio",
+                    name: "Bambu Studio",
                     found: false,
                     filament_dirs: vec![],
                     platform_hints: vec![],
@@ -124,13 +181,26 @@ pub fn detect_slicers() -> Vec<DetectedSlicer> {
         orca_dirs.extend(find_filament_dirs(&cand));
     }
 
-    if let Some(over) = filament_root_override() {
-        // Override is treated as a single allowlisted filament dir for installs.
-        if over.is_dir() || over.parent().is_some() {
-            creality_dirs.insert(0, over.clone());
-            orca_dirs.insert(0, over);
-        }
+    let mut prusa_dirs = Vec::new();
+    let mut prusa_hints = Vec::new();
+    for cand in prusa_candidates(&home) {
+        prusa_hints.push(cand.display().to_string());
+        prusa_dirs.extend(find_prusa_filament_dirs(&cand));
     }
+    // Only mark found when the config root exists (not merely projected filament path)
+    let prusa_found = prusa_candidates(&home).iter().any(|p| p.exists());
+
+    let mut bambu_dirs = Vec::new();
+    let mut bambu_hints = Vec::new();
+    for cand in bambu_candidates(&home) {
+        bambu_hints.push(cand.display().to_string());
+        bambu_dirs.extend(find_filament_dirs(&cand));
+    }
+
+    let creality_dirs = with_override(creality_dirs);
+    let orca_dirs = with_override(orca_dirs);
+    let prusa_dirs = with_override(prusa_dirs);
+    let bambu_dirs = with_override(bambu_dirs);
 
     vec![
         DetectedSlicer {
@@ -152,6 +222,26 @@ pub fn detect_slicers() -> Vec<DetectedSlicer> {
                 .map(|p| p.display().to_string())
                 .collect(),
             platform_hints: orca_hints,
+        },
+        DetectedSlicer {
+            id: "prusaslicer",
+            name: "PrusaSlicer",
+            found: prusa_found || filament_root_override().is_some(),
+            filament_dirs: prusa_dirs
+                .iter()
+                .map(|p| p.display().to_string())
+                .collect(),
+            platform_hints: prusa_hints,
+        },
+        DetectedSlicer {
+            id: "bambu_studio",
+            name: "Bambu Studio",
+            found: !bambu_dirs.is_empty(),
+            filament_dirs: bambu_dirs
+                .iter()
+                .map(|p| p.display().to_string())
+                .collect(),
+            platform_hints: bambu_hints,
         },
     ]
 }

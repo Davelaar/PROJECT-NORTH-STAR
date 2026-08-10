@@ -5,6 +5,10 @@ import { v4 as uuid } from "uuid";
 import { hashPassword } from "./password.js";
 import { rebuildSearchIndex } from "./search.js";
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function seed(dbPath?: string) {
   ensureMigrated(dbPath);
@@ -12,9 +16,30 @@ export async function seed(dbPath?: string) {
 
   const existing = db.select().from(schema.manufacturers).all();
   if (existing.length > 0) {
-    console.log("Database already seeded; skipping.");
-    return;
+    console.log("Database already seeded; skipping fixture seed.");
+  } else {
+    await seedFixtures(dbPath);
   }
+
+  const { ensurePrinterCatalog } = await import("./printer-catalog.js");
+  ensurePrinterCatalog(dbPath);
+
+  const ofdPath =
+    process.env.OFD_DATASET_PATH ??
+    path.resolve(__dirname, "../../../data/external/ofd-all.json");
+  if (fs.existsSync(ofdPath)) {
+    const { importOfdCatalog } = await import("./import-ofd.js");
+    await importOfdCatalog(dbPath, ofdPath);
+  } else {
+    console.log(
+      `OFD catalog dataset not found (${ofdPath}). Run ./scripts/fetch-ofd-catalog.sh then pnpm db:import-ofd`,
+    );
+  }
+}
+
+async function seedFixtures(dbPath?: string) {
+  ensureMigrated(dbPath);
+  const db = createDb(dbPath);
 
   const adminPassword = await hashPassword("admin-change-me");
   const contributorPassword = await hashPassword("contributor-change-me");
@@ -209,7 +234,7 @@ export async function seed(dbPath?: string) {
       printerModelId: k2plus!.id,
       hotendName: "Stock",
       hotendRevision: "1",
-      nozzleDiameterMm: 0.6,
+      nozzleDiameterMm: 0.4,
       nozzleMaterial: "hardened_steel",
       nozzleType: "standard",
       highFlow: false,
@@ -238,7 +263,7 @@ export async function seed(dbPath?: string) {
       toolheadConfigId: toolhead!.id,
       buildPlateId: pei!.id,
       createdByUserId: contributor.id,
-      title: "TEST Flashforge ASA Burnt Titanium — K2 Plus 0.6",
+      title: "TEST Flashforge ASA Burnt Titanium — K2 Plus 0.4",
       isSyntheticFixture: true,
     })
     .returning()
@@ -364,6 +389,22 @@ export async function seed(dbPath?: string) {
     .returning()
     .all();
 
+  db.insert(schema.rfidSchemes)
+    .values({
+      uuid: "88888888-8888-4888-8888-888888888802",
+      name: "OpenPrintTag",
+      vendor: "OpenPrintTag",
+      version: "fields-0",
+      tagTechnology: "ISO15693",
+      tagCapacityBytes: null,
+      requiresAuthentication: false,
+      encodingVersion: "planned-ndef-cbor",
+      status: "active",
+      notes:
+        "OpenPrintTag (ISO 15693 + NDEF application/vnd.openprinttag + CBOR). UUID/field mapping ships; binary encode planned (experimental). Spec: https://specs.openprinttag.org/ Catalog: https://openfilamentdatabase.org — see docs/OPENPRINTTAG.md. Not CFS.",
+    })
+    .run();
+
   db.insert(schema.rfidMappings)
     .values({
       uuid: uuid(),
@@ -383,6 +424,7 @@ export async function seed(dbPath?: string) {
   console.log(`Seeded synthetic fixtures into ${resolveDbPath(dbPath)}`);
   console.log("Users: admin / admin-change-me ; fixture_contributor / contributor-change-me");
 }
+
 
 const isDirect = process.argv[1]?.endsWith("seed.ts") || process.argv[1]?.endsWith("seed.js");
 if (isDirect) {

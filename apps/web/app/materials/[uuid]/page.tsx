@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
 type Material = { uuid: string; code: string; name: string; category: string | null };
 
@@ -9,6 +9,7 @@ export default async function MaterialPage({
 }: {
   params: Promise<{ uuid: string }>;
 }) {
+  const { messages } = await getLocaleMessages();
   const { uuid } = await params;
   let material: Material | null = null;
   try {
@@ -30,7 +31,7 @@ export default async function MaterialPage({
       <p className="muted">{material.code}{material.category ? ` · ${material.category}` : ""}</p>
       <p>
         <Link href={`/search?q=${encodeURIComponent(material.name)}`}>
-          Search filaments
+          {messages.nav.search}
         </Link>
       </p>
     </div>

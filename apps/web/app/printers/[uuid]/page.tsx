@@ -1,5 +1,5 @@
 import { apiGet } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
 type Printer = {
   uuid: string;
@@ -23,6 +23,9 @@ export default async function PrinterPage({
 }: {
   params: Promise<{ uuid: string }>;
 }) {
+  const { messages } = await getLocaleMessages();
+  const sp = messages.specs;
+  const c = messages.common;
   const { uuid } = await params;
   const printer = await apiGet<Printer>(`/api/v1/printers/${uuid}`);
   return (
@@ -34,16 +37,16 @@ export default async function PrinterPage({
         <div className="banner-warn">{messages.variant.syntheticBanner}</div>
       ) : null}
       <dl className="kv">
-        <dt>Revision</dt>
+        <dt>{sp.revision}</dt>
         <dd>{printer.revision ?? "—"}</dd>
-        <dt>Max nozzle</dt>
+        <dt>{sp.maxNozzle}</dt>
         <dd>{printer.maxNozzleTempC ?? "—"} °C</dd>
-        <dt>Max bed</dt>
+        <dt>{sp.maxBed}</dt>
         <dd>{printer.maxBedTempC ?? "—"} °C</dd>
-        <dt>Chamber</dt>
-        <dd>{printer.chamberCapable ? "yes" : "no"}</dd>
+        <dt>{sp.chamber}</dt>
+        <dd>{printer.chamberCapable ? c.yes : c.no}</dd>
       </dl>
-      <h2>Toolheads</h2>
+      <h2>{sp.toolheads}</h2>
       <ul className="list">
         {printer.toolheads.map((t) => (
           <li key={t.uuid}>

@@ -12,7 +12,7 @@ Package: `@open-filament/canonical-profile`
 
 ## Sections
 
-`provenance`, `filament`, `context`, `thermal`, `extrusion`, `cooling`, `retraction`, `preparation`, optional `extensions`.
+`provenance`, `filament`, `context`, `thermal`, `extrusion`, `dimensional` (shrinkage XY/Z), `cooling`, `retraction`, `preparation`, optional `extensions`.
 
 Unknown numerics are JSON `null`. `provenance.isSyntheticFixture` must be set for demo/seed data.
 

@@ -2,7 +2,6 @@ import type { FastifyInstance } from "fastify";
 import { and, desc, eq } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { z } from "zod";
-import QRCode from "qrcode";
 import { schema, type AppDb } from "@open-filament/db";
 import { openFilamentProfileV1Schema } from "@open-filament/canonical-profile";
 import { convertCrealityUserPresetToCanonicalPartial } from "@open-filament/slicer-creality";
@@ -122,16 +121,54 @@ export async function registerExtraRoutes(app: FastifyInstance) {
   app.get<{ Params: { uuid: string } }>(
     "/api/v1/variants/:uuid/qr",
     async (req, reply) => {
-      const variant = db(app)
-        .select()
+      const row = db(app)
+        .select({
+          variant: schema.filamentVariants,
+          productName: schema.filamentProducts.productName,
+          manufacturerName: schema.manufacturers.name,
+          materialCode: schema.materialFamilies.code,
+        })
         .from(schema.filamentVariants)
+        .innerJoin(
+          schema.filamentProducts,
+          eq(
+            schema.filamentVariants.filamentProductId,
+            schema.filamentProducts.id,
+          ),
+        )
+        .innerJoin(
+          schema.manufacturers,
+          eq(schema.filamentProducts.manufacturerId, schema.manufacturers.id),
+        )
+        .innerJoin(
+          schema.materialFamilies,
+          eq(
+            schema.filamentProducts.materialFamilyId,
+            schema.materialFamilies.id,
+          ),
+        )
         .where(eq(schema.filamentVariants.uuid, req.params.uuid))
         .get();
-      if (!variant) return notFound(reply, "Variant not found");
-      const web = process.env.WEB_ORIGIN ?? "http://127.0.0.1:3000";
-      const url = `${web.replace(/\/$/, "")}/f/${variant.uuid}`;
-      const dataUrl = await QRCode.toDataURL(url, { margin: 1, width: 256 });
-      return { url, path: `/f/${variant.uuid}`, qrDataUrl: dataUrl };
+      if (!row) return notFound(reply, "Variant not found");
+      // Never bake a deploy-specific WEB_ORIGIN into QR payloads.
+      // Clients generate absolute URLs from the current browser origin.
+      const path = `/f/${row.variant.uuid}`;
+      const identityUri = `openfilament://variant/${row.variant.uuid}`;
+      const shortId = row.variant.uuid.replace(/-/g, "").slice(0, 8).toUpperCase();
+      return {
+        path,
+        identityUri,
+        label: {
+          brand: "OPENFILAMENT",
+          manufacturer: row.manufacturerName,
+          material: row.materialCode,
+          variant: row.variant.variantName,
+          product: row.productName,
+          colorHex: row.variant.primaryColorHex,
+          shortId: `OF-${shortId}`,
+          variantUuid: row.variant.uuid,
+        },
+      };
     },
   );
 
@@ -422,9 +459,15 @@ export async function registerExtraRoutes(app: FastifyInstance) {
           nozzleTempOtherLayersC: num(params.nozzleTempOtherLayersC) ?? latest?.nozzleTempOtherLayersC ?? null,
           bedTempFirstLayerC: num(params.bedTempFirstLayerC) ?? latest?.bedTempFirstLayerC ?? null,
           bedTempOtherLayersC: num(params.bedTempOtherLayersC) ?? latest?.bedTempOtherLayersC ?? null,
+          chamberTempC: num(params.chamberTempC) ?? latest?.chamberTempC ?? null,
           flowRatio: num(params.flowRatio) ?? latest?.flowRatio ?? null,
           pressureAdvance: num(params.pressureAdvance) ?? latest?.pressureAdvance ?? null,
           maxVolumetricFlowMm3s: num(params.maxVolumetricFlowMm3s) ?? latest?.maxVolumetricFlowMm3s ?? null,
+          fanMinPercent: num(params.fanMinPercent) ?? latest?.fanMinPercent ?? null,
+          fanMaxPercent: num(params.fanMaxPercent) ?? latest?.fanMaxPercent ?? null,
+          retractionDistanceMm: num(params.retractionDistanceMm) ?? latest?.retractionDistanceMm ?? null,
+          shrinkagePercentXy: num(params.shrinkagePercentXy) ?? latest?.shrinkagePercentXy ?? null,
+          shrinkagePercentZ: num(params.shrinkagePercentZ) ?? latest?.shrinkagePercentZ ?? null,
         })
         .returning()
         .all();

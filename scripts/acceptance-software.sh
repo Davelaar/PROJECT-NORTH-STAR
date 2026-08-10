@@ -16,7 +16,7 @@ curl -sf "$BRIDGE/health" >/dev/null
 echo "== search Flashforge Burnt Titanium =="
 curl -sf "$API/api/v1/search?q=Flashforge%20Burnt%20Titanium" | grep -q "$VARIANT"
 
-echo "== recommendation K2 / 0.6 =="
+echo "== recommendation K2 / 0.4 =="
 curl -sf "$API/api/v1/variants/$VARIANT/recommendation" | grep -q "maxVolumetricFlowMm3s\|algorithmVersion\|of-agg"
 
 echo "== export creality + bridge install =="

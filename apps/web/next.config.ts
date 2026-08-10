@@ -6,6 +6,17 @@ const apiTarget = (
   "http://127.0.0.1:8787"
 ).replace(/\/$/, "");
 
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  {
+    key: "Permissions-Policy",
+    value:
+      "camera=(self), usb=(self), serial=(self), hid=(self), microphone=(), geolocation=()",
+  },
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Single public origin: browser calls /api/* → Fastify
@@ -18,6 +29,14 @@ const nextConfig: NextConfig = {
       {
         source: "/openapi.json",
         destination: `${apiTarget}/openapi.json`,
+      },
+    ];
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: securityHeaders,
       },
     ];
   },

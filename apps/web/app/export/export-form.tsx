@@ -1,34 +1,223 @@
 "use client";
 
-import { useState } from "react";
-import { getApiBase } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import Link from "next/link";
+import { useMessages } from "@/app/components/messages-provider";
+import { SearchableSelect } from "@/app/components/searchable-select";
+import { useEffect, useMemo, useState } from "react";
+import { getApiBase, apiGet } from "@/lib/api";
+import {
+  detectBrowserCapabilities,
+  slicerSaveMode,
+} from "@/lib/capabilities";
+import {
+  getSlicerEntry,
+  listInterchangeFormats,
+  listSlicerPresets,
+  type SlicerFormatId,
+} from "@open-filament/domain";
 
-const BRIDGE = "http://127.0.0.1:8788";
-const BRIDGE_TOKEN =
-  process.env.NEXT_PUBLIC_OF_BRIDGE_TOKEN ?? "local-dev-token";
+type Manufacturer = { uuid: string; name: string };
+type Material = { uuid: string; code: string; name: string };
+type Filament = {
+  uuid: string;
+  productName: string;
+  manufacturerUuid: string;
+  materialCode: string;
+};
+type Variant = {
+  uuid: string;
+  variantName: string;
+  colorName: string | null;
+  primaryColorHex: string | null;
+};
+type ProfileRow = {
+  uuid: string;
+  title: string;
+  printerName: string;
+  nozzleDiameterMm: number;
+};
+
+function downloadBlob(filename: string, contents: string, mime: string) {
+  const blob = new Blob([contents], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function formatLabel(
+  id: SlicerFormatId,
+  formats: Record<string, string>,
+): string {
+  return formats[id] ?? id;
+}
 
 export function ExportForm({
   initialProfileUuid,
+  initialFormat,
 }: {
   initialProfileUuid: string;
+  initialFormat?: string;
 }) {
+  const messages = useMessages();
   const m = messages.export;
+  const f = messages.fields;
+  const slicers = listSlicerPresets();
+  const interchange = listInterchangeFormats();
+
+  const initial =
+    (initialFormat && getSlicerEntry(initialFormat)?.id) || "creality";
+
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [filaments, setFilaments] = useState<Filament[]>([]);
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [profiles, setProfiles] = useState<ProfileRow[]>([]);
+  const [manufacturerUuid, setManufacturerUuid] = useState("");
+  const [materialCode, setMaterialCode] = useState("");
+  const [filamentUuid, setFilamentUuid] = useState("");
+  const [variantUuid, setVariantUuid] = useState("");
   const [profileUuid, setProfileUuid] = useState(initialProfileUuid);
-  const [format, setFormat] = useState<
-    "openfilamentprofile" | "creality" | "orca"
-  >("openfilamentprofile");
-  const [result, setResult] = useState<string>("");
+  const [format, setFormat] = useState<SlicerFormatId>(initial as SlicerFormatId);
   const [payload, setPayload] = useState<Record<string, unknown> | null>(null);
-  const [error, setError] = useState<string>("");
-  const [installMsg, setInstallMsg] = useState<string>("");
+  const [error, setError] = useState("");
+  const [statusMsg, setStatusMsg] = useState("");
+  const [downloaded, setDownloaded] = useState(false);
+  const [canFs, setCanFs] = useState(false);
+
+  const entry = getSlicerEntry(format);
+
+  useEffect(() => {
+    const caps = detectBrowserCapabilities();
+    setCanFs(slicerSaveMode(caps) === "save_to_folder");
+  }, []);
+
+  useEffect(() => {
+    Promise.all([
+      apiGet<Manufacturer[]>("/api/v1/manufacturers"),
+      apiGet<Material[]>("/api/v1/materials"),
+    ])
+      .then(([mfr, mats]) => {
+        setManufacturers([...mfr].sort((a, b) => a.name.localeCompare(b.name)));
+        setMaterials([...mats].sort((a, b) => a.code.localeCompare(b.code)));
+      })
+      .catch(() => undefined);
+  }, []);
+
+  useEffect(() => {
+    if (!manufacturerUuid || !materialCode) {
+      setFilaments([]);
+      return;
+    }
+    const qs = new URLSearchParams({ manufacturerUuid, materialCode });
+    apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
+      .then((rows) =>
+        setFilaments(
+          [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
+        ),
+      )
+      .catch(() => setFilaments([]));
+    setFilamentUuid("");
+    setVariantUuid("");
+    setProfiles([]);
+    if (!initialProfileUuid) setProfileUuid("");
+  }, [manufacturerUuid, materialCode, initialProfileUuid]);
+
+  useEffect(() => {
+    if (!filamentUuid) {
+      setVariants([]);
+      return;
+    }
+    apiGet<Variant[]>(`/api/v1/filaments/${filamentUuid}/variants`)
+      .then((rows) =>
+        setVariants(
+          [...rows].sort((a, b) => a.variantName.localeCompare(b.variantName)),
+        ),
+      )
+      .catch(() => setVariants([]));
+    setVariantUuid("");
+    setProfiles([]);
+  }, [filamentUuid]);
+
+  useEffect(() => {
+    if (!variantUuid) {
+      setProfiles([]);
+      return;
+    }
+    apiGet<ProfileRow[]>(`/api/v1/variants/${variantUuid}/profiles`)
+      .then((rows) => setProfiles(rows))
+      .catch(() => setProfiles([]));
+  }, [variantUuid]);
+
+  const suggestedName = useMemo(() => {
+    if (!payload) return entry ? `openfilament${entry.extension}` : "preset";
+    return String(
+      payload.suggestedFileName ??
+        (format === "prusaslicer"
+          ? "openfilament-filament.ini"
+          : "openfilament-profile.json"),
+    );
+  }, [payload, format, entry]);
+
+  const manufacturerOptions = useMemo(
+    () => manufacturers.map((x) => ({ value: x.uuid, label: x.name })),
+    [manufacturers],
+  );
+  const materialOptions = useMemo(
+    () =>
+      materials.map((x) => ({
+        value: x.code,
+        label: `${x.code} — ${x.name}`,
+      })),
+    [materials],
+  );
+  const filamentOptions = useMemo(
+    () => filaments.map((x) => ({ value: x.uuid, label: x.productName })),
+    [filaments],
+  );
+  const variantOptions = useMemo(
+    () =>
+      variants.map((x) => ({
+        value: x.uuid,
+        label: `${x.colorName || x.variantName}${
+          x.primaryColorHex ? ` (${x.primaryColorHex})` : ""
+        }`,
+      })),
+    [variants],
+  );
+  const profileOptions = useMemo(() => {
+    const rows = profiles.map((p) => ({
+      value: p.uuid,
+      label: `${p.title} — ${p.printerName}, ${p.nozzleDiameterMm} mm`,
+    }));
+    if (
+      initialProfileUuid &&
+      !rows.some((p) => p.value === initialProfileUuid)
+    ) {
+      rows.push({
+        value: initialProfileUuid,
+        label: `${f.profile} (${initialProfileUuid.slice(0, 8)}…)`,
+      });
+    }
+    return rows;
+  }, [profiles, initialProfileUuid, f.profile]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setResult("");
     setPayload(null);
-    setInstallMsg("");
+    setStatusMsg("");
+    setDownloaded(false);
+    if (!profileUuid) {
+      setError(m.chooseProfile);
+      return;
+    }
+    if (!entry?.downloadEnabled) {
+      setError(m.plannedDisabled);
+      return;
+    }
     try {
       const res = await fetch(`${getApiBase()}/api/v1/exports/${format}`, {
         method: "POST",
@@ -38,85 +227,291 @@ export function ExportForm({
       const text = await res.text();
       if (!res.ok) throw new Error(text);
       const json = JSON.parse(text) as Record<string, unknown>;
-      setResult(JSON.stringify(json, null, 2));
       setPayload(json);
+      setStatusMsg(m.presetCreated);
     } catch (err) {
       setError(err instanceof Error ? err.message : messages.common.error);
     }
   }
 
-  async function installViaBridge() {
-    setInstallMsg("");
+  function fileContents(): string {
+    if (!payload) return "";
+    if (format === "prusaslicer") return String(payload.presetText ?? "");
+    if (format === "openfilamentprofile") {
+      return JSON.stringify(payload.profile ?? payload, null, 2);
+    }
+    return JSON.stringify(payload.preset ?? payload, null, 2);
+  }
+
+  function downloadProfile() {
     setError("");
-    const bridgePayload = payload?.bridgeInstallPayload as
-      | Record<string, unknown>
-      | undefined;
-    if (!bridgePayload) {
-      setError("Export a creality or orca preset first (needs bridgeInstallPayload).");
+    if (!payload || !entry) {
+      setError(m.exportFirst);
       return;
     }
+    downloadBlob(suggestedName, fileContents(), entry.mimeType);
+    setDownloaded(true);
+    setStatusMsg(m.noInstallClaim);
+  }
+
+  async function saveWithFileSystemAccess() {
+    setError("");
+    if (!payload || !entry) {
+      setError(m.exportFirst);
+      return;
+    }
+    const w = window as Window & {
+      showSaveFilePicker?: (opts: unknown) => Promise<FileSystemFileHandle>;
+    };
+    if (!w.showSaveFilePicker) return;
     try {
-      const res = await fetch(`${BRIDGE}/v1/presets/install`, {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          "X-OF-Bridge-Token": BRIDGE_TOKEN,
-        },
-        body: JSON.stringify(bridgePayload),
+      const handle = await w.showSaveFilePicker({
+        suggestedName,
+        types: [
+          {
+            description: entry.name,
+            accept: {
+              [entry.mimeType]: [entry.extension],
+            },
+          },
+        ],
       });
-      const text = await res.text();
-      if (!res.ok) throw new Error(text);
-      setInstallMsg(`${m.installOk}: ${text}`);
+      const writable = await handle.createWritable();
+      await writable.write(fileContents());
+      await writable.close();
+      setDownloaded(true);
+      setStatusMsg(m.noInstallClaim);
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? `${m.installFail} ${err.message}`
-          : m.installFail,
-      );
+      if (err instanceof DOMException && err.name === "AbortError") return;
+      setError(err instanceof Error ? err.message : messages.common.error);
     }
   }
 
-  const canInstall =
-    payload != null &&
-    (format === "creality" || format === "orca") &&
-    Boolean(payload.bridgeInstallPayload);
+  const statusText =
+    entry?.status === "beta"
+      ? "Beta"
+      : entry?.status === "interchange"
+        ? "Interchange"
+        : entry?.status === "supported"
+          ? "Supported"
+          : entry?.status === "planned"
+            ? "Planned"
+            : "";
 
   return (
     <div className="stack">
+      <div className="banner-warn">{m.banner}</div>
+      <p>
+        <Link href="/docs/slicers">{m.supportedSlicersLink}</Link>
+      </p>
+
       <form className="stack panel" onSubmit={onSubmit}>
-        <label>
-          {m.profileUuid}
-          <input
-            value={profileUuid}
-            onChange={(e) => setProfileUuid(e.target.value)}
-            required
-          />
-        </label>
-        <label>
-          {m.format}
-          <select
-            value={format}
-            onChange={(e) =>
-              setFormat(e.target.value as typeof format)
-            }
-          >
-            <option value="openfilamentprofile">
-              {m.formats.openfilamentprofile}
-            </option>
-            <option value="creality">{m.formats.creality}</option>
-            <option value="orca">{m.formats.orca}</option>
-          </select>
-        </label>
+        <SearchableSelect
+          label={f.manufacturer}
+          value={manufacturerUuid}
+          onChange={setManufacturerUuid}
+          options={manufacturerOptions}
+          placeholder={f.selectPlaceholder}
+          searchPlaceholder={f.searchPlaceholder}
+          emptyText={f.noMatches}
+        />
+        <SearchableSelect
+          label={f.material}
+          value={materialCode}
+          onChange={setMaterialCode}
+          options={materialOptions}
+          placeholder={f.selectPlaceholder}
+          searchPlaceholder={f.searchPlaceholder}
+          emptyText={f.noMatches}
+          disabled={!manufacturerUuid}
+        />
+        <SearchableSelect
+          label={f.product}
+          value={filamentUuid}
+          onChange={setFilamentUuid}
+          options={filamentOptions}
+          placeholder={f.selectPlaceholder}
+          searchPlaceholder={f.searchPlaceholder}
+          emptyText={f.noMatches}
+          disabled={!materialCode}
+        />
+        <SearchableSelect
+          label={f.variant}
+          value={variantUuid}
+          onChange={setVariantUuid}
+          options={variantOptions}
+          placeholder={f.selectPlaceholder}
+          searchPlaceholder={f.searchPlaceholder}
+          emptyText={f.noMatches}
+          disabled={!filamentUuid}
+        />
+        <SearchableSelect
+          label={f.profile}
+          value={profileUuid}
+          onChange={setProfileUuid}
+          options={profileOptions}
+          placeholder={f.selectPlaceholder}
+          searchPlaceholder={f.searchPlaceholder}
+          emptyText={f.noMatches}
+          disabled={!variantUuid && !initialProfileUuid}
+        />
+
+        <fieldset className="format-fieldset">
+          <legend>{m.format}</legend>
+          <p className="muted">{m.slicerPresets}</p>
+          <div className="format-options" role="radiogroup" aria-label={m.slicerPresets}>
+            {slicers.map((s) => {
+              const disabled = !s.downloadEnabled;
+              return (
+                <label
+                  key={s.id}
+                  className={`format-option${format === s.id ? " selected" : ""}${disabled ? " disabled" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    name="format"
+                    value={s.id}
+                    checked={format === s.id}
+                    disabled={disabled}
+                    onChange={() => {
+                      setFormat(s.id);
+                      setPayload(null);
+                      setDownloaded(false);
+                      setStatusMsg("");
+                    }}
+                  />
+                  <span>
+                    <strong>{formatLabel(s.id, m.formats)}</strong>
+                    <span className={`badge badge-status-${s.status}`}>
+                      {statusText && s.id === format ? statusText : s.status}
+                    </span>
+                    <span className="muted">
+                      {" "}
+                      {m.versionsLabel}: {s.supportedVersions.join(", ")} ·{" "}
+                      {m.extensionLabel}: {s.extension}
+                    </span>
+                    {s.docsPath ? (
+                      <Link href={s.docsPath}>
+                        {m.viewInstructionsNamed.replace("{name}", s.name)}
+                      </Link>
+                    ) : null}
+                    {disabled ? (
+                      <span className="muted"> — {m.plannedDisabled}</span>
+                    ) : null}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          <p className="muted">{m.portableData}</p>
+          <div className="format-options">
+            {interchange.map((s) => (
+              <label
+                key={s.id}
+                className={`format-option${format === s.id ? " selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="format"
+                  value={s.id}
+                  checked={format === s.id}
+                  onChange={() => {
+                    setFormat(s.id);
+                    setPayload(null);
+                    setDownloaded(false);
+                    setStatusMsg("");
+                  }}
+                />
+                  <span>
+                    <strong>{formatLabel(s.id, m.formats)}</strong>
+                    <span className={`badge badge-status-${s.status}`}>
+                      {s.status === "interchange"
+                        ? m.portableData
+                        : s.status}
+                    </span>
+                  </span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
         <button type="submit">{m.submit}</button>
-        {canInstall ? (
-          <button type="button" onClick={installViaBridge}>
-            {m.installBridge}
-          </button>
+        {payload ? (
+          <>
+            <button type="button" onClick={downloadProfile}>
+              {m.download}
+            </button>
+            {canFs ? (
+              <button
+                type="button"
+                className="secondary"
+                onClick={saveWithFileSystemAccess}
+              >
+                {m.savePicker}
+              </button>
+            ) : null}
+          </>
         ) : null}
       </form>
-      {error ? <div className="banner-warn">{error}</div> : null}
-      {installMsg ? <div className="panel">{installMsg}</div> : null}
-      {result ? <pre>{result}</pre> : null}
+
+      {error ? (
+        <div className="banner-warn" role="alert">
+          {error}
+        </div>
+      ) : null}
+      <div aria-live="polite" className="visually-hidden">
+        {statusMsg}
+      </div>
+      {statusMsg ? <div className="panel">{statusMsg}</div> : null}
+
+      {payload && entry ? (
+        <section
+          className="panel export-ready"
+          aria-labelledby="export-ready-title"
+        >
+          <h2 id="export-ready-title">
+            {m.readyTitle.replace("{name}", entry.name)}
+          </h2>
+          <p>
+            <strong>{m.readyToImport}</strong> — {m.noInstallClaim}
+          </p>
+          <p>
+            {m.filenameLabel}: <code className="wrap-code">{suggestedName}</code>
+          </p>
+          <p>{m.readyNext}:</p>
+          <ol>
+            <li>{m.readyStepOpen.replace("{name}", entry.name)}</li>
+            <li>{m.readyStepImport}</li>
+            <li>{m.readyStepPrinter}</li>
+            <li>{m.readyStepSelect}</li>
+            {entry.group === "slicer" ? <li>{m.readyStepMap}</li> : null}
+          </ol>
+          <div className="home-cta-links">
+            {entry.docsPath ? (
+              <Link className="button" href={entry.docsPath}>
+                {m.viewInstructionsNamed.replace("{name}", entry.name)}
+              </Link>
+            ) : null}
+            <button type="button" className="secondary" onClick={downloadProfile}>
+              {m.downloadAgain}
+            </button>
+            <button
+              type="button"
+              className="secondary"
+              onClick={() => {
+                setPayload(null);
+                setDownloaded(false);
+                setStatusMsg("");
+              }}
+            >
+              {m.chooseAnother}
+            </button>
+          </div>
+          {downloaded ? null : (
+            <p className="muted">{m.download}</p>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

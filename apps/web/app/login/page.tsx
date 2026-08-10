@@ -1,14 +1,13 @@
 import { LoginForm } from "./login-form";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const { messages } = await getLocaleMessages();
+
   return (
     <div>
       <h1>{messages.login.heading}</h1>
-      <p className="muted">
-        Seed users: admin / admin-change-me · fixture_contributor /
-        contributor-change-me
-      </p>
+      <p className="muted">{messages.login.seedHint}</p>
       <LoginForm />
     </div>
   );

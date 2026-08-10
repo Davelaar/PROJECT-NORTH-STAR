@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
 type Manufacturer = {
   uuid: string;
@@ -16,6 +16,8 @@ export default async function ManufacturerPage({
 }: {
   params: Promise<{ uuid: string }>;
 }) {
+  const { messages } = await getLocaleMessages();
+  const sp = messages.specs;
   const { uuid } = await params;
   const mfr = await apiGet<Manufacturer>(`/api/v1/manufacturers/${uuid}`);
   return (
@@ -25,9 +27,9 @@ export default async function ManufacturerPage({
         <div className="banner-warn">{messages.variant.syntheticBanner}</div>
       ) : null}
       <dl className="kv">
-        <dt>Country</dt>
+        <dt>{sp.country}</dt>
         <dd>{mfr.country ?? "—"}</dd>
-        <dt>Website</dt>
+        <dt>{sp.website}</dt>
         <dd>
           {mfr.website ? (
             <a href={mfr.website} rel="noreferrer" target="_blank">

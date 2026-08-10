@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 import { InstallProfileButton } from "../../components/install-profile-button";
 import { ConfirmFailButtons } from "../../components/confirm-fail-buttons";
 
@@ -28,6 +28,9 @@ export default async function ProfilePage({
 }: {
   params: Promise<{ uuid: string }>;
 }) {
+  const { messages } = await getLocaleMessages();
+  const sp = messages.specs;
+  const pr = messages.profile;
   const { uuid } = await params;
   const profile = await apiGet<Profile>(`/api/v1/profiles/${uuid}`);
   const rev = profile.currentRevision;
@@ -40,36 +43,49 @@ export default async function ProfilePage({
       ) : null}
       {rev ? (
         <div className="panel">
-          <h3>Current revision ({rev.status})</h3>
+          <h3>{pr.currentRevision} ({rev.status})</h3>
           <dl className="kv">
-            <dt>Nozzle °C</dt>
+            <dt>{sp.nozzleTemp}</dt>
             <dd>{rev.nozzleTempOtherLayersC ?? "—"}</dd>
-            <dt>Bed °C</dt>
+            <dt>{sp.bedTemp}</dt>
             <dd>{rev.bedTempOtherLayersC ?? "—"}</dd>
-            <dt>Flow</dt>
+            <dt>{sp.flow}</dt>
             <dd>{rev.flowRatio ?? "—"}</dd>
-            <dt>PA</dt>
+            <dt>{sp.pressureAdvance}</dt>
             <dd>{rev.pressureAdvance ?? "—"}</dd>
-            <dt>Max VF</dt>
+            <dt>{sp.maxVolumetric}</dt>
             <dd>{rev.maxVolumetricFlowMm3s ?? "—"}</dd>
           </dl>
           {rev.notes ? <p className="muted">{rev.notes}</p> : null}
         </div>
       ) : null}
       <div className="panel">
-        <h3>Install</h3>
+        <h2>{messages.export.downloadForSlicer}</h2>
+        <p>
+          <Link
+            className="button"
+            href={`/export?profileUuid=${profile.uuid}`}
+          >
+            {messages.export.downloadForSlicer}
+          </Link>
+        </p>
         <InstallProfileButton profileUuid={profile.uuid} />
         <p className="muted">
-          Also: <Link href={`/export?profileUuid=${profile.uuid}`}>Export page</Link>
+          <Link href="/docs/slicers">{messages.export.supportedSlicersLink}</Link>
           {" · "}
-          <Link href={`/rfid`}>Write CFS RFID</Link>
+          {pr.identifySpool}{" "}
+          <Link href={`/label/${profile.variantUuid}`}>{messages.variant.printQr}</Link>
+          {" · "}
+          <Link href={`/scan`}>{messages.variant.scanQr}</Link>
+          {" · "}
+          <Link href={`/rfid`}>{messages.nav.rfid}</Link>
         </p>
       </div>
       <ConfirmFailButtons profileUuid={profile.uuid} />
       <p>
-        <Link href={`/variants/${profile.variantUuid}`}>Variant</Link>
+        <Link href={`/variants/${profile.variantUuid}`}>{messages.fields.variant}</Link>
         {" · "}
-        <Link href={`/printers/${profile.printerUuid}`}>Printer</Link>
+        <Link href={`/printers/${profile.printerUuid}`}>{messages.nav.hardware}</Link>
       </p>
       {profile.openFilamentProfile ? (
         <>

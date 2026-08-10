@@ -1,6 +1,11 @@
-/** Normalize hex color to `#RRGGBB` (uppercase). */
+/** Normalize hex color to `#RRGGBB` (uppercase). Accepts `#RGB` or `#RRGGBB`. */
 export function normalizeHexColor(input: string): string | null {
   const raw = input.trim();
+  const short = raw.match(/^#?([0-9a-fA-F]{3})$/);
+  if (short?.[1]) {
+    const s = short[1];
+    return `#${s[0]}${s[0]}${s[1]}${s[1]}${s[2]}${s[2]}`.toUpperCase();
+  }
   const m = raw.match(/^#?([0-9a-fA-F]{6})$/);
   if (!m) return null;
   return `#${m[1]!.toUpperCase()}`;

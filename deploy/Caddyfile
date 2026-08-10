@@ -1,11 +1,21 @@
 # Public site → Next.js (which proxies /api to the API service).
-# Replace openfilament.example.com with your domain when using HTTPS.
+# Production: openfilament.nl (DNS A/AAAA already pointed at the VPS).
 
-:80 {
-	reverse_proxy web:3000
+{
+	email {$ACME_EMAIL:admin@openfilament.nl}
 }
 
-# Uncomment for automatic HTTPS once DNS points here:
-# openfilament.example.com {
-# 	reverse_proxy web:3000
-# }
+openfilament.nl, www.openfilament.nl {
+	encode gzip zstd
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(self), usb=(self), serial=(self), hid=(self), microphone=(), geolocation=()"
+		-Server
+	}
+
+	reverse_proxy web:3000
+}

@@ -82,6 +82,14 @@
         "minVolumetricFlowMm3s": { "type": ["number", "null"] }
       }
     },
+    "dimensional": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shrinkagePercentXy": { "type": ["number", "null"] },
+        "shrinkagePercentZ": { "type": ["number", "null"] }
+      }
+    },
     "cooling": {
       "type": "object",
       "additionalProperties": false,

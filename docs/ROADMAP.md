@@ -1,41 +1,41 @@
 # ROADMAP
 
-Aligned with master build specification phases.
+OpenFilament is **web-first / PWA**. OS installers and a general desktop app are **not** on the default roadmap. Optional native helpers only after a documented browser gap.
 
-| Phase | Deliverable | Status |
-|-------|-------------|--------|
-| 0 | Repository audit | Done |
-| 1 | Domain foundation | Done (SQLite; Postgres optional later) |
-| 2 | Calibration engine | Done — publish/revise/fork, observations, evidence |
-| 3 | Community aggregation | Done (median/IQR + trust-weighted) |
-| 4 | Web application | Done — search/submit/import/compare/me/admin/RFID/QR |
-| 5 | Public API hardening | Done — scopes, rate limit, OpenAPI |
-| 6 | OpenFilamentProfile v1 | Done (+ import path) |
-| 7 | Creality Print research | Done |
-| 8 | Creality Print adapter | Done (export/import/backup/install/rollback) |
-| 9 | Local bridge | Done |
-| 10 | CFS RFID research | Done |
-| 11 | CFS RFID codec | Done |
-| 12 | RFID hardware transport | Done (simulate always; PC/SC optional feature) |
-| 13 | Website RFID workflow | Done |
-| 14 | CFS profile mapping | Done (resolve + map-install) |
+## Product phases (current doctrine)
 
-## Remaining (post-MVP / hardware)
+| Phase | Focus | Status |
+|-------|--------|--------|
+| **1 — Web foundation** | Filament DB, search, profiles, accounts, responsive webapp, spool IDs | **Done** (SQLite; Postgres later) |
+| **2 — Universal browser flows** | Profile download/import, QR labels, camera scan, capability detection | **Done** |
+| **3 — PWA** | Manifest, installability, safe shell cache, offline page, update flow | **Done** (shell-only) |
+| **4 — Browser-native integrations** | File System Access, OF1 Web Serial/USB RFID write+verify, memory PoC | **Done** (WebHID OF1 still open; hardware validation ongoing) |
+| **5 — Limited compatibility helpers** | PC/SC / allowlisted install only where browsers cannot | **Partial** — `apps/bridge` optional |
 
-- Physical MIFARE write validation on ACR122U (or similar) against real blank tags
-- CFS firmware recognition of third-party tags on K2 Plus (device-dependent)
+## Remaining
+
+- Deploy/verify HTTPS on openfilament.nl with Compose `--profile proxy` + rotated secrets
+- Validate OF1 firmware against real blank MIFARE tags + selected Web Serial/USB hardware
+- WebHID OF1 profile if a maintainable HID reader is chosen
+- Creality CFS / K2 Plus acceptance of third-party rewritten tags (**hardware/firmware**)
+- OpenPrintTag NDEF + CBOR encode/write and Web NFC path ([spec](https://specs.openprinttag.org/), OFD UUIDs from [openfilamentdatabase.org](https://openfilamentdatabase.org))
+- Broader community shrinkage / full slicer-param coverage as measurements land
 - Postgres + FTS for multi-user production
-- Full offline sync / device registration (§34, §56–57)
-- Broader slicer adapters beyond Creality/Orca
+- Broader slicers (e.g. SuperSlicer) as needed
 
-## Non-goals (still)
+## Non-goals
 
-- New slicer / firmware / cloud slicing
-- Commerce / ads / recommendation AI
-- Every RFID ecosystem / every slicer
+- General desktop app / Electron / Tauri as default distribution
+- Required OS installers for core product use
+- Automatic silent local slicer detection as a promised browser feature
+- Claiming Web NFC as a MIFARE Classic CFS solution
+- Treating OpenPrintTag and CFS as the same RFID format
 
 ## Acceptance
 
 ```bash
 ./scripts/acceptance-software.sh
+pnpm --filter @open-filament/web typecheck
+pnpm --filter @open-filament/web test
+pnpm --filter @open-filament/web build
 ```

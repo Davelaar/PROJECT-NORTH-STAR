@@ -1,7 +1,9 @@
 import { getApiBase } from "@/lib/api";
-import { messages } from "@/lib/messages/en";
+import { getLocaleMessages } from "@/lib/messages";
 
-export default function DocsApiPage() {
+export default async function DocsApiPage() {
+  const { messages } = await getLocaleMessages();
+
   const openapiUrl = `${getApiBase()}/openapi.json`;
   return (
     <div>
@@ -13,7 +15,7 @@ export default function DocsApiPage() {
         </a>
       </p>
       <p className="muted">
-        Also see repository docs: docs/API.md
+        {messages.docsApi.repoDocsNote}
       </p>
     </div>
   );

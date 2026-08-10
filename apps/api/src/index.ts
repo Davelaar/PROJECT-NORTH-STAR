@@ -1,23 +1,54 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { eq } from "drizzle-orm";
 import {
   createDb,
   ensureMigrated,
+  importOfdCatalog,
   schema,
   seed,
   type AppDb,
 } from "@open-filament/db";
 import { registerRoutes } from "./routes.js";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+async function ensureCatalog(dbPath: string | undefined, database: AppDb) {
+  const manufacturers = database.select().from(schema.manufacturers).all();
+  if (manufacturers.length === 0) {
+    await seed(dbPath);
+    return;
+  }
+
+  // Production often seeds fixtures first without the OFD dump present.
+  // If the dump appears later (or is mounted), import once automatically.
+  const ofdProducts = database
+    .select({ id: schema.filamentProducts.id })
+    .from(schema.filamentProducts)
+    .where(eq(schema.filamentProducts.sourceType, "open_filament_database"))
+    .all();
+  if (ofdProducts.length > 0) return;
+
+  const candidates = [
+    process.env.OFD_DATASET_PATH,
+    "/data/external/ofd-all.json",
+    path.resolve(__dirname, "../../../data/external/ofd-all.json"),
+  ].filter(Boolean) as string[];
+  const hit = candidates.find((p) => fs.existsSync(p));
+  if (!hit) return;
+
+  console.log(`Importing Open Filament Database catalog from ${hit}`);
+  await importOfdCatalog(dbPath, hit);
+}
+
 export async function buildServer(options?: { dbPath?: string }) {
   const dbPath = options?.dbPath;
   ensureMigrated(dbPath);
   const database = createDb(dbPath);
-
-  const manufacturers = database.select().from(schema.manufacturers).all();
-  if (manufacturers.length === 0) {
-    await seed(dbPath);
-  }
+  await ensureCatalog(dbPath, database);
 
   const app = Fastify({ logger: true });
   app.decorate("db", database as AppDb);

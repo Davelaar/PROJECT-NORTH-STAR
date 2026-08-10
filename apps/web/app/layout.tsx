@@ -1,42 +1,42 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { messages } from "@/lib/messages/en";
+import { SiteHeader } from "./components/site-header";
+import { MessagesProvider } from "./components/messages-provider";
+import { ServiceWorkerRegister } from "./components/sw-register";
+import { getLocaleMessages } from "@/lib/messages";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: messages.brand,
+  title: "Open Filament",
   description:
-    "One filament. One profile. Every printer. Open community filament database — calibrate once, share what works, use it everywhere.",
+    "Find a tested filament profile for your printer—and identify every spool with QR or RFID.",
+  applicationName: "OpenFilament",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "OpenFilament",
+  },
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  themeColor: "#0d6b56",
+};
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const m = messages;
+  const { locale, messages: m } = await getLocaleMessages();
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body>
-        <div className="shell">
-          <header className="site-header">
-            <Link href="/" className="brand">
-              {m.brand}
-            </Link>
-            <nav className="nav" aria-label="Primary">
-              <Link href="/">{m.nav.home}</Link>
-              <Link href="/search">{m.nav.search}</Link>
-              <Link href="/submit">Submit</Link>
-              <Link href="/import">Import</Link>
-              <Link href="/export">{m.nav.export}</Link>
-              <Link href="/rfid">{m.nav.rfid}</Link>
-              <Link href="/docs/api">{m.nav.docsApi}</Link>
-              <Link href="/me">Me</Link>
-              <Link href="/login">{m.nav.login}</Link>
-            </nav>
-          </header>
-          <main>{children}</main>
-        </div>
+        <MessagesProvider locale={locale} messages={m}>
+          <ServiceWorkerRegister />
+          <div className="shell">
+            <SiteHeader />
+            <main>{children}</main>
+          </div>
+        </MessagesProvider>
       </body>
     </html>
   );

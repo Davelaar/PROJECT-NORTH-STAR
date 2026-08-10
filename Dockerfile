@@ -29,8 +29,11 @@ ENV NODE_ENV=production
 ENV API_HOST=0.0.0.0
 ENV API_PORT=8787
 WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gzip \
+  && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app /app
-RUN mkdir -p /data
+RUN mkdir -p /data /data/external \
+  && chmod +x /app/scripts/*.sh
 ENV DATABASE_URL=file:/data/open-filament.sqlite
 EXPOSE 8787
 CMD ["pnpm", "--filter", "@open-filament/api", "start"]

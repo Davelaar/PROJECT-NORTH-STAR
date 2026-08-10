@@ -146,6 +146,21 @@ export function convertCanonicalToOrcaFilamentPreset(
   const retract = asStringArray(canonical.retraction.retractionDistanceMm);
   if (retract) preset.filament_retraction_length = retract;
 
+  const retractSpeed = asStringArray(canonical.retraction.retractionSpeedMms);
+  if (retractSpeed) preset.filament_retraction_speed = retractSpeed;
+
+  if (canonical.thermal.chamberTempC != null) {
+    preset.chamber_temperature = asStringArray(canonical.thermal.chamberTempC);
+  }
+
+  const shrinkXy = asStringArray(canonical.dimensional?.shrinkagePercentXy);
+  if (shrinkXy) {
+    preset.shrinkage_xy = shrinkXy;
+    preset.filament_shrinkage = shrinkXy;
+  }
+  const shrinkZ = asStringArray(canonical.dimensional?.shrinkagePercentZ);
+  if (shrinkZ) preset.shrinkage_z = shrinkZ;
+
   const notes: string[] = ["Open Filament user preset"];
   if (canonical.provenance.isSyntheticFixture) {
     notes.push("Source: seed catalog data");

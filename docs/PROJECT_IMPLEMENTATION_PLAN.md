@@ -1,8 +1,10 @@
 # PROJECT IMPLEMENTATION PLAN — Open Filament Platform
 
-**Status:** Phase 0 complete — plan only; implementation not started  
+> **Superseding note (2026-08-10):** Platform doctrine is now **web-first / PWA**. See [`ARCHITECTURE.md`](./ARCHITECTURE.md) and [`ROADMAP.md`](./ROADMAP.md). OS installers and a general desktop app are **out** of the default architecture. Sections below that describe the local bridge as a required layer are **historical**; treat the bridge as an optional compatibility helper only. Phases 1–5 in ROADMAP are the active plan.
+
+**Status:** Implementation largely delivered for web foundation; this file retains historical planning detail.  
 **Companion audit:** [`CURRENT_STATE.md`](./CURRENT_STATE.md)  
-**Spec reference:** Master Build Specification (user brief, 2026-08-09)
+**Spec reference:** Master Build Specification + web-first / PWA migration brief
 
 ---
 
@@ -177,7 +179,7 @@ Manufacturer: Flashforge
 Product:      ASA
 Variant:      Burnt Titanium
 Printer:      Creality K2 Plus
-Nozzle:       0.6 mm
+Nozzle:       0.4 mm
 TEST nozzle:  255 °C
 TEST bed:     100 °C
 TEST flow:    0.95
@@ -456,6 +458,7 @@ Create as phases land (do not invent empty stubs that claim completeness):
 | CREALITY_PRINT_RESEARCH.md | Phase 7 |
 | RFID_ARCHITECTURE.md | Phase 10–11 |
 | CREALITY_CFS_RFID.md / RESEARCH | Phase 10–11 |
+| PRODUCT_ACCESSIBILITY_AND_IDENTIFICATION.md | Product/UX companion (QR + RFID parity, progressive UX) |
 | LOCAL_BRIDGE.md | Phase 9 |
 | SECURITY.md | Bridge + API auth |
 | CONTRIBUTING.md / DEVELOPMENT.md / TESTING.md | Scaffold |

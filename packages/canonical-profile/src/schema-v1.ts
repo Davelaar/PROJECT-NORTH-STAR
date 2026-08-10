@@ -50,6 +50,12 @@ export const openFilamentProfileV1Schema = z.object({
     maxVolumetricFlowMm3s: z.number().nullable().optional(),
     minVolumetricFlowMm3s: z.number().nullable().optional(),
   }),
+  dimensional: z
+    .object({
+      shrinkagePercentXy: z.number().nullable().optional(),
+      shrinkagePercentZ: z.number().nullable().optional(),
+    })
+    .optional(),
   cooling: z.object({
     fanMinPercent: z.number().nullable().optional(),
     fanMaxPercent: z.number().nullable().optional(),

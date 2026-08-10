@@ -1,0 +1,25 @@
+{
+  "name": "OpenFilament",
+  "short_name": "OpenFilament",
+  "description": "Find filament profiles, identify your spool, and use them from any device — in your browser.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#dfeae4",
+  "theme_color": "#0d6b56",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

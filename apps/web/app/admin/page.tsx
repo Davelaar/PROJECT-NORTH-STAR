@@ -1,12 +1,14 @@
 "use client";
 
+import { useMessages } from "@/app/components/messages-provider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import { loadAuth } from "@/lib/auth";
-import { messages } from "@/lib/messages/en";
 
 export default function AdminPage() {
+  const messages = useMessages();
+
   const [summary, setSummary] = useState<Record<string, number> | null>(null);
   const [error, setError] = useState("");
   useEffect(() => {

@@ -1,11 +1,12 @@
 "use client";
 
+import { useMessages } from "@/app/components/messages-provider";
 import { useState } from "react";
 import { getApiBase } from "@/lib/api";
 import { saveAuth } from "@/lib/auth";
-import { messages } from "@/lib/messages/en";
 
 export function LoginForm() {
+  const messages = useMessages();
   const m = messages.login;
   const [username, setUsername] = useState("admin");
   const [password, setPassword] = useState("admin-change-me");

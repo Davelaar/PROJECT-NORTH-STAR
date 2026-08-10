@@ -40,6 +40,8 @@ export function rebuildSearchIndex(db: AppDb) {
       description: schema.filamentProducts.description,
       mfrName: schema.manufacturers.name,
       material: schema.materialFamilies.name,
+      isSyntheticFixture: schema.filamentProducts.isSyntheticFixture,
+      sourceType: schema.filamentProducts.sourceType,
     })
     .from(schema.filamentProducts)
     .innerJoin(
@@ -53,6 +55,7 @@ export function rebuildSearchIndex(db: AppDb) {
     .all();
 
   for (const p of products) {
+    if (p.isSyntheticFixture || p.sourceType === "synthetic_fixture") continue;
     rows.push({
       entityType: "filament_product",
       entityUuid: p.uuid,
@@ -75,6 +78,9 @@ export function rebuildSearchIndex(db: AppDb) {
       productName: schema.filamentProducts.productName,
       mfrName: schema.manufacturers.name,
       material: schema.materialFamilies.name,
+      productFixture: schema.filamentProducts.isSyntheticFixture,
+      productSource: schema.filamentProducts.sourceType,
+      variantFixture: schema.filamentVariants.isSyntheticFixture,
     })
     .from(schema.filamentVariants)
     .innerJoin(
@@ -92,6 +98,13 @@ export function rebuildSearchIndex(db: AppDb) {
     .all();
 
   for (const v of variants) {
+    if (
+      v.productFixture ||
+      v.variantFixture ||
+      v.productSource === "synthetic_fixture"
+    ) {
+      continue;
+    }
     rows.push({
       entityType: "filament_variant",
       entityUuid: v.uuid,

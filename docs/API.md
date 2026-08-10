@@ -28,7 +28,7 @@ OpenAPI: `GET /openapi.json`
 | GET | `/search?q=` | no |
 | GET | `/rfid/schemes`, `/rfid/resolve` | no |
 | POST | `/rfid/encode`, `/verify`, `/resolve-and-export` | encode/verify public |
-| POST | `/exports/{creality,orca,openfilamentprofile}` | no |
+| POST | `/exports/{creality,orca,prusaslicer,bambu,openfilamentprofile}` | no |
 | POST | `/imports/{creality,openfilamentprofile}` | yes |
 | POST | `/auth/login`, `/auth/register` | no |
 | GET | `/me/contributions`, `/admin/summary` | yes |
