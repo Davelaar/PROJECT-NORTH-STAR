@@ -30,11 +30,21 @@ type Variant = {
   colorName: string | null;
   primaryColorHex: string | null;
 };
+type VariantDetail = Variant & {
+  productUuid: string;
+  productName: string;
+  manufacturerUuid: string;
+  materialCode: string;
+};
 type ProfileRow = {
   uuid: string;
   title: string;
   printerName: string;
   nozzleDiameterMm: number;
+};
+type ProfileBundle = {
+  uuid: string;
+  variantUuid: string;
 };
 
 function downloadBlob(filename: string, contents: string, mime: string) {
@@ -107,6 +117,19 @@ export function ExportForm({
   }, []);
 
   useEffect(() => {
+    if (!initialProfileUuid) return;
+    apiGet<ProfileBundle>(`/api/v1/profiles/${initialProfileUuid}`)
+      .then((profile) => apiGet<VariantDetail>(`/api/v1/variants/${profile.variantUuid}`))
+      .then((variant) => {
+        setManufacturerUuid(variant.manufacturerUuid);
+        setMaterialCode(variant.materialCode);
+        setFilamentUuid(variant.productUuid);
+        setVariantUuid(variant.uuid);
+      })
+      .catch(() => undefined);
+  }, [initialProfileUuid]);
+
+  useEffect(() => {
     if (!manufacturerUuid || !materialCode) {
       setFilaments([]);
       return;
@@ -114,16 +137,18 @@ export function ExportForm({
     const qs = new URLSearchParams({ manufacturerUuid, materialCode });
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
-        setFilaments(
-          [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
-        ),
+        [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
       )
+      .then((rows) => {
+        setFilaments(rows);
+        if (!filamentUuid && rows.length === 1) {
+          setFilamentUuid(rows[0]!.uuid);
+          setVariantUuid("");
+          setProfiles([]);
+        }
+      })
       .catch(() => setFilaments([]));
-    setFilamentUuid("");
-    setVariantUuid("");
-    setProfiles([]);
-    if (!initialProfileUuid) setProfileUuid("");
-  }, [manufacturerUuid, materialCode, initialProfileUuid]);
+  }, [manufacturerUuid, materialCode, initialProfileUuid, filamentUuid]);
 
   useEffect(() => {
     if (!filamentUuid) {
@@ -132,14 +157,17 @@ export function ExportForm({
     }
     apiGet<Variant[]>(`/api/v1/filaments/${filamentUuid}/variants`)
       .then((rows) =>
-        setVariants(
-          [...rows].sort((a, b) => a.variantName.localeCompare(b.variantName)),
-        ),
+        [...rows].sort((a, b) => a.variantName.localeCompare(b.variantName)),
       )
+      .then((rows) => {
+        setVariants(rows);
+        if (!variantUuid && rows.length === 1) {
+          setVariantUuid(rows[0]!.uuid);
+          setProfiles([]);
+        }
+      })
       .catch(() => setVariants([]));
-    setVariantUuid("");
-    setProfiles([]);
-  }, [filamentUuid]);
+  }, [filamentUuid, variantUuid]);
 
   useEffect(() => {
     if (!variantUuid) {
@@ -147,9 +175,14 @@ export function ExportForm({
       return;
     }
     apiGet<ProfileRow[]>(`/api/v1/variants/${variantUuid}/profiles`)
-      .then((rows) => setProfiles(rows))
+      .then((rows) => {
+        setProfiles(rows);
+        if (!profileUuid && rows.length === 1) {
+          setProfileUuid(rows[0]!.uuid);
+        }
+      })
       .catch(() => setProfiles([]));
-  }, [variantUuid]);
+  }, [variantUuid, profileUuid]);
 
   const suggestedName = useMemo(() => {
     if (!payload) return entry ? `openfilament${entry.extension}` : "preset";
@@ -309,7 +342,13 @@ export function ExportForm({
         <SearchableSelect
           label={f.manufacturer}
           value={manufacturerUuid}
-          onChange={setManufacturerUuid}
+          onChange={(v) => {
+            setManufacturerUuid(v);
+            setFilamentUuid("");
+            setVariantUuid("");
+            setProfiles([]);
+            setProfileUuid("");
+          }}
           options={manufacturerOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
@@ -318,17 +357,27 @@ export function ExportForm({
         <SearchableSelect
           label={f.material}
           value={materialCode}
-          onChange={setMaterialCode}
+          onChange={(v) => {
+            setMaterialCode(v);
+            setFilamentUuid("");
+            setVariantUuid("");
+            setProfiles([]);
+            setProfileUuid("");
+          }}
           options={materialOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
-          disabled={!manufacturerUuid}
         />
         <SearchableSelect
           label={f.product}
           value={filamentUuid}
-          onChange={setFilamentUuid}
+          onChange={(v) => {
+            setFilamentUuid(v);
+            setVariantUuid("");
+            setProfiles([]);
+            setProfileUuid("");
+          }}
           options={filamentOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
@@ -338,7 +387,11 @@ export function ExportForm({
         <SearchableSelect
           label={f.variant}
           value={variantUuid}
-          onChange={setVariantUuid}
+          onChange={(v) => {
+            setVariantUuid(v);
+            setProfiles([]);
+            setProfileUuid("");
+          }}
           options={variantOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}

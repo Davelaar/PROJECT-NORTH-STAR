@@ -79,7 +79,7 @@ export const spoolsFr = {
   conflictPolicy:
     "Les conflits utilisent last-write-wins par version de sync. La réimportation ignore les anciens doublons.",
   wizardLead:
-    "Choisis marque → matériau → produit → couleur dans le catalogue. Cherche d’abord ; « Autre » seulement si l’élément manque vraiment.",
+    "Choisis la marque et le matériau dans le catalogue, puis le produit et la couleur. Cherche d’abord ; « Autre » seulement si l’élément manque vraiment.",
   catalogRequired:
     "Sélectionne marque, matériau, produit et couleur dans le catalogue avant d’enregistrer.",
   existingRollWarn:

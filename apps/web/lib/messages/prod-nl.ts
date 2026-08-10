@@ -79,7 +79,7 @@ export const spoolsNl = {
   conflictPolicy:
     "Conflicten gebruiken last-write-wins op sync-versie. Herimport slaat oudere duplicaten over.",
   wizardLead:
-    "Kies merk → materiaal → product → kleur uit de catalogus. Zoek eerst; kies “Overig” alleen als het item echt ontbreekt.",
+    "Kies merk en materiaal uit de catalogus, daarna product en kleur. Zoek eerst; kies “Overig” alleen als het item echt ontbreekt.",
   catalogRequired:
     "Selecteer merk, materiaal, product en kleur uit de catalogus voordat je opslaat.",
   existingRollWarn:

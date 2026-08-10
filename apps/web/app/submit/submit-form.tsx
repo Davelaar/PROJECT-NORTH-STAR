@@ -92,12 +92,17 @@ export function SubmitProfileForm() {
     const qs = new URLSearchParams({ manufacturerUuid, materialCode });
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
-        setFilaments(
-          [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
-        ),
+        [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
       )
+      .then((rows) => {
+        setFilaments(rows);
+        if (!filamentUuid && rows.length === 1) {
+          setFilamentUuid(rows[0]!.uuid);
+          setVariantUuid("");
+        }
+      })
       .catch(() => setFilaments([]));
-  }, [manufacturerUuid, materialCode]);
+  }, [manufacturerUuid, materialCode, filamentUuid]);
 
   useEffect(() => {
     if (!filamentUuid) {
@@ -106,16 +111,20 @@ export function SubmitProfileForm() {
     }
     apiGet<Variant[]>(`/api/v1/filaments/${filamentUuid}/variants`)
       .then((rows) =>
-        setVariants(
-          [...rows].sort((a, b) =>
-            (a.colorName ?? a.variantName).localeCompare(
-              b.colorName ?? b.variantName,
-            ),
+        [...rows].sort((a, b) =>
+          (a.colorName ?? a.variantName).localeCompare(
+            b.colorName ?? b.variantName,
           ),
         ),
       )
+      .then((rows) => {
+        setVariants(rows);
+        if (!variantUuid && rows.length === 1) {
+          setVariantUuid(rows[0]!.uuid);
+        }
+      })
       .catch(() => setVariants([]));
-  }, [filamentUuid]);
+  }, [filamentUuid, variantUuid]);
 
   const printerModels = useMemo(() => {
     const brand = printerBrands.find((b) => b.name === printerBrand);

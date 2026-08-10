@@ -79,7 +79,7 @@ export const spoolsDe = {
   conflictPolicy:
     "Konflikte nutzen last-write-wins nach Sync-Version. Re-Import überspringt ältere Duplikate.",
   wizardLead:
-    "Wähle Marke → Material → Produkt → Farbe aus dem Katalog. Zuerst suchen; „Sonstiges“ nur wenn der Eintrag wirklich fehlt.",
+    "Wähle Marke und Material aus dem Katalog, danach Produkt und Farbe. Zuerst suchen; „Sonstiges“ nur wenn der Eintrag wirklich fehlt.",
   catalogRequired:
     "Wähle Marke, Material, Produkt und Farbe aus dem Katalog, bevor du speicherst.",
   existingRollWarn:

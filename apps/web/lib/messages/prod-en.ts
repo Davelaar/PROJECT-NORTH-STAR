@@ -78,7 +78,7 @@ export const spoolsEn = {
   conflictPolicy:
     "Conflicts use last-write-wins by sync version. Re-import skips older duplicates.",
   wizardLead:
-    "Choose brand → material → product → colour from the catalog. Search first; add “Other” only when the item is truly missing.",
+    "Choose brand and material from the catalog, then product and colour. Search first; add “Other” only when the item is truly missing.",
   catalogRequired:
     "Select brand, material, product and colour from the catalog before saving.",
   existingRollWarn:

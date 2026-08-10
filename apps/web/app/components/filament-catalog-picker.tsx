@@ -124,12 +124,22 @@ export function FilamentCatalogPicker({
     const qs = new URLSearchParams({ manufacturerUuid, materialCode });
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
-        setFilaments(
-          [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
-        ),
+        [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
       )
+      .then((rows) => {
+        setFilaments(rows);
+        if (!productUuid && rows.length === 1) {
+          emitPartial({
+            productUuid: rows[0]!.uuid,
+            productName: rows[0]!.productName,
+            variantUuid: "",
+            variantName: "",
+            colorHex: null,
+          });
+        }
+      })
       .catch(() => setFilaments([]));
-  }, [manufacturerUuid, materialCode]);
+  }, [manufacturerUuid, materialCode, productUuid]);
 
   useEffect(() => {
     if (!productUuid) {
@@ -138,16 +148,40 @@ export function FilamentCatalogPicker({
     }
     apiGet<Variant[]>(`/api/v1/filaments/${productUuid}/variants`)
       .then((rows) =>
-        setVariants(
-          [...rows].sort((a, b) =>
-            (a.colorName ?? a.variantName).localeCompare(
-              b.colorName ?? b.variantName,
-            ),
+        [...rows].sort((a, b) =>
+          (a.colorName ?? a.variantName).localeCompare(
+            b.colorName ?? b.variantName,
           ),
         ),
       )
+      .then((rows) => {
+        setVariants(rows);
+        if (!variantUuid && rows.length === 1) {
+          const variant = rows[0]!;
+          const mfr = manufacturers.find((x) => x.uuid === manufacturerUuid);
+          const product = filaments.find((x) => x.uuid === productUuid);
+          if (mfr && product) {
+            emitComplete({
+              manufacturerUuid,
+              manufacturerName: mfr.name,
+              materialCode,
+              productUuid,
+              productName: product.productName,
+              variantUuid: variant.uuid,
+              variantName: variant.colorName ?? variant.variantName,
+              colorHex: variant.primaryColorHex,
+            });
+          } else {
+            emitPartial({
+              variantUuid: variant.uuid,
+              variantName: variant.colorName ?? variant.variantName,
+              colorHex: variant.primaryColorHex,
+            });
+          }
+        }
+      })
       .catch(() => setVariants([]));
-  }, [productUuid]);
+  }, [productUuid, variantUuid, manufacturers, filaments, manufacturerUuid, materialCode]);
 
   function emitPartial(patch: Partial<CatalogSelection>) {
     onChange({ ...value, ...patch });
@@ -171,7 +205,6 @@ export function FilamentCatalogPicker({
           emitPartial({
             manufacturerUuid: v,
             manufacturerName: mfr?.name ?? "",
-            materialCode: "",
             productUuid: "",
             productName: "",
             variantUuid: "",
@@ -198,7 +231,6 @@ export function FilamentCatalogPicker({
           emitPartial({
             manufacturerUuid: created.uuid,
             manufacturerName: created.name,
-            materialCode: "",
             productUuid: "",
             productName: "",
             variantUuid: "",
@@ -212,7 +244,7 @@ export function FilamentCatalogPicker({
       <SearchableSelect
         label={L.material}
         value={materialCode}
-        disabled={disabled || !manufacturerUuid}
+        disabled={disabled}
         onChange={(v) => {
           emitPartial({
             materialCode: v,

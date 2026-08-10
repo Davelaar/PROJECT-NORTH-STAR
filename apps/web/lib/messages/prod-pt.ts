@@ -79,7 +79,7 @@ export const spoolsPt = {
   conflictPolicy:
     "Conflitos usam last-write-wins por versão de sync. A reimportação ignora duplicados antigos.",
   wizardLead:
-    "Escolhe marca → material → produto → cor no catálogo. Pesquisa primeiro; «Outro» só se o item realmente faltar.",
+    "Escolhe marca e material no catálogo, depois produto e cor. Pesquisa primeiro; «Outro» só se o item realmente faltar.",
   catalogRequired:
     "Seleciona marca, material, produto e cor no catálogo antes de guardar.",
   existingRollWarn:
