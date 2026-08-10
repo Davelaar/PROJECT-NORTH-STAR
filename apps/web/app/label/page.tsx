@@ -52,20 +52,22 @@ export default function LabelIndexPage() {
   useEffect(() => {
     if (!manufacturerUuid || !materialCode) {
       setFilaments([]);
-      setFilamentUuid("");
       return;
     }
     const qs = new URLSearchParams({ manufacturerUuid, materialCode });
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
-        setFilaments(
-          [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
-        ),
+        [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
       )
+      .then((rows) => {
+        setFilaments(rows);
+        if (!filamentUuid && rows.length === 1) {
+          setFilamentUuid(rows[0]!.uuid);
+          setVariantUuid("");
+        }
+      })
       .catch(() => setFilaments([]));
-    setFilamentUuid("");
-    setVariantUuid("");
-  }, [manufacturerUuid, materialCode]);
+  }, [manufacturerUuid, materialCode, filamentUuid]);
 
   useEffect(() => {
     if (!filamentUuid) {
@@ -75,13 +77,16 @@ export default function LabelIndexPage() {
     }
     apiGet<Variant[]>(`/api/v1/filaments/${filamentUuid}/variants`)
       .then((rows) =>
-        setVariants(
-          [...rows].sort((a, b) => a.variantName.localeCompare(b.variantName)),
-        ),
+        [...rows].sort((a, b) => a.variantName.localeCompare(b.variantName)),
       )
+      .then((rows) => {
+        setVariants(rows);
+        if (!variantUuid && rows.length === 1) {
+          setVariantUuid(rows[0]!.uuid);
+        }
+      })
       .catch(() => setVariants([]));
-    setVariantUuid("");
-  }, [filamentUuid]);
+  }, [filamentUuid, variantUuid]);
 
   const manufacturerOptions = useMemo(
     () => manufacturers.map((x) => ({ value: x.uuid, label: x.name })),
@@ -132,7 +137,11 @@ export default function LabelIndexPage() {
         <SearchableSelect
           label={f.manufacturer}
           value={manufacturerUuid}
-          onChange={setManufacturerUuid}
+          onChange={(v) => {
+            setManufacturerUuid(v);
+            setFilamentUuid("");
+            setVariantUuid("");
+          }}
           options={manufacturerOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
@@ -141,17 +150,23 @@ export default function LabelIndexPage() {
         <SearchableSelect
           label={f.material}
           value={materialCode}
-          onChange={setMaterialCode}
+          onChange={(v) => {
+            setMaterialCode(v);
+            setFilamentUuid("");
+            setVariantUuid("");
+          }}
           options={materialOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
-          disabled={!manufacturerUuid}
         />
         <SearchableSelect
           label={f.product}
           value={filamentUuid}
-          onChange={setFilamentUuid}
+          onChange={(v) => {
+            setFilamentUuid(v);
+            setVariantUuid("");
+          }}
           options={filamentOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}

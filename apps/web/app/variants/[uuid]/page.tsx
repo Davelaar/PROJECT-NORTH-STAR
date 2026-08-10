@@ -401,7 +401,7 @@ export default async function VariantPage({
           <Link className="button secondary" href="/identify">
             {messages.nav.identify}
           </Link>
-          <Link className="button secondary" href="/submit">
+          <Link className="button secondary" href={`/submit?variantUuid=${uuid}`}>
             {m.contribute}
           </Link>
         </div>

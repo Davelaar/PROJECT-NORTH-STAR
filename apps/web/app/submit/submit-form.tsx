@@ -20,6 +20,22 @@ type Variant = {
   colorName: string | null;
   primaryColorHex: string | null;
 };
+type VariantDetail = Variant & {
+  productUuid: string;
+  productName: string;
+  manufacturerUuid: string;
+  manufacturerName: string;
+  materialCode: string;
+  manufacturerSpecs: {
+    nozzleTempMinC: number | null;
+    nozzleTempMaxC: number | null;
+    bedTempMinC: number | null;
+    bedTempMaxC: number | null;
+    chamberTempC: number | null;
+    chamberTempMinC: number | null;
+    chamberTempMaxC: number | null;
+  };
+};
 type PrinterBrand = { name: string; models: Array<{ name: string }> };
 
 const NOZZLE_OPTIONS = ["0.2", "0.25", "0.4", "0.6", "0.8", "1.0"];
@@ -28,7 +44,11 @@ function fillName(template: string, name: string) {
   return template.replace("{name}", name);
 }
 
-export function SubmitProfileForm() {
+export function SubmitProfileForm({
+  initialVariantUuid = "",
+}: {
+  initialVariantUuid?: string;
+}) {
   const messages = useMessages();
   const m = messages.submitProfile;
   const f = messages.fields;
@@ -83,6 +103,62 @@ export function SubmitProfileForm() {
       })
       .catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    if (initialVariantUuid) setVariantUuid(initialVariantUuid);
+  }, [initialVariantUuid]);
+
+  useEffect(() => {
+    if (!variantUuid) return;
+    apiGet<VariantDetail>(`/api/v1/variants/${variantUuid}`)
+      .then((variant) => {
+        setManufacturerUuid(variant.manufacturerUuid);
+        setMaterialCode(variant.materialCode);
+        setFilamentUuid(variant.productUuid);
+        setVariants((rows) => {
+          if (rows.some((row) => row.uuid === variant.uuid)) return rows;
+          return [
+            ...rows,
+            {
+              uuid: variant.uuid,
+              variantName: variant.variantName,
+              colorName: variant.colorName,
+              primaryColorHex: variant.primaryColorHex,
+            },
+          ].sort((a, b) =>
+            (a.colorName ?? a.variantName).localeCompare(
+              b.colorName ?? b.variantName,
+            ),
+          );
+        });
+        const specs = variant.manufacturerSpecs;
+        if (specs.nozzleTempMinC != null) {
+          setNozzleTempMinC((prev) => prev || String(specs.nozzleTempMinC));
+        }
+        if (specs.nozzleTempMaxC != null) {
+          setNozzleTempMaxC((prev) => prev || String(specs.nozzleTempMaxC));
+        }
+        const bedTemp = specs.bedTempMinC ?? specs.bedTempMaxC;
+        if (bedTemp != null) setBedTempC((prev) => prev || String(bedTemp));
+        const chamberTemp =
+          specs.chamberTempC ?? specs.chamberTempMinC ?? specs.chamberTempMaxC;
+        if (chamberTemp != null) {
+          setChamberHeaterActive(true);
+          setChamberTempC((prev) => prev || String(chamberTemp));
+        }
+        setTitle((prev) =>
+          prev ||
+            [
+              variant.manufacturerName,
+              variant.productName,
+              variant.colorName ?? variant.variantName,
+            ]
+              .filter(Boolean)
+              .join(" "),
+        );
+      })
+      .catch(() => undefined);
+  }, [variantUuid]);
 
   useEffect(() => {
     if (!manufacturerUuid || !materialCode) {
