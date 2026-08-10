@@ -22,14 +22,25 @@
 
 ## Owner input required (launch blockers)
 
-- [ ] `NEXT_PUBLIC_LEGAL_OWNER_NAME`
-- [ ] `NEXT_PUBLIC_LEGAL_PRIVACY_EMAIL` / security email
-- [ ] `NEXT_PUBLIC_LEGAL_HOSTING_PROVIDER` + region
-- [ ] Confirm subprocessors + DPAs
-- [ ] Optional: `NEXT_PUBLIC_GA_MEASUREMENT_ID` + GA retention settings
+- [ ] `NEXT_PUBLIC_LEGAL_OWNER_NAME` — legal person or company that operates the site (this is what drives the yellow banner)
+- [x] Privacy / security email — `info@openfilament.nl`
+- [x] Hosting — self-hosted VPS + SQLite on-server, EU (Germany); override via env if wrong
+- [ ] Confirm subprocessors + DPAs (Stripe/Google only if enabled)
 - [ ] Backup schedule + deletion-replay runbook
 - [ ] Legal review of Privacy / Terms (NL AVG)
 - [ ] Rotate seed admin passwords in production
+
+## Optional: Google + Stripe for go-live
+
+### Google (only if you want analytics)
+- [ ] GA4 Measurement ID → `NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXX` (consent-gated; omit = no Google Analytics)
+- [ ] Optional Search Console (verification TXT may already exist)
+
+### Stripe (only before real payments)
+- [x] Test keys on server (`pk_test_` / `sk_test_`) for development
+- [ ] Live keys `pk_live_` / `sk_live_` before charging customers
+- [ ] Webhook secret `STRIPE_WEBHOOK_SECRET=whsec_…` when webhooks are wired
+- [ ] Stripe Dashboard business profile (legal entity, support email, bank for payouts)
 
 ## Legal review recommended
 
@@ -37,6 +48,6 @@
 - [ ] Affiliate disclosure if Amazon links remain
 - [ ] Supervisory authority text for non-NL operators
 
-## Blocked until owner config
+## Banner behavior
 
-Production builds show a visible banner when legal placeholders remain. Do not treat placeholder pages as final legal text.
+Production shows a yellow banner until `NEXT_PUBLIC_LEGAL_OWNER_NAME` is set and the web app is rebuilt. Do not treat placeholder privacy text as final legal advice.

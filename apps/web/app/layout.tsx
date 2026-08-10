@@ -5,7 +5,7 @@ import { ServiceWorkerRegister } from "./components/sw-register";
 import { ConsentManager } from "./components/consent-manager";
 import { getLocaleMessages } from "@/lib/messages";
 import { jsonLdScript, absoluteUrl } from "@/lib/seo/metadata";
-import { legalHasPlaceholders } from "@/lib/legal/config";
+import { legalHasPlaceholders, legalMissingSummary } from "@/lib/legal/config";
 import type { Viewport } from "next";
 import "./globals.css";
 
@@ -83,8 +83,7 @@ export default async function RootLayout({
           </div>
           {showBuildWarn ? (
             <div className="legal-placeholder-warn legal-banner" role="status">
-              Production legal placeholders remain — see
-              docs/PRODUCTION_LAUNCH_CHECKLIST.md
+              {legalMissingSummary()} See docs/PRODUCTION_LAUNCH_CHECKLIST.md
             </div>
           ) : null}
         </MessagesProvider>
