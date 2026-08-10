@@ -33,7 +33,7 @@ Required fields:
 - Tested bed temperature
 - If an **active chamber heater** was used: chamber set temperature
 
-Catalog brand/colour data is imported one-way from the [Open Filament Database](https://openfilamentdatabase.org) into our **server-hosted SQLite**. Serving the site does **not** depend on OFD being online. OFD’s public API is read-only — there is no automatic write-back. Catalog corrections go through [their editor](https://openfilamentdatabase.org); calibrations stay on Open Filament.
+Catalog brand/colour data may be **seeded** from the [Open Filament Database](https://openfilamentdatabase.org) (MIT) into our **server-hosted SQLite** on OpenFilament. Serving the site does **not** depend on OFD being online. The live catalog, community additions, and calibrations all live on OpenFilament — add or correct brands, products and colours here (for example via Submit / community catalog APIs). There is no requirement to use the OFD editor for OpenFilament catalog changes.
 
 ## For brands
 

@@ -82,7 +82,7 @@ export const messages: Messages = {
     fixtureNote:
       "演示数据与公开目录结果分开显示。",
     catalogEmpty:
-      "目录看起来是空的（仅有演示数据）。需要管理员导入一次 Open Filament Database。",
+      "目录看起来是空的（仅有演示数据）。管理员可在服务器加载目录，或你通过提交添加条目。",
     apiDown: "API 当前不可用。请启动服务或检查服务器。",
     browseFullCatalog: "浏览完整目录",
     featuredMaterials: "精选材料",
@@ -105,7 +105,7 @@ export const messages: Messages = {
       "按品牌、产品、材料、颜色、SKU、EAN 搜索——或输入颜色代码如 #000000、RAL 9011、黑色。",
     noResults: "没有找到匹配结果。",
     catalogEmpty:
-      "当前只有演示数据。请在服务器导入 Open Filament Database 以加载完整目录。",
+      "当前只有演示数据。管理员可在服务器加载完整目录，或通过提交添加条目。",
     apiDown: "搜索依赖 API，但 API 当前离线。",
     colorMatch: "颜色匹配",
     colorHint:
@@ -149,7 +149,7 @@ export const messages: Messages = {
     communityRecommendation: "社区推荐",
     profiles: "校准配置文件",
     syntheticBanner: "演示或占位数据——不作为正常公开目录内容显示。",
-    ofdAttribution: "目录身份来自 Open Filament Database（MIT）。",
+    ofdAttribution: "目录身份托管在 OpenFilament。部分条目最初从 Open Filament Database（MIT）导入作为种子数据。",
     openPrintTagPreview: "OpenPrintTag 字段预览",
     whereToBuy: "哪里买",
     noIdentifiers: "该颜色暂无 SKU、EAN 或 GTIN 记录。",
@@ -353,7 +353,7 @@ export const messages: Messages = {
     termsAcceptSuffix: "，并理解我的邮箱保持私密；若之后删除账户，校准可能仍公开（匿名署名）。",
     termsRequired: "请接受贡献条款以继续。",
     ofdNote:
-      "目录中的品牌/颜色数据来自 Open Filament Database（单向导入）。校准数据保存在 Open Filament。OFD 没有写入 API——如需修正目录，请使用他们的编辑器：openfilamentdatabase.org。",
+      "耗材目录保存在此 OpenFilament 服务器上。请在此添加缺失的品牌、产品和颜色——更正保留在 OpenFilament，而不是外部网站。",
   },
   profile: {
     useThisProfile: "使用此配置文件",

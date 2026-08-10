@@ -78,7 +78,7 @@ export const messages: Messages = {
     fixtureNote:
       "Demo records are separated from public catalog results.",
     catalogEmpty:
-      "The catalog looks empty (demo data only). An admin needs to import the Open Filament Database once.",
+      "The catalog looks empty (demo data only). An admin can load catalog data on the server, or you can add entries via Submit.",
     apiDown: "The API is offline. Start the stack or check the server.",
     browseFullCatalog: "Browse the full catalog",
     featuredMaterials: "Featured materials",
@@ -101,7 +101,7 @@ export const messages: Messages = {
       "Search by brand, product, material, colour, SKU, EAN — or a colour code such as #000000, RAL 9011, zwart.",
     noResults: "Nothing matched that search.",
     catalogEmpty:
-      "Only demo data is loaded. Import the Open Filament Database on the server for the full catalog.",
+      "Only demo data is loaded. An admin can load the full catalog on the server, or add entries via Submit.",
     apiDown: "Search needs the API, and it is offline right now.",
     colorMatch: "Colour match",
     colorHint:
@@ -147,7 +147,7 @@ export const messages: Messages = {
     syntheticBanner:
       "Demo or placeholder data — not shown as normal public catalog content.",
     ofdAttribution:
-      "Catalog identity from the Open Filament Database (MIT).",
+      "Catalog identity is hosted on OpenFilament. Some rows were originally seeded from the Open Filament Database (MIT).",
     openPrintTagPreview: "OpenPrintTag fields",
     whereToBuy: "Where to buy",
     noIdentifiers: "No SKU, EAN or GTIN on file for this colour yet.",
@@ -347,7 +347,7 @@ export const messages: Messages = {
     termsAcceptSuffix: "and understand my email stays private while the calibration may remain public if I later delete my account (anonymized attribution).",
     termsRequired: "Accept the contribution terms to continue.",
     ofdNote:
-      "Catalog brand/colour data comes from the Open Filament Database (one-way import). Calibrations live on Open Filament. OFD has no write API — for catalog corrections use their editor at openfilamentdatabase.org.",
+      "The filament catalog lives on this OpenFilament server. Add missing brands, products and colours here — corrections stay on OpenFilament, not on an external site.",
   },
   profile: {
     useThisProfile: "Use this profile",

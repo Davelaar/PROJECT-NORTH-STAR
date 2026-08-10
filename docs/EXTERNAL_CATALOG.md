@@ -1,14 +1,18 @@
 # External filament catalog sources
 
-## Imported: Open Filament Database (MIT)
+## Optional seed: Open Filament Database (MIT)
 
-**Editor / browse:** [https://openfilamentdatabase.org](https://openfilamentdatabase.org)  
+OpenFilament’s **live catalog is stored on the OpenFilament server** (SQLite). Users add and correct brands, products and colours on OpenFilament.
+
+OFD can be used as an optional **bulk seed** of manufacturer/product/variant identity (MIT). Runtime does **not** depend on OFD being online.
+
+**Upstream browse (seed source only):** [https://openfilamentdatabase.org](https://openfilamentdatabase.org)  
 **Static API:** [https://api.openfilamentdatabase.org](https://api.openfilamentdatabase.org/)  
 **Source:** [OpenFilamentCollective/open-filament-database](https://github.com/OpenFilamentCollective/open-filament-database)  
 **License:** MIT  
 **Bulk dump:** GitHub release `all.json.gz` (also via the API site)
 
-OFD is the community catalog OpenFilament imports for manufacturer/product/variant identity. It pairs with the open NFC format **OpenPrintTag** ([spec](https://specs.openprinttag.org/), see [`OPENPRINTTAG.md`](OPENPRINTTAG.md)).
+OFD pairs usefully with the open NFC format **OpenPrintTag** ([spec](https://specs.openprinttag.org/), see [`OPENPRINTTAG.md`](OPENPRINTTAG.md)). Catalog changes for OpenFilament are made on OpenFilament, not via the OFD editor.
 
 ### Commands
 

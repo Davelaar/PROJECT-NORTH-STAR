@@ -77,7 +77,7 @@ export const messages: Messages = {
     fixtureNote:
       "Demogegevens worden gescheiden van openbare catalogusresultaten.",
     catalogEmpty:
-      "De catalogus lijkt leeg (alleen demodata). Een beheerder moet de Open Filament Database eenmaal importeren.",
+      "De catalogus lijkt leeg (alleen demodata). Een beheerder kan catalogusdata op de server laden, of jij voegt items toe via Indienen.",
     apiDown: "De API is offline. Start de stack of controleer de server.",
     browseFullCatalog: "Volledige catalogus bekijken",
     featuredMaterials: "Uitgelichte materialen",
@@ -100,7 +100,7 @@ export const messages: Messages = {
       "Zoek op merk, product, materiaal, kleur, SKU, EAN — of een kleurcode zoals #000000, RAL 9011, zwart.",
     noResults: "Geen resultaten.",
     catalogEmpty:
-      "Alleen demodata geladen. Importeer de Open Filament Database op de server voor de volledige catalogus.",
+      "Alleen demodata geladen. Een beheerder kan de volledige catalogus op de server laden, of voeg items toe via Indienen.",
     apiDown: "Zoeken heeft de API nodig, en die is nu offline.",
     colorMatch: "Kleurenmatch",
     colorHint:
@@ -146,7 +146,7 @@ export const messages: Messages = {
     syntheticBanner:
       "Demo- of placeholderdata — niet weergegeven als normaal openbaar catalogusmateriaal.",
     ofdAttribution:
-      "Catalogus-identiteit uit de Open Filament Database (MIT).",
+      "Catalogus-identiteit staat op OpenFilament. Sommige rijen zijn oorspronkelijk geseed vanuit de Open Filament Database (MIT).",
     openPrintTagPreview: "OpenPrintTag-velden",
     whereToBuy: "Waar te koop",
     noIdentifiers: "Nog geen SKU, EAN of GTIN voor deze kleur.",
@@ -346,7 +346,7 @@ export const messages: Messages = {
     termsAcceptSuffix: "en begrijp dat mijn e-mail privé blijft, terwijl de kalibratie openbaar kan blijven als ik later mijn account verwijder (geanonimiseerde vermelding).",
     termsRequired: "Accepteer de bijdragevoorwaarden om door te gaan.",
     ofdNote:
-      "Catalogusmerk- en kleurgegevens komen uit de Open Filament Database (eenrichtingsimport). Kalibraties staan op Open Filament. OFD heeft geen schrijf-API — voor cataloguscorrecties gebruik je hun editor op openfilamentdatabase.org.",
+      "De filamentcatalogus staat op deze OpenFilament-server. Voeg ontbrekende merken, producten en kleuren hier toe — correcties blijven op OpenFilament, niet op een externe site.",
   },
   profile: {
     useThisProfile: "Dit profiel gebruiken",

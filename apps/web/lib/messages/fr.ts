@@ -77,7 +77,7 @@ export const messages: Messages = {
     fixtureNote:
       "Les enregistrements de démo sont séparés des résultats publics du catalogue.",
     catalogEmpty:
-      "Le catalogue semble vide (démo uniquement). Un admin doit importer une fois l'Open Filament Database.",
+      "Le catalogue semble vide (démo uniquement). Un admin peut charger le catalogue sur le serveur, ou tu peux ajouter des entrées via Soumettre.",
     apiDown: "L'API est hors ligne. Démarrez la stack ou vérifiez le serveur.",
     browseFullCatalog: "Parcourir le catalogue complet",
     featuredMaterials: "Matières en vedette",
@@ -100,7 +100,7 @@ export const messages: Messages = {
       "Recherchez par marque, produit, matière, couleur, SKU, EAN — ou un code couleur comme #000000, RAL 9011, noir.",
     noResults: "Aucun résultat.",
     catalogEmpty:
-      "Seules des données de démo sont chargées. Importez l'Open Filament Database sur le serveur.",
+      "Seules des données de démo sont chargées. Un admin peut charger le catalogue complet sur le serveur, ou ajouter des entrées via Soumettre.",
     apiDown: "La recherche a besoin de l'API, actuellement indisponible.",
     colorMatch: "Correspondance de couleur",
     colorHint:
@@ -146,7 +146,7 @@ export const messages: Messages = {
     syntheticBanner:
       "Données de démo ou placeholders — non affichées comme contenu public normal du catalogue.",
     ofdAttribution:
-      "Identité catalogue issue de l'Open Filament Database (MIT).",
+      "L’identité catalogue est hébergée sur OpenFilament. Certaines lignes ont d’abord été amorcées depuis l’Open Filament Database (MIT).",
     openPrintTagPreview: "Champs OpenPrintTag",
     whereToBuy: "Où acheter",
     noIdentifiers: "Pas encore de SKU, EAN ou GTIN pour cette couleur.",
@@ -346,7 +346,7 @@ export const messages: Messages = {
     termsAcceptSuffix: "et comprends que mon e-mail reste privé tandis que la calibration peut rester publique si je supprime mon compte plus tard (attribution anonymisée).",
     termsRequired: "Acceptez les conditions de contribution pour continuer.",
     ofdNote:
-      "Les données de marque/couleur du catalogue proviennent de l'Open Filament Database (import unidirectionnel). Les calibrations vivent sur Open Filament. OFD n'a pas d'API d'écriture — pour corriger le catalogue, utilisez leur éditeur sur openfilamentdatabase.org.",
+      "Le catalogue filament vit sur ce serveur OpenFilament. Ajoute ici les marques, produits et couleurs manquants — les corrections restent sur OpenFilament, pas sur un site externe.",
   },
   profile: {
     useThisProfile: "Utiliser ce profil",
