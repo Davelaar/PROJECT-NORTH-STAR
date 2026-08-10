@@ -5,7 +5,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: messages.brand,
-  description: messages.tagline,
+  description:
+    "One filament. One profile. Every printer. Open community filament database — calibrate once, share what works, use it everywhere.",
 };
 
 export default function RootLayout({

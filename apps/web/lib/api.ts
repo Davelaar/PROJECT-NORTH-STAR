@@ -1,8 +1,18 @@
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8787";
-
+/**
+ * Browser: same-origin (empty) so Next rewrites proxy to the API.
+ * Server (RSC): talk to the API process directly.
+ */
 export function getApiBase(): string {
-  return API_URL.replace(/\/$/, "");
+  if (typeof window === "undefined") {
+    const internal =
+      process.env.API_INTERNAL_URL ??
+      process.env.NEXT_PUBLIC_API_URL ??
+      "http://127.0.0.1:8787";
+    return internal.replace(/\/$/, "");
+  }
+  const pub = process.env.NEXT_PUBLIC_API_URL;
+  if (pub && pub.length > 0) return pub.replace(/\/$/, "");
+  return "";
 }
 
 export async function apiGet<T>(path: string, token?: string): Promise<T> {

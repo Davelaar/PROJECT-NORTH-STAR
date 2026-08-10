@@ -19,6 +19,8 @@
     "db:generate": "pnpm --filter @open-filament/db generate",
     "db:migrate": "pnpm --filter @open-filament/db migrate",
     "db:seed": "pnpm --filter @open-filament/db seed",
-    "db:reset": "pnpm --filter @open-filament/db reset"
+    "db:reset": "pnpm --filter @open-filament/db reset",
+    "stack:start": "./scripts/start-stack.sh",
+    "stack:stop": "./scripts/stop-stack.sh"
   }
 }

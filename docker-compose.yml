@@ -1,0 +1,51 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      API_HOST: "0.0.0.0"
+      API_PORT: "8787"
+      WEB_ORIGIN: "${WEB_ORIGIN:-http://localhost:3000}"
+      DATABASE_URL: "file:/data/open-filament.sqlite"
+      SESSION_SECRET: "${SESSION_SECRET:-change-me-in-production-please-32c}"
+    volumes:
+      - of-data:/data
+    expose:
+      - "8787"
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      target: web
+    environment:
+      API_INTERNAL_URL: "http://api:8787"
+      API_REWRITE_TARGET: "http://api:8787"
+      # Same-origin in the browser via Next rewrites
+      NEXT_PUBLIC_API_URL: ""
+    depends_on:
+      - api
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    restart: unless-stopped
+
+  # Optional single-entry reverse proxy (install Docker; then: docker compose --profile proxy up -d)
+  caddy:
+    profiles: ["proxy"]
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - web
+    restart: unless-stopped
+
+volumes:
+  of-data:
+  caddy-data:
+  caddy-config:

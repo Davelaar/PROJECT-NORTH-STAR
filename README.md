@@ -28,16 +28,21 @@ export PATH="/opt/homebrew/opt/node@22/bin:/opt/homebrew/bin:$PATH"
 pnpm install
 pnpm -r --filter './packages/*' build
 pnpm db:reset
-pnpm test
-pnpm dev
+
+# Recommended: detached local stack (survives closing the terminal)
+pnpm stack:start
+# stop with: pnpm stack:stop
 ```
 
-Then open the **web UI** (not the API port):
+Or foreground (dies when the shell dies): `pnpm dev`
+
+Then open the **web UI**:
 
 - Web: http://127.0.0.1:3000
-- API: http://127.0.0.1:8787/api/v1/health
+- API health: http://127.0.0.1:8787/api/v1/health
 
-`pnpm dev` starts **both**. Opening only `:8787` in a browser used to look like a 404; the API root now redirects browsers to the web UI.
+Deploy to a VPS: see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) (`docker compose up -d`).
+The local RFID/slicer **bridge** always stays on your PC.
 
 Local bridge (preset install + CFS simulate):
 

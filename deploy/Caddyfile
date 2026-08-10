@@ -1,0 +1,11 @@
+# Public site → Next.js (which proxies /api to the API service).
+# Replace openfilament.example.com with your domain when using HTTPS.
+
+:80 {
+	reverse_proxy web:3000
+}
+
+# Uncomment for automatic HTTPS once DNS points here:
+# openfilament.example.com {
+# 	reverse_proxy web:3000
+# }
