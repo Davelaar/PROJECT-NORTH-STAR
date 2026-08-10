@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install
+      - run: pnpm --filter @open-filament/domain test
+      - run: pnpm --filter @open-filament/canonical-profile test
+      - run: pnpm --filter @open-filament/slicer-creality test
+      - run: pnpm --filter @open-filament/slicer-orca test
+      - run: pnpm --filter @open-filament/rfid-cfs test
+      - run: pnpm --filter @open-filament/domain typecheck
+      - run: pnpm --filter @open-filament/db typecheck
+      - run: pnpm --filter @open-filament/canonical-profile typecheck
+      - run: pnpm --filter @open-filament/slicer-creality typecheck
+      - run: pnpm --filter @open-filament/slicer-orca typecheck
+      - run: pnpm --filter @open-filament/rfid-cfs typecheck
+      - run: pnpm --filter @open-filament/api typecheck
+
+  rust-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo check -p open-filament-bridge

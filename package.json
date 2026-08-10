@@ -1,0 +1,24 @@
+{
+  "name": "open-filament",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Open community filament intelligence platform",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter=./packages/* build && pnpm -r --filter=./apps/* build",
+    "dev": "pnpm --parallel --filter @open-filament/api --filter @open-filament/web dev",
+    "dev:api": "pnpm --filter @open-filament/api dev",
+    "dev:web": "pnpm --filter @open-filament/web dev",
+    "test": "pnpm -r --filter=./packages/* build && pnpm -r test",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "db:generate": "pnpm --filter @open-filament/db generate",
+    "db:migrate": "pnpm --filter @open-filament/db migrate",
+    "db:seed": "pnpm --filter @open-filament/db seed",
+    "db:reset": "pnpm --filter @open-filament/db reset"
+  }
+}

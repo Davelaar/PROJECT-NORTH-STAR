@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openfilament.dev/schemas/openfilamentprofile-v1.json",
+  "title": "OpenFilamentProfile v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "title",
+    "provenance",
+    "filament",
+    "context",
+    "thermal",
+    "extrusion",
+    "cooling",
+    "retraction",
+    "preparation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "openfilamentprofile-v1" },
+    "id": { "type": "string", "format": "uuid" },
+    "title": { "type": "string", "minLength": 1 },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "isSyntheticFixture": { "type": "boolean" },
+        "sourceNotes": { "type": ["string", "null"] },
+        "createdAt": { "type": ["string", "null"] }
+      }
+    },
+    "filament": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "manufacturerName": { "type": ["string", "null"] },
+        "productName": { "type": ["string", "null"] },
+        "variantName": { "type": ["string", "null"] },
+        "materialCode": { "type": ["string", "null"] },
+        "diameterMm": { "type": ["number", "null"] },
+        "colorName": { "type": ["string", "null"] },
+        "primaryColorHex": { "type": ["string", "null"] },
+        "densityGCm3": { "type": ["number", "null"] }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "printerManufacturer": { "type": ["string", "null"] },
+        "printerModel": { "type": ["string", "null"] },
+        "printerRevision": { "type": ["string", "null"] },
+        "nozzleDiameterMm": { "type": ["number", "null"] },
+        "nozzleMaterial": { "type": ["string", "null"] },
+        "buildPlate": { "type": ["string", "null"] },
+        "slicerName": { "type": ["string", "null"] },
+        "slicerVersion": { "type": ["string", "null"] }
+      }
+    },
+    "thermal": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nozzleTempFirstLayerC": { "type": ["number", "null"] },
+        "nozzleTempOtherLayersC": { "type": ["number", "null"] },
+        "nozzleTempMinC": { "type": ["number", "null"] },
+        "nozzleTempMaxC": { "type": ["number", "null"] },
+        "bedTempFirstLayerC": { "type": ["number", "null"] },
+        "bedTempOtherLayersC": { "type": ["number", "null"] },
+        "chamberTempC": { "type": ["number", "null"] },
+        "enclosureRecommended": { "type": ["boolean", "null"] }
+      }
+    },
+    "extrusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "flowRatio": { "type": ["number", "null"] },
+        "pressureAdvance": { "type": ["number", "null"] },
+        "linearAdvance": { "type": ["number", "null"] },
+        "maxVolumetricFlowMm3s": { "type": ["number", "null"] },
+        "minVolumetricFlowMm3s": { "type": ["number", "null"] }
+      }
+    },
+    "cooling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fanMinPercent": { "type": ["number", "null"] },
+        "fanMaxPercent": { "type": ["number", "null"] },
+        "bridgeFanPercent": { "type": ["number", "null"] },
+        "fanDisableFirstLayers": { "type": ["integer", "null"] }
+      }
+    },
+    "retraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "retractionDistanceMm": { "type": ["number", "null"] },
+        "retractionSpeedMms": { "type": ["number", "null"] },
+        "deretractionSpeedMms": { "type": ["number", "null"] },
+        "wipe": { "type": ["boolean", "null"] },
+        "zHopMm": { "type": ["number", "null"] }
+      }
+    },
+    "preparation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dryingTempC": { "type": ["number", "null"] },
+        "dryingDurationHours": { "type": ["number", "null"] },
+        "recommendedMaxRhPercent": { "type": ["number", "null"] },
+        "prePrintDryingRequired": { "type": ["boolean", "null"] },
+        "annealingNotes": { "type": ["string", "null"] },
+        "postProcessingNotes": { "type": ["string", "null"] },
+        "adhesiveRecommendation": { "type": ["string", "null"] },
+        "brimRecommended": { "type": ["boolean", "null"] },
+        "buildSurfaceNotes": { "type": ["string", "null"] }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "creality": { "type": "object", "additionalProperties": true },
+        "orca": { "type": "object", "additionalProperties": true },
+        "unknown": { "type": "object", "additionalProperties": true }
+      }
+    }
+  }
+}

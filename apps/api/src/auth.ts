@@ -1,0 +1,139 @@
+import { eq } from "drizzle-orm";
+import {
+  hashPassword,
+  hashToken,
+  schema,
+  type AppDb,
+  verifyPassword,
+} from "@open-filament/db";
+import { randomBytes } from "node:crypto";
+import { v4 as uuid } from "uuid";
+
+export type AuthUser = {
+  id: number;
+  uuid: string;
+  username: string;
+  role: string;
+  trustScore: number;
+};
+
+export async function resolveBearerUser(
+  db: AppDb,
+  authorizationHeader?: string,
+): Promise<AuthUser | null> {
+  if (!authorizationHeader?.startsWith("Bearer ")) return null;
+  const token = authorizationHeader.slice("Bearer ".length).trim();
+  if (!token) return null;
+  const tokenHash = hashToken(token);
+  const row = db
+    .select({
+      id: schema.users.id,
+      uuid: schema.users.uuid,
+      username: schema.users.username,
+      role: schema.users.role,
+      trustScore: schema.users.trustScore,
+      revokedAt: schema.apiTokens.revokedAt,
+      expiresAt: schema.apiTokens.expiresAt,
+    })
+    .from(schema.apiTokens)
+    .innerJoin(schema.users, eq(schema.apiTokens.userId, schema.users.id))
+    .where(eq(schema.apiTokens.tokenHash, tokenHash))
+    .get();
+  if (!row) return null;
+  if (row.revokedAt) return null;
+  if (row.expiresAt && new Date(row.expiresAt) < new Date()) return null;
+  if (row.role === "anonymous") return null;
+  return {
+    id: row.id,
+    uuid: row.uuid,
+    username: row.username,
+    role: row.role,
+    trustScore: row.trustScore,
+  };
+}
+
+export async function loginWithPassword(
+  db: AppDb,
+  usernameOrEmail: string,
+  password: string,
+): Promise<{ user: AuthUser; token: string } | null> {
+  const user =
+    db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.username, usernameOrEmail))
+      .get() ??
+    db
+      .select()
+      .from(schema.users)
+      .where(eq(schema.users.email, usernameOrEmail))
+      .get();
+  if (!user?.passwordHash) return null;
+  const ok = await verifyPassword(password, user.passwordHash);
+  if (!ok) return null;
+  const token = randomBytes(32).toString("hex");
+  db.insert(schema.apiTokens)
+    .values({
+      uuid: uuid(),
+      userId: user.id,
+      name: "session",
+      tokenHash: hashToken(token),
+      scopes: JSON.stringify(["*"]),
+    })
+    .run();
+  return {
+    token,
+    user: {
+      id: user.id,
+      uuid: user.uuid,
+      username: user.username,
+      role: user.role,
+      trustScore: user.trustScore,
+    },
+  };
+}
+
+export async function registerUser(
+  db: AppDb,
+  input: {
+    username: string;
+    email: string;
+    password: string;
+    displayName?: string;
+  },
+) {
+  const passwordHash = await hashPassword(input.password);
+  const [user] = db
+    .insert(schema.users)
+    .values({
+      uuid: uuid(),
+      username: input.username,
+      email: input.email,
+      displayName: input.displayName ?? input.username,
+      passwordHash,
+      role: "registered",
+    })
+    .returning()
+    .all();
+  if (!user) throw new Error("Failed to create user");
+  const token = randomBytes(32).toString("hex");
+  db.insert(schema.apiTokens)
+    .values({
+      uuid: uuid(),
+      userId: user.id,
+      name: "session",
+      tokenHash: hashToken(token),
+      scopes: JSON.stringify(["*"]),
+    })
+    .run();
+  return {
+    token,
+    user: {
+      id: user.id,
+      uuid: user.uuid,
+      username: user.username,
+      role: user.role,
+      trustScore: user.trustScore,
+    },
+  };
+}
