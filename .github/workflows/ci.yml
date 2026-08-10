@@ -16,6 +16,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install
+      - run: pnpm --filter "./packages/*" build
       - run: pnpm --filter @open-filament/domain test
       - run: pnpm --filter @open-filament/canonical-profile test
       - run: pnpm --filter @open-filament/slicer-creality test
