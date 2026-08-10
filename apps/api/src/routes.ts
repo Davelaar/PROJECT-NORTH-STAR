@@ -24,6 +24,8 @@ import {
   failureCategories,
   compareCatalogLabels,
   buildExportFilename,
+  calculateTemplateFilamentValues,
+  selectGenericPrinterTemplate,
 } from "@open-filament/domain";
 import {
   toCanonicalFromRevision,
@@ -1911,6 +1913,12 @@ function buildStarterCanonicalProfile(
   if (printerUuid && !printer) return null;
 
   const materialCode = row.materialCode ?? "PLA";
+  const template = selectGenericPrinterTemplate(printer);
+  const templateValues = calculateTemplateFilamentValues({
+    materialCode,
+    printer,
+    template,
+  });
   const nozzleTemp = mid(
     row.mfrNozzleTempMinC,
     row.mfrNozzleTempMaxC,
@@ -1928,7 +1936,7 @@ function buildStarterCanonicalProfile(
     provenance: {
       isSyntheticFixture: false,
       sourceNotes:
-        "Generated starter profile from catalog/manufacturer values. Not measured; calibrate before production use.",
+        `Calculated, untested starter profile from catalog/manufacturer values and generic printer template "${template.label}". Not measured; calibrate before production use. Assumptions: ${template.assumptions.join(", ")}.`,
       createdAt: new Date().toISOString(),
     },
     filament: {
@@ -1958,14 +1966,14 @@ function buildStarterCanonicalProfile(
       nozzleTempMaxC: row.mfrNozzleTempMaxC,
       bedTempFirstLayerC: bedTemp,
       bedTempOtherLayersC: bedTemp,
-      chamberTempC: row.mfrChamberTempC,
+      chamberTempC: row.mfrChamberTempC ?? templateValues.chamberTempC,
       enclosureRecommended: null,
     },
     extrusion: {
-      flowRatio: 1,
-      pressureAdvance: null,
+      flowRatio: templateValues.flowRatio,
+      pressureAdvance: templateValues.pressureAdvance,
       linearAdvance: null,
-      maxVolumetricFlowMm3s: null,
+      maxVolumetricFlowMm3s: templateValues.maxVolumetricFlowMm3s,
       minVolumetricFlowMm3s: null,
     },
     dimensional: {
@@ -1973,14 +1981,14 @@ function buildStarterCanonicalProfile(
       shrinkagePercentZ: null,
     },
     cooling: {
-      fanMinPercent: null,
-      fanMaxPercent: null,
+      fanMinPercent: template.fanMinPercent,
+      fanMaxPercent: template.fanMaxPercent,
       bridgeFanPercent: null,
       fanDisableFirstLayers: null,
     },
     retraction: {
-      retractionDistanceMm: null,
-      retractionSpeedMms: null,
+      retractionDistanceMm: template.retractionDistanceMm,
+      retractionSpeedMms: template.retractionSpeedMms,
       deretractionSpeedMms: null,
       wipe: null,
       zHopMm: null,

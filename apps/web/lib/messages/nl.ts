@@ -181,7 +181,7 @@ export const messages: Messages = {
       "Er zijn instellingen beschikbaar voor dezelfde nozzlemaat op een andere printer. Temperatuur, flow en nozzlemaat zijn nog steeds bruikbare startpunten; controleer printerspecifiek gedrag voordat je erop vertrouwt.",
     generatedStarterProfile: "Gegenereerd starterprofiel",
     generatedStarterProfileBody:
-      "Er bestaat nog geen gemeten of vergelijkbaar profiel. OpenFilament kan een Creality Print-starterpreset genereren uit catalogus-/fabrikantwaarden voor deze printer en nozzle. Dit is niet gemeten; kalibreer voordat je het voor productieprints gebruikt.",
+      "Er bestaat nog geen gemeten of vergelijkbaar profiel. OpenFilament kan een Creality Print-starterpreset genereren uit catalogus-/fabrikantwaarden plus een generic printertemplate voor deze printerklasse. De waarden zijn berekend en ongetest; kalibreer voordat je het voor productieprints gebruikt.",
     downloadStarterProfile: "Starterprofiel downloaden",
     defaultNozzleNote: "Standaard 0,4 mm totdat je een nozzle kiest.",
     highConfidence: "Hoge betrouwbaarheid",

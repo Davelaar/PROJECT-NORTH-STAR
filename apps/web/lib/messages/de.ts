@@ -181,7 +181,7 @@ export const messages: Messages = {
       "Für dieselbe Düsengröße auf einem anderen Drucker sind Einstellungen verfügbar. Temperatur, Flow und Düsengröße sind weiterhin brauchbare Ausgangspunkte; prüfen Sie druckerspezifisches Verhalten, bevor Sie sich darauf verlassen.",
     generatedStarterProfile: "Generiertes Starterprofil",
     generatedStarterProfileBody:
-      "Es gibt noch kein gemessenes oder vergleichbares Profil. OpenFilament kann aus Katalog-/Herstellerwerten ein Creality Print-Starterpreset für diesen Drucker und diese Düse erzeugen. Es ist nicht gemessen; kalibrieren Sie vor produktiven Drucken.",
+      "Es gibt noch kein gemessenes oder vergleichbares Profil. OpenFilament kann aus Katalog-/Herstellerwerten plus einem generischen Druckertemplate für diese Druckerklasse ein Creality Print-Starterpreset erzeugen. Die Werte sind berechnet und ungetestet; kalibrieren Sie vor produktiven Drucken.",
     downloadStarterProfile: "Starterprofil herunterladen",
     defaultNozzleNote: "Zeigt standardmäßig 0,4 mm an, bis Sie eine Düse wählen.",
     highConfidence: "Hohe Zuverlässigkeit",
