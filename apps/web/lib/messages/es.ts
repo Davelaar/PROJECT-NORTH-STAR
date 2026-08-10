@@ -10,7 +10,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "Encuentra el perfil de filamento adecuado, identifica tu bobina y úsala en cualquier dispositivo — en el navegador.",
+    "Encuentra datos de filamento, perfiles medidos o iniciales calculados, etiquetas de bobina y herramientas de inventario — en el navegador.",
   nav: {
     home: "Inicio",
     search: "Buscar",
@@ -47,8 +47,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "Encuentra un perfil de filamento probado para tu impresora — e identifica cada bobina con QR o RFID.",
-    lead: "Busca en el catálogo abierto, elige tu impresora y boquilla, y luego descarga un perfil adecuado o identifica la bobina directamente desde tu navegador. Sin app de escritorio.",
+      "Encuentra perfiles de filamento, perfiles iniciales y herramientas QR/RFID para tu impresora.",
+    lead: "Busca en el catálogo abierto, elige impresora y boquilla, y descarga un perfil medido si existe o un perfil inicial calculado y claramente marcado. Lleva el inventario manualmente en gramos, usa QR/RFID y sigue en el navegador. Sin app de escritorio. Disponible en nueve idiomas.",
     searchPlaceholder: "Nombre, marca, SKU, EAN o color…",
     searchButton: "Buscar",
     browse: "Ver todos los filamentos",
@@ -71,7 +71,7 @@ export const messages: Messages = {
       "Una muestra de marcas y materiales del catálogo abierto. Busca en el catálogo completo por colores, SKU y perfiles medidos.",
     profilesTitle: "Perfiles para tu impresora",
     profilesBody:
-      "Elige una impresora y una boquilla, luego descarga un perfil adecuado. Los perfiles iniciales cubren boquillas comunes; las mediciones de la comunidad tienen prioridad cuando están disponibles.",
+      "Elige una impresora y una boquilla, luego descarga un perfil adecuado. Las calibraciones medidas de la comunidad tienen prioridad; si no existen, OpenFilament puede componer un perfil inicial calculado y no probado con datos del filamento y promedios de plantillas de impresora.",
     nozzlesNote: "Si no eliges otra, la boquilla por defecto es 0,4 mm.",
     communityTitle: "Comparte tus mediciones",
     communityBody:
@@ -84,7 +84,7 @@ export const messages: Messages = {
     browseFullCatalog: "Ver el catálogo completo",
     featuredMaterials: "Materiales destacados",
     recentlyAdded: "Añadidos recientemente",
-    mostComplete: "Most complete catalog entries",
+    mostComplete: "Entradas de catálogo más completas",
   },
   identify: {
     heading: "Identificar una bobina",

@@ -2,7 +2,7 @@
   "name": "open-filament",
   "private": true,
   "version": "0.1.0",
-  "description": "Open community filament intelligence platform",
+  "description": "Open filament catalog, slicer profiles, QR/RFID spool IDs and My Spools inventory tools",
   "license": "Apache-2.0",
   "packageManager": "pnpm@9.15.0",
   "engines": {

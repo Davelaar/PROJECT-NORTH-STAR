@@ -17,7 +17,7 @@ OpenFilament webapp / PWA
 ├── Progressive browser integrations (capability-detected)
 │   ├── File System Access (optional save)
 │   ├── Camera (QR scan)
-│   └── WebUSB / Web Serial / WebHID (RFID); Web NFC for OpenPrintTag (planned)
+│   └── WebUSB / Web Serial / WebHID (RFID); Web NFC for OpenPrintTag where available
 │
 └── Optional compatibility helper (NOT default UX)
     └── apps/bridge — PC/SC RFID or allowlisted slicer dir write
@@ -58,7 +58,8 @@ OpenFilament webapp / PWA
 | QR genereren | Browser `/label` (PNG/SVG/PDF/print) | Short link `/f/{uuid}` | Nee |
 | QR scannen | Browsercamera (`/scan`) + BarcodeDetector/jsQR | URL/code handmatig invoeren | Nee |
 | RFID schrijven (CFS) | Browser memory PoC + OF1 Web Serial/USB | QR of handmatig identificeren | Alleen voor specifiek incompatibel protocol (PC/SC) |
-| OpenPrintTag | Veldmapping + UUID-derivatie; NDEF encode gepland | QR / handmatig; OFD catalog | Later: Web NFC waar ISO 15693 NDEF werkt |
+| OpenPrintTag | Veldmapping + UUID-derivatie + NDEF/CBOR encode; Web NFC waar beschikbaar | QR / handmatig; OFD catalog | Alleen bij concreet gedocumenteerde browser-/hardwarekloof |
+| Voorraadverbruik bijhouden | My Spools handmatige gramcorrecties; slicer-estimates na bevestiging; printer-reported usage pas met compatibele integratie | Handmatig add/used grams of geen aftrek | Alleen als browserbeperkingen voor lokale printerintegraties aantoonbaar blokkeren |
 | PWA installeren | Browserinstallatie | Website gebruiken | Nee |
 
 A functional fallback in this table describes **technical availability**, not product ranking. QR is not subordinate to RFID.
@@ -83,7 +84,7 @@ Do not label a control universally “Install in slicer” when the browser cann
 
 Connect reader → permission dialog → detect tag → prepare payload → user confirm → write → read-back → verify → success only after verify.
 
-**Shipped:** API encode + verify; browser memory PoC; OF1 Web Serial + experimental WebUSB (`docs/RFID_BROWSER_TRANSPORT.md`). Optional PC/SC helper for ACR122U-class readers.
+**Shipped:** API encode + verify; browser memory PoC; OF1 Web Serial + experimental WebUSB (`docs/RFID_BROWSER_TRANSPORT.md`); OpenPrintTag NDEF/CBOR encode and Web NFC path where browser support exists. Optional PC/SC helper for ACR122U-class readers.
 
 ## Native-helper exception policy
 
@@ -109,6 +110,6 @@ Current helper: `apps/bridge` — see [`LOCAL_BRIDGE.md`](./LOCAL_BRIDGE.md).
 ## Trust boundaries
 
 - Public read APIs are unauthenticated.
-- Profile create / confirm / failure require Bearer tokens (hashed in `api_tokens`).
+- Web auth uses httpOnly session cookies plus CSRF for mutating requests; Bearer tokens remain supported for API/script clients.
 - Optional bridge binds loopback only with shared-secret token + path allowlist (see SECURITY.md).
 - Hardware permissions only after explicit user action.

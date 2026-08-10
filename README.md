@@ -1,6 +1,6 @@
 # Open Filament
 
-Open community filament intelligence platform: canonical filament database, calibration evidence, slicer adapters, QR/RFID identification — delivered as a **web-first Progressive Web App**.
+Open community filament intelligence platform: canonical filament database, measured calibration evidence, calculated starter profiles, slicer adapters, QR/RFID identification, and My Spools inventory tools — delivered as a **web-first Progressive Web App**.
 
 **Production:** [https://openfilament.nl](https://openfilament.nl) (HTTPS via Caddy — see `docs/DEPLOYMENT.md`).
 
@@ -59,7 +59,7 @@ Default helper token: `local-dev-token` (header `X-OF-Bridge-Token`).
 
 ### Public site
 
-Browse, search, export, QR, and RFID tools need **no login**. Contributions (data and code) go through GitHub — see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) and [/contribute](https://openfilament.nl/contribute).
+Browse, search, export, QR, RFID, compatibility and usage-tracking docs need **no login**. The public site is localized in English, Dutch, German, French, Spanish, Portuguese, Russian, Ukrainian and Simplified Chinese. Contributions (data and code) go through GitHub — see [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) and [/contribute](https://openfilament.nl/contribute).
 
 ### Seed logins (operators only)
 
@@ -80,7 +80,9 @@ Seed includes Flashforge ASA Burnt Titanium **seed catalog** fixtures — exampl
 
 ### What works
 
-Working: catalog DB, calibrations + revisions + evidence, search, community aggregation, submit/import/admin web UI, REST API + OpenAPI, OpenFilamentProfile import/export, **slicer preset download** (Orca / Creality / Prusa / Bambu), optional File System Access save, PWA shell, CFS RFID encode/resolve/**browser write+verify**, QR short links + **label PNG/SVG/PDF** + **camera scan**.
+Working: catalog DB, calibrations + revisions + evidence, search, community aggregation, submit/import/admin web UI, REST API + OpenAPI, OpenFilamentProfile import/export, **slicer preset download** (Orca / Creality / Prusa / Bambu), calculated starter-profile exports for missing exact matches, optional File System Access save, PWA shell, QR short links + **label PNG/SVG/PDF** + **camera scan**, CFS RFID encode/resolve/**browser write+verify**, OpenPrintTag NDEF/CBOR encode + Web NFC write path, My Spools Local manual inventory with gram-based usage ledger, and optional My Spools Cloud sync/billing.
+
+Print-usage tracking is transparent by design: slicer values are estimates, completed-print deductions require confirmation unless a compatible printer/print-host integration reports usage, and “actual usage” is reserved for physical measurement. See `docs/PRINT_USAGE_TRACKING_SOURCES.md` and `/compatibility`.
 
 Optional helper: Creality/Orca/etc. allowlisted install + CFS simulate / policy-gated PC/SC write.
 
@@ -114,7 +116,7 @@ See `docs/EXTERNAL_CATALOG.md`, `docs/FILAMENT_PARAMETERS.md`, `docs/OPENPRINTTA
 - `packages/canonical-profile` — OpenFilamentProfile v1
 - `packages/slicer-creality` / `slicer-orca` / `slicer-prusa` / `slicer-bambu` — exporters
 - `packages/rfid-cfs` — CFS-compatible codec (community RE; not affiliated with Creality)
-- `packages/rfid-openprinttag` — OpenPrintTag UUID derivation + catalog field mapping (NDEF encode planned)
+- `packages/rfid-openprinttag` — OpenPrintTag UUID derivation + catalog field mapping + NDEF/CBOR encode
 
 ## License
 

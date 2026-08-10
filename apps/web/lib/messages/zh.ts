@@ -15,7 +15,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "找到合适的耗材配置，识别你的料盘，在任意设备上用浏览器直接使用。",
+    "查找耗材数据、实测或计算的入门配置、料盘标签和库存工具——直接在浏览器中完成。",
   nav: {
     home: "首页",
     search: "搜索",
@@ -52,8 +52,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "找到经过验证的耗材配置文件——用二维码或 RFID 识别每一盘料。",
-    lead: "搜索开放目录，选择打印机和喷嘴，然后下载匹配的配置文件或直接在浏览器中识别料盘。无需安装桌面软件。",
+      "为你的打印机查找耗材配置、入门配置和二维码/RFID 工具。",
+    lead: "搜索开放目录，选择打印机和喷嘴；如果有实测配置就下载实测配置，否则下载清楚标注的计算入门配置。用克为单位手动管理料盘库存，使用二维码/RFID 识别，并保持在浏览器中操作。无需桌面应用。支持九种语言。",
     searchPlaceholder: "名称、品牌、SKU、条码或颜色…",
     searchButton: "搜索",
     browse: "浏览所有耗材",
@@ -76,7 +76,7 @@ export const messages: Messages = {
       "来自开放目录的品牌与材料样本。搜索完整目录可查找颜色、SKU 和实测配置文件。",
     profilesTitle: "按打印机匹配的配置文件",
     profilesBody:
-      "选择打印机和喷嘴，然后下载匹配的配置文件。入门配置覆盖常见喷嘴；有社区实测时优先采用实测数据。",
+      "选择打印机和喷嘴，然后下载匹配的配置文件。社区实测校准优先；如果没有，OpenFilament 会根据耗材数据和打印机模板平均值组合一个计算得出、未测试的入门配置。",
     nozzlesNote: "未特别选择时，默认按 0.4 mm 喷嘴处理。",
     communityTitle: "分享你的测量数据",
     communityBody:
@@ -89,7 +89,7 @@ export const messages: Messages = {
     browseFullCatalog: "浏览完整目录",
     featuredMaterials: "精选材料",
     recentlyAdded: "最近添加",
-    mostComplete: "Most complete catalog entries",
+    mostComplete: "最完整的目录条目",
   },
   identify: {
     heading: "识别一盘料",

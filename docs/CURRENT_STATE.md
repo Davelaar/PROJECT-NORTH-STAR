@@ -1,6 +1,6 @@
 # CURRENT STATE
 
-**Updated:** 2026-08-10 (HTTPS openfilament.nl · My Spools Cloud · AVG/privacy · richer OFD params · hardware page)
+**Updated:** 2026-08-11 (HTTPS openfilament.nl · My Spools Cloud · usage tracking transparency · calculated starter profiles · OpenPrintTag encode/Web NFC)
 
 Open Filament lives at `/Users/raymonddavelaar/Projects/open-filament` (Apache-2.0). Production site: **https://openfilament.nl**.
 
@@ -38,9 +38,12 @@ See [`docs/EXTERNAL_CATALOG.md`](EXTERNAL_CATALOG.md), [`docs/FILAMENT_PARAMETER
 | Account privacy (sessions, export, delete, privacy prefs) | **Done** |
 | Cookie consent + consent-gated GA4 | **Done** |
 | My Spools local inventory | **Done** (IndexedDB; user-controlled import/export) |
+| My Spools manual usage ledger | **Done** (manual add/used grams; auditable usage transactions; local + Cloud schema/sync) |
 | My Spools Cloud sync | **Done** (optional paid backup/sync; explicit user confirmation before upload) |
 | My Spools Cloud billing | **Done** (Stripe one-time 12 months; test mode by default; live checkout gated by `MY_SPOOLS_CLOUD_LIVE_PAYMENTS`) |
 | Download/import slicer export (Orca, Creality, Prusa, Bambu) | **Done** |
+| Calculated starter-profile exports | **Done** (generic printer-template heuristics by metadata/brand/model/nozzle; explicitly calculated, untested and not measured) |
+| Usage tracking docs + compatibility checker | **Done** (conservative slicer/printer capability registry; no automatic actual-usage claims from slicer estimates) |
 | File System Access optional save | **Done** (Chrome/Edge when available) |
 | PWA manifest + shell service worker + offline page | **Done** |
 | Browser capability detection | **Done** |
@@ -70,6 +73,9 @@ Software acceptance: `./scripts/acceptance-software.sh` → `ACCEPTANCE_SOFTWARE
 - CFS encode / browser memory write+verify / resolve
 - Auth, publish/revise/fork, evidence upload
 - My Spools local + Cloud sync and account privacy export/delete
+- Manual My Spools add/used grams flow and Cloud usage-history sync
+- Compatibility checker and usage-tracking docs with conservative slicer/printer claims
+- Generated starter profile endpoint for OpenFilamentProfile, Orca, Creality, Prusa and Bambu formats
 - Cookie consent with analytics only after consent
 - OpenAPI at `/openapi.json`
 - PWA shell assets

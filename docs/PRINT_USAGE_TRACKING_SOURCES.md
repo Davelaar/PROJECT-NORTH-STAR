@@ -33,4 +33,6 @@ OpenFilament uses conservative terminology:
 
 ## Validation Status
 
-The current implementation is structurally tested in code. No real printer, AMS/CFS/MMU, NFC hardware, scale hardware, Moonraker server, OctoPrint server, Bambu printer or Creality printer has been validated as part of this change.
+The current implementation is structurally tested in code for terminology, compatibility registry coverage, manual My Spools usage transactions, Cloud sync/export of usage history, and calculated starter-profile generation. No real printer, AMS/CFS/MMU, NFC hardware, scale hardware, Moonraker server, OctoPrint server, Bambu printer or Creality printer has been validated as part of this change.
+
+Manual My Spools inventory updates are supported today through explicit `used` / `add` gram entries. Automatic completed-print or failed-print deduction remains dependent on future validated slicer/print-host integrations and is not enabled by default.

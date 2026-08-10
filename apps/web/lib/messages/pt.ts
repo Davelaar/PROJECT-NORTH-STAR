@@ -10,7 +10,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "Encontre o perfil de filamento certo, identifique o carretel e use-o em qualquer dispositivo — no navegador.",
+    "Encontre dados de filamento, perfis medidos ou iniciais calculados, etiquetas de carretel e ferramentas de inventário — no navegador.",
   nav: {
     home: "Início",
     search: "Pesquisar",
@@ -47,8 +47,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "Encontre um perfil de filamento testado para a sua impressora — e identifique cada carretel com QR ou RFID.",
-    lead: "Pesquise o catálogo aberto, escolha impressora e nozzle, depois descarregue um perfil adequado ou identifique o carretel diretamente no navegador. Sem app de ambiente de trabalho.",
+      "Encontre perfis de filamento, perfis iniciais e ferramentas QR/RFID para a sua impressora.",
+    lead: "Pesquise o catálogo aberto, escolha impressora e nozzle, depois descarregue um perfil medido quando existir ou um perfil inicial calculado e claramente assinalado. Controle carretéis manualmente em gramas, use QR/RFID e continue no navegador. Sem app de ambiente de trabalho. Disponível em nove idiomas.",
     searchPlaceholder: "Nome, marca, SKU, EAN ou cor…",
     searchButton: "Pesquisar",
     browse: "Ver todos os filamentos",
@@ -71,7 +71,7 @@ export const messages: Messages = {
       "Uma seleção de marcas e materiais do catálogo aberto. Pesquise o catálogo completo por cores, SKU e perfis medidos.",
     profilesTitle: "Perfis para a sua impressora",
     profilesBody:
-      "Escolha uma impressora e um nozzle, depois descarregue um perfil adequado. Os perfis iniciais cobrem nozzles comuns; medições da comunidade têm prioridade quando disponíveis.",
+      "Escolha uma impressora e um nozzle, depois descarregue um perfil adequado. Calibrações medidas pela comunidade têm prioridade; se não existirem, o OpenFilament pode compor um perfil inicial calculado e não testado a partir de dados do filamento e médias de templates de impressora.",
     nozzlesNote: "Se nada for escolhido, o predefinido é 0,4 mm.",
     communityTitle: "Partilhe as suas medições",
     communityBody:
@@ -84,7 +84,7 @@ export const messages: Messages = {
     browseFullCatalog: "Ver o catálogo completo",
     featuredMaterials: "Materiais em destaque",
     recentlyAdded: "Adicionados recentemente",
-    mostComplete: "Most complete catalog entries",
+    mostComplete: "Entradas de catálogo mais completas",
   },
   identify: {
     heading: "Identificar um carretel",

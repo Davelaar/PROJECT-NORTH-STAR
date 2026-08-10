@@ -10,7 +10,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "Passendes Filamentprofil finden, Spule kennzeichnen und überall nutzen — direkt im Browser.",
+    "Filamentdaten, gemessene oder berechnete Starterprofile, Spulenlabels und Inventartools finden — direkt im Browser.",
   nav: {
     home: "Start",
     search: "Suche",
@@ -47,8 +47,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "Finden Sie ein getestetes Filamentprofil für Ihren Drucker — und identifizieren Sie jede Spule per QR oder RFID.",
-    lead: "Durchsuchen Sie den offenen Katalog, wählen Sie Drucker und Düse, laden Sie dann ein passendes Profil herunter oder identifizieren Sie die Spule direkt im Browser. Keine Desktop-App nötig.",
+      "Filamentprofile, Starterprofile und QR/RFID-Spulentools für deinen Drucker finden.",
+    lead: "Durchsuche den offenen Katalog, wähle Drucker und Düse und lade ein gemessenes Profil herunter, wenn es vorhanden ist, oder ein klar gekennzeichnetes berechnetes Starterprofil. Verwalte Spulen manuell in Gramm, nutze QR/RFID und bleibe im Browser. Keine Desktop-App nötig. Verfügbar in neun Sprachen.",
     searchPlaceholder: "Name, Marke, SKU, EAN oder Farbe…",
     searchButton: "Suchen",
     browse: "Alle Filamente durchsuchen",
@@ -71,7 +71,7 @@ export const messages: Messages = {
       "Eine Auswahl an Marken und Materialien aus dem offenen Katalog. Durchsuchen Sie den vollständigen Katalog nach Farben, SKUs und gemessenen Profilen.",
     profilesTitle: "Profile für Ihren Drucker",
     profilesBody:
-      "Wählen Sie einen Drucker und eine Düse, laden Sie dann ein passendes Profil herunter. Starterprofile decken gängige Düsen ab; Community-Messungen haben Vorrang, sobald sie verfügbar sind.",
+      "Wähle Drucker und Düse und lade dann ein passendes Profil herunter. Gemessene Community-Kalibrierungen haben Vorrang; sonst kann OpenFilament ein berechnetes, ungetestetes Starterprofil aus Filamentdaten und Druckertemplate-Durchschnitten erstellen.",
     nozzlesNote: "Ohne Auswahl gilt standardmäßig 0,4 mm.",
     communityTitle: "Teilen Sie Ihre Messungen",
     communityBody:
@@ -84,7 +84,7 @@ export const messages: Messages = {
     browseFullCatalog: "Vollständigen Katalog durchsuchen",
     featuredMaterials: "Ausgewählte Materialien",
     recentlyAdded: "Kürzlich hinzugefügt",
-    mostComplete: "Most complete catalog entries",
+    mostComplete: "Vollständigste Katalogeinträge",
   },
   identify: {
     heading: "Spule identifizieren",

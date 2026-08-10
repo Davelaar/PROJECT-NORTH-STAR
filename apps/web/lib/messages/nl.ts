@@ -10,7 +10,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "Vind het juiste filamentprofiel, herken je spoel en gebruik het overal — gewoon in de browser.",
+    "Vind filamentdata, gemeten of berekende starterprofielen, spoellabels en voorraadtools — gewoon in de browser.",
   nav: {
     home: "Home",
     search: "Zoeken",
@@ -47,8 +47,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "Vind een getest filamentprofiel voor je printer — en herken elke spoel met QR of RFID.",
-    lead: "Doorzoek de open catalogus, kies je printer en nozzle, download dan een passend profiel of herken de spoel direct vanuit je browser. Geen desktop-app nodig.",
+      "Vind filamentprofielen, starterprofielen en QR/RFID-spoeltools voor je printer.",
+    lead: "Doorzoek de open catalogus, kies je printer en nozzle, download een gemeten profiel als dat er is of een duidelijk gemarkeerd berekend starterprofiel. Houd spoelen handmatig bij in grammen, gebruik QR/RFID en blijf in de browser. Geen desktop-app nodig. Beschikbaar in negen talen.",
     searchPlaceholder: "Naam, merk, SKU, EAN of kleur…",
     searchButton: "Zoeken",
     browse: "Alle filamenten bekijken",
@@ -71,7 +71,7 @@ export const messages: Messages = {
       "Een selectie merken en materialen uit de open catalogus. Doorzoek de volledige catalogus op kleuren, SKU's en gemeten profielen.",
     profilesTitle: "Profielen voor jouw printer",
     profilesBody:
-      "Kies een printer en nozzle, download dan een passend profiel. Startprofielen dekken gangbare nozzles; community-metingen krijgen voorrang zodra ze beschikbaar zijn.",
+      "Kies een printer en nozzle, download dan een passend profiel. Gemeten community-kalibraties krijgen voorrang; anders stelt OpenFilament een berekend, ongetest starterprofiel samen uit filamentdata en printertemplate-gemiddelden.",
     nozzlesNote: "Staat er niets gekozen, dan geldt standaard 0,4 mm.",
     communityTitle: "Deel je metingen",
     communityBody:
@@ -84,7 +84,7 @@ export const messages: Messages = {
     browseFullCatalog: "Volledige catalogus bekijken",
     featuredMaterials: "Uitgelichte materialen",
     recentlyAdded: "Recent toegevoegd",
-    mostComplete: "Most complete catalog entries",
+    mostComplete: "Meest complete catalogusitems",
   },
   identify: {
     heading: "Herken een spoel",

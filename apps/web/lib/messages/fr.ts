@@ -10,7 +10,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "Trouvez le bon profil de filament, identifiez votre bobine et utilisez-la partout — directement dans le navigateur.",
+    "Trouvez des données filament, des profils mesurés ou de démarrage calculés, des étiquettes de bobine et des outils d’inventaire — directement dans le navigateur.",
   nav: {
     home: "Accueil",
     search: "Recherche",
@@ -47,8 +47,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "Trouvez un profil de filament testé pour votre imprimante — et identifiez chaque bobine par QR ou RFID.",
-    lead: "Parcourez le catalogue ouvert, choisissez imprimante et buse, puis téléchargez un profil adapté ou identifiez la bobine directement depuis votre navigateur. Aucune appli de bureau requise.",
+      "Trouvez des profils filament, des profils de démarrage et des outils QR/RFID pour votre imprimante.",
+    lead: "Parcourez le catalogue ouvert, choisissez imprimante et buse, puis téléchargez un profil mesuré s’il existe ou un profil de démarrage calculé et clairement indiqué. Suivez les bobines manuellement en grammes, utilisez QR/RFID et restez dans le navigateur. Aucune appli de bureau requise. Disponible en neuf langues.",
     searchPlaceholder: "Nom, marque, SKU, EAN ou couleur…",
     searchButton: "Rechercher",
     browse: "Parcourir tous les filaments",
@@ -71,7 +71,7 @@ export const messages: Messages = {
       "Un échantillon de marques et de matières du catalogue ouvert. Parcourez le catalogue complet pour les couleurs, SKU et profils mesurés.",
     profilesTitle: "Profils adaptés à votre imprimante",
     profilesBody:
-      "Choisissez une imprimante et une buse, puis téléchargez un profil adapté. Les profils de démarrage couvrent les buses courantes ; les mesures communautaires prennent le relais dès qu'elles sont disponibles.",
+      "Choisissez une imprimante et une buse, puis téléchargez un profil adapté. Les calibrations communautaires mesurées sont prioritaires ; sinon OpenFilament peut composer un profil de démarrage calculé et non testé à partir des données filament et des moyennes de template d’imprimante.",
     nozzlesNote: "Sans choix explicite, la buse par défaut est 0,4 mm.",
     communityTitle: "Partagez vos mesures",
     communityBody:
@@ -84,7 +84,7 @@ export const messages: Messages = {
     browseFullCatalog: "Parcourir le catalogue complet",
     featuredMaterials: "Matières en vedette",
     recentlyAdded: "Ajoutés récemment",
-    mostComplete: "Most complete catalog entries",
+    mostComplete: "Entrées de catalogue les plus complètes",
   },
   identify: {
     heading: "Identifier une bobine",

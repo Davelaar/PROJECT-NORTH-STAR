@@ -15,12 +15,24 @@ Adapters convert **OpenFilamentProfile → slicer user preset**. They never beco
 
 | Slicer | Status | Notes |
 |--------|--------|-------|
-| **OrcaSlicer** | Supported | SoftFever JSON; inherits `Generic {MAT} @{printer}-all`; exports shrinkage / chamber when set |
-| **Creality Print** | Supported | Thin user wrappers + companion `.info`; shrinkage / chamber when set |
-| **PrusaSlicer** | Supported | INI `[filament:Name]` section; shrinkage/chamber as comments when set |
-| **Bambu Studio** | Supported | SoftFever-family JSON; shrinkage / chamber when set |
+| **OrcaSlicer** | Beta export | SoftFever JSON; inherits `Generic {MAT} @{printer}-all`; exports shrinkage / chamber when set |
+| **Creality Print** | Beta export | Thin user wrappers + companion `.info`; shrinkage / chamber when set |
+| **PrusaSlicer** | Beta export | INI `[filament:Name]` section; shrinkage/chamber as comments when set |
+| **Bambu Studio** | Beta export | SoftFever-family JSON; shrinkage / chamber when set |
 
-Default nozzle diameter when unspecified: **0.4 mm**. Parameter matrix: [`FILAMENT_PARAMETERS.md`](./FILAMENT_PARAMETERS.md).
+Default nozzle diameter when unspecified: **0.4 mm**. Parameter matrix: [`FILAMENT_PARAMETERS.md`](./FILAMENT_PARAMETERS.md). These adapters generate downloadable user presets; manual slicer import remains the standard path.
+
+## Starter profile fallback
+
+When no exact measured profile exists, the API can build a **calculated, untested starter profile** from catalog/manufacturer filament values plus a generic printer template selected from known printer metadata or conservative brand/model heuristics.
+
+Supported starter export route:
+
+```
+GET /api/v1/variants/{uuid}/exports/starter?format={openfilamentprofile|orca|creality|prusaslicer|bambu}&printerUuid={uuid}&nozzleDiameterMm=0.4
+```
+
+The response is never presented as measured calibration data. UI copy states that it is calculated and should be calibrated before production use.
 
 ## Creality Print
 
@@ -58,6 +70,7 @@ POST /api/v1/exports/creality
 POST /api/v1/exports/prusaslicer
 POST /api/v1/exports/bambu
 POST /api/v1/exports/openfilamentprofile
+GET  /api/v1/variants/{uuid}/exports/starter
 ```
 
 Each slicer export may include `bridgeInstallPayload` for the **optional** helper (`POST http://127.0.0.1:8788/v1/presets/install`). Primary UX is browser **download** (and optional File System Access save).

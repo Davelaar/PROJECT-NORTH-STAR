@@ -11,7 +11,7 @@ import {
 export const messages: Messages = {
   brand: "OpenFilament",
   tagline:
-    "Find the right filament profile, recognise your spool, and use it from any device — right in the browser.",
+    "Find filament data, measured or calculated starter profiles, spool labels and inventory tools — right in the browser.",
   nav: {
     home: "Home",
     search: "Search",
@@ -48,8 +48,8 @@ export const messages: Messages = {
   },
   home: {
     heading:
-      "Find a tested filament profile for your printer—and identify every spool with QR or RFID.",
-    lead: "Search the open catalog, choose your printer and nozzle, then download a matching profile or identify the spool directly from your browser. No desktop app required.",
+      "Find filament profiles, starter profiles and QR/RFID spool tools for your printer.",
+    lead: "Search the open catalog, choose your printer and nozzle, then download a measured profile when available or a clearly marked calculated starter profile. Track spools manually in grams, use QR/RFID identification and stay in the browser. No desktop app required. Available in nine languages.",
     searchPlaceholder: "Name, brand, SKU, EAN or colour…",
     searchButton: "Search",
     browse: "Browse all filaments",
@@ -72,7 +72,7 @@ export const messages: Messages = {
       "A sample of brands and materials from the open catalog. Search the full catalog for colours, SKUs and measured profiles.",
     profilesTitle: "Profiles that fit your printer",
     profilesBody:
-      "Pick a printer and nozzle, then download a matching profile. Starter ranges cover common nozzles; community measurements take priority when available.",
+      "Pick a printer and nozzle, then download a matching profile. Measured community calibrations take priority; otherwise OpenFilament can compose a calculated, untested starter profile from filament data and printer-template averages.",
     nozzlesNote: "Until you choose otherwise, we highlight 0.4 mm nozzle profiles.",
     communityTitle: "Share your measurements",
     communityBody:

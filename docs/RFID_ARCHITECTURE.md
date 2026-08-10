@@ -6,9 +6,9 @@
 
 - Codec packages:
   - `@open-filament/rfid-cfs` — working CFS-compatible codec (MIFARE Classic / AES; Node crypto — API/bridge)
-  - `@open-filament/rfid-openprinttag` — OpenPrintTag UUID derivation + catalog field mapping (NDEF/CBOR encode **planned**)
-- API: `GET /rfid/schemes`, `POST /rfid/encode`, `POST /rfid/verify`, resolve/mapping routes, `GET /variants/{uuid}/openprinttag`
-- Web UI: CFS encode + resolve; browser write+verify via `apps/web/lib/rfid/browser-transport.ts`
+  - `@open-filament/rfid-openprinttag` — OpenPrintTag UUID derivation + catalog field mapping + NDEF/CBOR encode
+- API: `GET /rfid/schemes`, `POST /rfid/encode`, `POST /rfid/verify`, resolve/mapping routes, `GET /variants/{uuid}/openprinttag`, `POST /variants/{uuid}/openprinttag/encode`
+- Web UI: CFS encode + resolve; browser write+verify via `apps/web/lib/rfid/browser-transport.ts`; OpenPrintTag Web NFC write path where `NDEFReader` is available
 - Optional helper: simulate-write + policy-gated PC/SC write
 - Details: [`RFID_BROWSER_TRANSPORT.md`](./RFID_BROWSER_TRANSPORT.md), [`OPENPRINTTAG.md`](./OPENPRINTTAG.md), [`CREALITY_CFS_RFID.md`](./CREALITY_CFS_RFID.md)
 
@@ -17,7 +17,7 @@
 | Scheme | Tag tech | Status |
 |--------|----------|--------|
 | Creality CFS Compatible | ISO 14443-A / MIFARE Classic | Encode / verify / browser write path shipped |
-| OpenPrintTag | ISO 15693 + NDEF MIME `application/vnd.openprinttag` | Fields + UUIDs ready; binary encode planned |
+| OpenPrintTag | ISO 15693 + NDEF MIME `application/vnd.openprinttag` | UUIDs + fields + NDEF/CBOR encode + Web NFC write path shipped in software; physical compatibility remains browser/tag dependent |
 
 Catalog UUIDs for OpenPrintTag preferably come from [Open Filament Database](https://openfilamentdatabase.org) ([spec](https://specs.openprinttag.org/)).
 
@@ -34,7 +34,7 @@ Connect (explicit click) → encode (API) → write ciphertext → read-back →
 | Web Serial (OF1) | Primary hardware path for OF1-capable adapters (CFS ciphertext) |
 | WebUSB (OF1) | Experimental bulk OF1 path |
 | WebHID | Detected; OF1 HID profile not shipped |
-| Web NFC | Relevant for **OpenPrintTag NDEF** (planned); **not** a general MIFARE Classic / CFS solution |
+| Web NFC | Relevant for **OpenPrintTag NDEF** where browser/tag support exists; **not** a general MIFARE Classic / CFS solution |
 | PC/SC via optional helper | Compatibility fallback (e.g. ACR122U) for CFS |
 
 ## Codec (CFS)
@@ -51,4 +51,4 @@ Connect (explicit click) → encode (API) → write ciphertext → read-back →
 | PC/SC physical write | Optional helper + `FEATURE_RFID_WRITE` |
 | Device CFS recognition of third-party tags | Hardware/firmware-dependent — **blocked outside software** |
 | OpenPrintTag UUID + field mapping | Done (`@open-filament/rfid-openprinttag`) |
-| OpenPrintTag NDEF/CBOR encode + Web NFC write | **Planned** |
+| OpenPrintTag NDEF/CBOR encode + Web NFC write | Done in software; hardware/browser validation still required |
