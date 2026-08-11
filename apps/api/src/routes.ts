@@ -515,7 +515,7 @@ export async function registerRoutes(app: FastifyInstance) {
           shoreHardnessA: row.shoreHardnessA,
           shoreHardnessD: row.shoreHardnessD,
           minNozzleDiameterMm: row.minNozzleDiameterMm,
-          note: "Manufacturer / catalog claims — not community calibration",
+          note: "Brand/catalog ranges — solid first setting; community calibrations refine further",
         },
         catalogMinimums: {
           material: hasMaterial,
@@ -2051,7 +2051,7 @@ function buildStarterCanonicalProfile(
     provenance: {
       isSyntheticFixture: false,
       sourceNotes:
-        `Calculated, untested starter profile from catalog/manufacturer values and generic printer template "${template.label}". Not measured; calibrate before production use. Assumptions: ${template.assumptions.join(", ")}.`,
+        `Calculated starter from brand/catalog filament values plus printer-class template "${template.label}". Usually a stronger first setting than a slicer Generic PLA. Not community-measured yet — fine-tune before critical prints. Assumptions: ${template.assumptions.join(", ")}.`,
       createdAt: new Date().toISOString(),
     },
     filament: {

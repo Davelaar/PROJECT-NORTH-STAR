@@ -49,7 +49,7 @@ export const messages: Messages = {
   home: {
     heading:
       "Find filament profiles, starter profiles and QR/RFID spool tools for your printer.",
-    lead: "Search the open catalog, choose your printer and nozzle, then download a measured profile when available or a clearly marked calculated starter profile. Track spools manually in grams, use QR/RFID identification and stay in the browser. No desktop app required. Available in nine languages.",
+    lead: "Search the open catalog, choose your printer and nozzle, then download a measured profile when available — or a starter built from this filament’s manufacturer data (usually stronger than a slicer Generic PLA). Track spools in grams, use QR/RFID and stay in the browser.",
     searchPlaceholder: "Name, brand, SKU, EAN or colour…",
     searchButton: "Search",
     browse: "Browse all filaments",
@@ -69,10 +69,10 @@ export const messages: Messages = {
     hardwareLink: "RFID and QR hardware",
     catalogTitle: "Open filament catalog",
     catalogBody:
-      "A sample of brands and materials from the open catalog. Search the full catalog for colours, SKUs and measured profiles.",
+      "A sample of brands and materials from the open catalog. Search for colours, SKUs, manufacturer temps and profiles — brand filament data is already a usable first setting.",
     profilesTitle: "Profiles that fit your printer",
     profilesBody:
-      "Pick a printer and nozzle, then download a matching profile. Measured community calibrations take priority; otherwise OpenFilament can compose a calculated, untested starter profile from filament data and printer-template averages.",
+      "Measured community calibrations refine flow, PA and printer-specific behaviour when available. Until then, OpenFilament builds a labeled starter from this filament’s manufacturer/catalog values plus printer-class averages — usually a better start than Generic PLA. Marked as calculated until the community measures it.",
     nozzlesNote: "Until you choose otherwise, we highlight 0.4 mm nozzle profiles.",
     communityTitle: "Share your measurements",
     communityBody:
@@ -125,6 +125,7 @@ export const messages: Messages = {
     colours: "colours",
     nozzleProfiles: "profiles",
     measuredProfiles: "measured",
+    brandSpecsAvailable: "brand specs available",
     viewProduct: "View product",
     viewVariant: "View colour",
     provenance: {
@@ -144,7 +145,12 @@ export const messages: Messages = {
   },
   variant: {
     manufacturerSpecs: "Manufacturer and catalog specs",
+    manufacturerSpecsNote:
+      "Recommended ranges for this filament from the brand/catalog — a solid first setting, usually better than a slicer Generic PLA. Community calibrations refine flow, PA and printer-specific behaviour when someone has measured them.",
+    manufacturerFirstBadge: "Brand first setting",
     communityRecommendation: "Community recommendation",
+    communityEmpty:
+      "No community measurements for this colour yet. Use the manufacturer specs and starter download below — they are already a strong first setting. Contribute a calibration when you have measured values.",
     profiles: "Calibration profiles",
     syntheticBanner:
       "Demo or placeholder data — not shown as normal public catalog content.",
@@ -174,20 +180,22 @@ export const messages: Messages = {
     writeRfid: "Write RFID",
     bestMatch: "Best match",
     measuredProfiles: "Measured community profiles",
-    starterProfiles: "Generated starter profiles",
+    starterProfiles: "Starter profiles (manufacturer-based)",
     compatibleAlternatives: "Compatible alternatives",
     comparablePrinterProfiles: "Comparable printer setup",
-    noExactMatch: "No exact measured match for this printer and nozzle yet.",
+    noExactMatch:
+      "No measured match for this printer and nozzle yet — manufacturer specs and a starter profile below still apply.",
     comparableNozzleAvailable:
       "Settings are available for the same nozzle size on a different printer. Temperature, flow and nozzle size are still useful starting points; verify printer-specific behaviour before relying on them.",
-    generatedStarterProfile: "Generated starter profile",
+    generatedStarterProfile: "Starter profile from manufacturer data",
     generatedStarterProfileBody:
-      "No exact profile exists yet. OpenFilament can compose a starter profile for your chosen export format from catalog/manufacturer values plus a generic printer template for this printer class. The values are calculated and untested; calibrate before production use.",
+      "Built from this filament’s brand/catalog temperatures plus a printer-class template. That is usually a stronger start than a slicer Generic PLA. Not community-measured yet — fine-tune before critical prints, and share your calibration when you can.",
     downloadStarterProfile: "Download starter profile",
     defaultNozzleNote: "Showing 0.4 mm by default until you choose a nozzle.",
     highConfidence: "High confidence",
     mediumConfidence: "Medium confidence",
     lowConfidence: "Low confidence",
+    insufficientConfidence: "Not enough samples yet",
     howCalculated: "How this recommendation was calculated",
     sampleCount: "Based on {count} measured samples",
     notAvailable: "Not available",
@@ -200,7 +208,7 @@ export const messages: Messages = {
   },
   export: {
     heading: "Download for slicer",
-    body: "Create a filament preset, download it and import it into your slicer. OpenFilament does not install software or change local slicer files. You remain in control of what is imported.",
+    body: "Create a filament preset, download it and import it into your slicer. Prefer a measured community profile when one exists; otherwise download a manufacturer-based starter for this filament.",
     profileUuid: "Profile ID",
     format: "Format",
     submit: "Create download",
@@ -209,6 +217,10 @@ export const messages: Messages = {
     installFail:
       "Optional helper failed — use Download. The helper is not required.",
     chooseProfile: "Choose a profile from the lists above.",
+    starterEmptyHeading: "No measured profile yet — use a starter",
+    starterEmptyBody:
+      "This colour has no community calibration for download yet. A starter built from the filament’s manufacturer/catalog values is usually a better first import than Generic PLA. Pick a slicer format below, or open the colour page for printer-specific starters.",
+    downloadStarter: "Download manufacturer starter",
     exportFirst: "Create a download first.",
     download: "Download preset file",
     savePicker: "Save to a folder…",

@@ -48,7 +48,7 @@ export const messages: Messages = {
   home: {
     heading:
       "Trouvez des profils filament, des profils de démarrage et des outils QR/RFID pour votre imprimante.",
-    lead: "Parcourez le catalogue ouvert, choisissez imprimante et buse, puis téléchargez un profil mesuré s’il existe ou un profil de démarrage calculé et clairement indiqué. Suivez les bobines manuellement en grammes, utilisez QR/RFID et restez dans le navigateur. Aucune appli de bureau requise. Disponible en neuf langues.",
+    lead: "Parcourez le catalogue ouvert, choisissez imprimante et buse, puis téléchargez un profil mesuré s’il existe — ou un profil de démarrage issu des données fabricant de ce filament (souvent plus solide qu’un Generic PLA de slicer). Suivez les bobines en grammes, utilisez QR/RFID et restez dans le navigateur.",
     searchPlaceholder: "Nom, marque, SKU, EAN ou couleur…",
     searchButton: "Rechercher",
     browse: "Parcourir tous les filaments",
@@ -68,10 +68,10 @@ export const messages: Messages = {
     hardwareLink: "Matériel RFID et QR",
     catalogTitle: "Catalogue de filament ouvert",
     catalogBody:
-      "Un échantillon de marques et de matières du catalogue ouvert. Parcourez le catalogue complet pour les couleurs, SKU et profils mesurés.",
+      "Un échantillon de marques et de matières du catalogue ouvert. Recherchez couleurs, SKU, températures fabricant et profils — les données filament de marque sont déjà un premier réglage utilisable.",
     profilesTitle: "Profils adaptés à votre imprimante",
     profilesBody:
-      "Choisissez une imprimante et une buse, puis téléchargez un profil adapté. Les calibrations communautaires mesurées sont prioritaires ; sinon OpenFilament peut composer un profil de démarrage calculé et non testé à partir des données filament et des moyennes de template d’imprimante.",
+      "Les calibrations communautaires mesurées affinent débit, PA et comportement spécifique à l’imprimante lorsqu’elles existent. En attendant, OpenFilament compose un profil de démarrage étiqueté à partir des valeurs fabricant/catalogue de ce filament et des moyennes de classe d’imprimante — souvent un meilleur départ qu’un Generic PLA. Marqué comme calculé jusqu’à mesure communautaire.",
     nozzlesNote: "Sans choix explicite, la buse par défaut est 0,4 mm.",
     communityTitle: "Partagez vos mesures",
     communityBody:
@@ -124,6 +124,7 @@ export const messages: Messages = {
     colours: "couleurs",
     nozzleProfiles: "profils",
     measuredProfiles: "mesurés",
+    brandSpecsAvailable: "specs marque disponibles",
     viewProduct: "Voir le produit",
     viewVariant: "Voir la couleur",
     provenance: {
@@ -143,7 +144,12 @@ export const messages: Messages = {
   },
   variant: {
     manufacturerSpecs: "Spécifications fabricant et catalogue",
+    manufacturerSpecsNote:
+      "Plages recommandées pour ce filament selon la marque/le catalogue — un premier réglage solide, souvent meilleur qu’un Generic PLA de slicer. Les calibrations communautaires affinent débit, PA et comportement spécifique à l’imprimante lorsqu’elles ont été mesurées.",
+    manufacturerFirstBadge: "Réglage marque en premier",
     communityRecommendation: "Recommandation communautaire",
+    communityEmpty:
+      "Pas encore de mesures communautaires pour cette couleur. Utilisez les specs fabricant et le téléchargement de démarrage ci-dessous — c’est déjà un premier réglage solide. Contribuez une calibration lorsque vous avez des valeurs mesurées.",
     profiles: "Profils de calibration",
     syntheticBanner:
       "Données de démo ou placeholders — non affichées comme contenu public normal du catalogue.",
@@ -173,20 +179,22 @@ export const messages: Messages = {
     writeRfid: "Écrire RFID",
     bestMatch: "Meilleure correspondance",
     measuredProfiles: "Profils communautaires mesurés",
-    starterProfiles: "Profils de démarrage générés",
+    starterProfiles: "Profils de démarrage (basés fabricant)",
     compatibleAlternatives: "Alternatives compatibles",
     comparablePrinterProfiles: "Configuration d’imprimante comparable",
-    noExactMatch: "Aucune mesure exacte pour cette imprimante et cette buse pour le moment.",
+    noExactMatch:
+      "Pas encore de correspondance mesurée pour cette imprimante et cette buse — les specs fabricant et un profil de démarrage ci-dessous restent valables.",
     comparableNozzleAvailable:
       "Des réglages existent pour la même taille de buse sur une autre imprimante. La température, le débit et la taille de buse restent de bons points de départ ; vérifiez le comportement propre à votre imprimante avant de vous y fier.",
-    generatedStarterProfile: "Profil de démarrage généré",
+    generatedStarterProfile: "Profil de démarrage à partir des données fabricant",
     generatedStarterProfileBody:
-      "Aucun profil exact n’existe encore. OpenFilament peut composer un profil de démarrage pour le format d’export choisi à partir des valeurs catalogue/fabricant et d’un template d’imprimante générique pour cette classe d’imprimante. Les valeurs sont calculées et non testées ; calibrez avant les impressions de production.",
+      "Construit à partir des températures marque/catalogue de ce filament plus un template de classe d’imprimante. Souvent un départ plus solide qu’un Generic PLA de slicer. Pas encore mesuré par la communauté — affinez avant les impressions critiques et partagez votre calibration si possible.",
     downloadStarterProfile: "Télécharger le profil de démarrage",
     defaultNozzleNote: "Affichage 0,4 mm par défaut tant que vous n'avez pas choisi de buse.",
     highConfidence: "Confiance élevée",
     mediumConfidence: "Confiance moyenne",
     lowConfidence: "Confiance faible",
+    insufficientConfidence: "Pas assez d’échantillons encore",
     howCalculated: "Comment cette recommandation a été calculée",
     sampleCount: "Basé sur {count} échantillons mesurés",
     notAvailable: "Non disponible",
@@ -199,7 +207,7 @@ export const messages: Messages = {
   },
   export: {
     heading: "Télécharger pour le slicer",
-    body: "Créez un préréglage filament, téléchargez-le et importez-le dans votre slicer. OpenFilament n'installe aucun logiciel et ne modifie pas les fichiers locaux du slicer. Vous gardez le contrôle de ce qui est importé.",
+    body: "Créez un préréglage filament, téléchargez-le et importez-le dans votre slicer. Préférez un profil communautaire mesuré s’il existe ; sinon téléchargez un profil de démarrage basé fabricant pour ce filament.",
     profileUuid: "ID du profil",
     format: "Format",
     submit: "Créer le téléchargement",
@@ -208,6 +216,10 @@ export const messages: Messages = {
     installFail:
       "Le helper a échoué — utilisez Télécharger. Il n'est pas obligatoire.",
     chooseProfile: "Choisissez un profil dans les listes ci-dessus.",
+    starterEmptyHeading: "Pas encore de profil mesuré — utilisez un démarrage",
+    starterEmptyBody:
+      "Cette couleur n’a pas encore de calibration communautaire à télécharger. Un profil de démarrage issu des valeurs fabricant/catalogue est souvent un meilleur premier import qu’un Generic PLA. Choisissez un format de slicer ci-dessous, ou ouvrez la page couleur pour des démarrages spécifiques à l’imprimante.",
+    downloadStarter: "Télécharger le démarrage fabricant",
     exportFirst: "Créez d'abord un téléchargement.",
     download: "Télécharger le fichier de préréglage",
     savePicker: "Enregistrer dans un dossier…",

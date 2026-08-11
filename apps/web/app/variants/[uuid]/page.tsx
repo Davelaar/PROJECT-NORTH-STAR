@@ -211,12 +211,12 @@ export default async function VariantPage({
   );
   const bestMatch = exact[0] ?? null;
 
-  const firstExportUuid =
+  const measuredExportUuid =
     bestMatch?.uuid ??
     sameNozzleAlternatives[0]?.uuid ??
     measured[0]?.uuid ??
-    profiles[0]?.uuid ??
     null;
+  const showStarterPanel = measured.length === 0;
   function starterExportHref(format: string) {
     const params = new URLSearchParams({
       format,
@@ -245,6 +245,9 @@ export default async function VariantPage({
     if (level === "high") return m.highConfidence;
     if (level === "medium") return m.mediumConfidence;
     if (level === "low") return m.lowConfidence;
+    if (level === "insufficient" || level === "none") {
+      return m.insufficientConfidence;
+    }
     return level;
   }
 
@@ -380,18 +383,19 @@ export default async function VariantPage({
           <a className="button" href="#profile-filter">
             {m.choosePrinterNozzle}
           </a>
-          {firstExportUuid ? (
+          {measuredExportUuid ? (
             <Link
               className="button secondary"
-              href={`/export?profileUuid=${firstExportUuid}`}
+              href={`/export?profileUuid=${measuredExportUuid}`}
             >
               {messages.export.downloadForSlicer}
             </Link>
-          ) : (
+          ) : null}
+          {showStarterPanel ? (
             <a className="button secondary" href="#starter-profile">
               {m.downloadStarterProfile}
             </a>
-          )}
+          ) : null}
           <Link className="button secondary" href={`/label/${uuid}`}>
             {m.printQr}
           </Link>
@@ -439,8 +443,11 @@ export default async function VariantPage({
 
       <div className="split">
         <section className="panel">
-          <h2>{m.manufacturerSpecs}</h2>
-          <p className="muted">{specs.note}</p>
+          <h2>
+            {m.manufacturerSpecs}{" "}
+            <span className="badge badge-catalog">{m.manufacturerFirstBadge}</span>
+          </h2>
+          <p className="muted">{m.manufacturerSpecsNote}</p>
           <dl className="kv">
             <dt>{sp.nozzleTemp}</dt>
             <dd>
@@ -488,76 +495,85 @@ export default async function VariantPage({
 
         <section className="panel">
           <h2>{m.communityRecommendation}</h2>
-          {recommendation.warning ? (
-            <div className="banner-warn">{recommendation.warning}</div>
-          ) : null}
-          <p className="muted">
-            {m.sampleCount.replace(
-              "{count}",
-              String(recommendation.sampleProfileCount),
-            )}
-          </p>
-          <dl className="kv">
-            <dt>{sp.nozzleTemp}</dt>
-            <dd>
-              {roundTemp(nozzleAgg.recommended)} °C{" "}
-              <span className="muted">
-                ({confidenceLabel(nozzleAgg.confidence)})
-              </span>
-            </dd>
-            <dt>{sp.bedTemp}</dt>
-            <dd>
-              {roundTemp(bedAgg.recommended)} °C{" "}
-              <span className="muted">
-                ({confidenceLabel(bedAgg.confidence)})
-              </span>
-            </dd>
-            <dt>{sp.flow}</dt>
-            <dd>
-              {fmt(recommendation.recommendation.flowRatio.recommended)}{" "}
-              <span className="muted">
-                (
-                {confidenceLabel(
-                  recommendation.recommendation.flowRatio.confidence,
-                )}
-                )
-              </span>
-            </dd>
-            <dt>{sp.pressureAdvance}</dt>
-            <dd>
-              {fmt(recommendation.recommendation.pressureAdvance.recommended)}{" "}
-              <span className="muted">
-                (
-                {confidenceLabel(
-                  recommendation.recommendation.pressureAdvance.confidence,
-                )}
-                )
-              </span>
-            </dd>
-            <dt>{sp.maxVolumetric}</dt>
-            <dd>
-              {fmt(
-                recommendation.recommendation.maxVolumetricFlowMm3s.recommended,
-              )}{" "}
-              mm³/s
-            </dd>
-          </dl>
-          <details className="how-calculated">
-            <summary>{m.howCalculated}</summary>
-            <ul>
-              <li>
+          {recommendation.sampleProfileCount === 0 ? (
+            <p className="muted" role="status">
+              {m.communityEmpty}
+            </p>
+          ) : (
+            <>
+              {recommendation.warning ? (
+                <div className="banner-warn">{recommendation.warning}</div>
+              ) : null}
+              <p className="muted">
                 {m.sampleCount.replace(
                   "{count}",
                   String(recommendation.sampleProfileCount),
                 )}
-              </li>
-              <li>{m.howCalculatedBody}</li>
-              <li>
-                Kept / outliers: {nozzleAgg.keptCount ?? "—"} /{" "}
-                {nozzleAgg.excludedOutlierCount ?? "—"}
-              </li>
-            </ul>
-          </details>
+              </p>
+              <dl className="kv">
+                <dt>{sp.nozzleTemp}</dt>
+                <dd>
+                  {roundTemp(nozzleAgg.recommended)} °C{" "}
+                  <span className="muted">
+                    ({confidenceLabel(nozzleAgg.confidence)})
+                  </span>
+                </dd>
+                <dt>{sp.bedTemp}</dt>
+                <dd>
+                  {roundTemp(bedAgg.recommended)} °C{" "}
+                  <span className="muted">
+                    ({confidenceLabel(bedAgg.confidence)})
+                  </span>
+                </dd>
+                <dt>{sp.flow}</dt>
+                <dd>
+                  {fmt(recommendation.recommendation.flowRatio.recommended)}{" "}
+                  <span className="muted">
+                    (
+                    {confidenceLabel(
+                      recommendation.recommendation.flowRatio.confidence,
+                    )}
+                    )
+                  </span>
+                </dd>
+                <dt>{sp.pressureAdvance}</dt>
+                <dd>
+                  {fmt(recommendation.recommendation.pressureAdvance.recommended)}{" "}
+                  <span className="muted">
+                    (
+                    {confidenceLabel(
+                      recommendation.recommendation.pressureAdvance.confidence,
+                    )}
+                    )
+                  </span>
+                </dd>
+                <dt>{sp.maxVolumetric}</dt>
+                <dd>
+                  {fmt(
+                    recommendation.recommendation.maxVolumetricFlowMm3s
+                      .recommended,
+                  )}{" "}
+                  mm³/s
+                </dd>
+              </dl>
+              <details className="how-calculated">
+                <summary>{m.howCalculated}</summary>
+                <ul>
+                  <li>
+                    {m.sampleCount.replace(
+                      "{count}",
+                      String(recommendation.sampleProfileCount),
+                    )}
+                  </li>
+                  <li>{m.howCalculatedBody}</li>
+                  <li>
+                    Kept / outliers: {nozzleAgg.keptCount ?? "—"} /{" "}
+                    {nozzleAgg.excludedOutlierCount ?? "—"}
+                  </li>
+                </ul>
+              </details>
+            </>
+          )}
         </section>
       </div>
 
@@ -581,10 +597,10 @@ export default async function VariantPage({
       {renderProfileGroup(m.compatibleAlternatives, alternatives)}
       {renderProfileGroup(m.catalogProfiles, catalogish)}
       {renderProfileGroup(m.starterProfiles, starter)}
-      {!firstExportUuid ? (
+      {showStarterPanel ? (
         <section className="profile-group panel" id="starter-profile">
           <h3>{m.generatedStarterProfile}</h3>
-          <p className="banner-warn">{m.generatedStarterProfileBody}</p>
+          <p>{m.generatedStarterProfileBody}</p>
           <div className="home-cta-links">
             {starterFormats.map((item) => (
               <a

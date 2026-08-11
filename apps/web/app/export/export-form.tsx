@@ -251,7 +251,11 @@ export function ExportForm({
     setStatusMsg("");
     setDownloaded(false);
     if (!profileUuid) {
-      setError(m.chooseProfile);
+      setError(
+        variantUuid && profiles.length === 0
+          ? m.starterEmptyHeading
+          : m.chooseProfile,
+      );
       return;
     }
     if (!entry?.downloadEnabled) {
@@ -427,6 +431,26 @@ export function ExportForm({
           emptyText={f.noMatches}
           disabled={!variantUuid && !initialProfileUuid}
         />
+
+        {variantUuid && profiles.length === 0 && !profileUuid ? (
+          <div className="panel" role="status">
+            <h3>{m.starterEmptyHeading}</h3>
+            <p>{m.starterEmptyBody}</p>
+            <div className="home-cta-links">
+              {entry?.downloadEnabled ? (
+                <a
+                  className="button"
+                  href={`${getApiBase()}/api/v1/variants/${variantUuid}/exports/starter?format=${encodeURIComponent(format)}&nozzleDiameterMm=0.4`}
+                >
+                  {m.downloadStarter} — {formatLabel(format, m.formats)}
+                </a>
+              ) : null}
+              <Link className="button secondary" href={`/variants/${variantUuid}`}>
+                {messages.variant.manufacturerSpecs}
+              </Link>
+            </div>
+          </div>
+        ) : null}
 
         <fieldset className="format-fieldset">
           <legend>{m.format}</legend>

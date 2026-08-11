@@ -6,7 +6,7 @@ import { messages as en } from "./messages/en";
 describe("web-first product copy", () => {
   it("homepage messages stay browser-first", () => {
     expect(en.tagline.toLowerCase()).toMatch(/browser/);
-    expect(en.home.lead.toLowerCase()).toMatch(/no desktop app/);
+    expect(en.home.lead.toLowerCase()).toMatch(/stay in the browser/);
     expect(en.export.body.toLowerCase()).toMatch(/download/);
     expect(en.export.body.toLowerCase()).not.toMatch(/must install/);
   });

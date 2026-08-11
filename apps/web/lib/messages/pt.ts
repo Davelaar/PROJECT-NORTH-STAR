@@ -48,7 +48,7 @@ export const messages: Messages = {
   home: {
     heading:
       "Encontre perfis de filamento, perfis iniciais e ferramentas QR/RFID para a sua impressora.",
-    lead: "Pesquise o catálogo aberto, escolha impressora e nozzle, depois descarregue um perfil medido quando existir ou um perfil inicial calculado e claramente assinalado. Controle carretéis manualmente em gramas, use QR/RFID e continue no navegador. Sem app de ambiente de trabalho. Disponível em nove idiomas.",
+    lead: "Pesquise o catálogo aberto, escolha impressora e nozzle, depois descarregue um perfil medido quando existir — ou um perfil inicial a partir dos dados do fabricante deste filamento (geralmente mais sólido do que Generic PLA no slicer). Controle carretéis em gramas, use QR/RFID e continue no navegador.",
     searchPlaceholder: "Nome, marca, SKU, EAN ou cor…",
     searchButton: "Pesquisar",
     browse: "Ver todos os filamentos",
@@ -68,10 +68,10 @@ export const messages: Messages = {
     hardwareLink: "Hardware RFID e QR",
     catalogTitle: "Catálogo aberto de filamento",
     catalogBody:
-      "Uma seleção de marcas e materiais do catálogo aberto. Pesquise o catálogo completo por cores, SKU e perfis medidos.",
+      "Uma seleção de marcas e materiais do catálogo aberto. Pesquise cores, SKU, temperaturas do fabricante e perfis — os dados de filamento da marca já são um primeiro ajuste utilizável.",
     profilesTitle: "Perfis para a sua impressora",
     profilesBody:
-      "Escolha uma impressora e um nozzle, depois descarregue um perfil adequado. Calibrações medidas pela comunidade têm prioridade; se não existirem, o OpenFilament pode compor um perfil inicial calculado e não testado a partir de dados do filamento e médias de templates de impressora.",
+      "Calibrações medidas pela comunidade afinam flow, PA e comportamento específico da impressora quando existem. Até lá, o OpenFilament cria um perfil inicial etiquetado a partir dos valores fabricante/catálogo deste filamento mais médias da classe de impressora — geralmente um melhor início do que Generic PLA. Marcado como calculado até a comunidade medir.",
     nozzlesNote: "Se nada for escolhido, o predefinido é 0,4 mm.",
     communityTitle: "Partilhe as suas medições",
     communityBody:
@@ -124,6 +124,7 @@ export const messages: Messages = {
     colours: "cores",
     nozzleProfiles: "perfis",
     measuredProfiles: "medidos",
+    brandSpecsAvailable: "specs da marca disponíveis",
     viewProduct: "Ver produto",
     viewVariant: "Ver cor",
     provenance: {
@@ -143,7 +144,12 @@ export const messages: Messages = {
   },
   variant: {
     manufacturerSpecs: "Especificações do fabricante e do catálogo",
+    manufacturerSpecsNote:
+      "Intervalos recomendados para este filamento segundo marca/catálogo — um primeiro ajuste sólido, geralmente melhor do que Generic PLA no slicer. Calibrações da comunidade afinam flow, PA e comportamento específico da impressora quando alguém as mediu.",
+    manufacturerFirstBadge: "Marca como primeiro ajuste",
     communityRecommendation: "Recomendação da comunidade",
+    communityEmpty:
+      "Ainda sem medições da comunidade para esta cor. Use as specs do fabricante e o download inicial abaixo — já são um primeiro ajuste sólido. Contribua com uma calibração quando tiver valores medidos.",
     profiles: "Perfis de calibração",
     syntheticBanner:
       "Dados de demo ou placeholders — não exibidos como conteúdo público normal do catálogo.",
@@ -173,20 +179,22 @@ export const messages: Messages = {
     writeRfid: "Escrever RFID",
     bestMatch: "Melhor correspondência",
     measuredProfiles: "Perfis comunitários medidos",
-    starterProfiles: "Perfis iniciais gerados",
+    starterProfiles: "Perfis iniciais (baseados no fabricante)",
     compatibleAlternatives: "Alternativas compatíveis",
     comparablePrinterProfiles: "Configuração de impressora comparável",
-    noExactMatch: "Ainda sem medição exata para esta impressora e nozzle.",
+    noExactMatch:
+      "Ainda sem correspondência medida para esta impressora e nozzle — as specs do fabricante e um perfil inicial abaixo continuam a aplicar-se.",
     comparableNozzleAvailable:
       "Existem definições para o mesmo tamanho de nozzle noutra impressora. Temperatura, flow e tamanho de nozzle continuam a ser bons pontos de partida; valide o comportamento específico da impressora antes de confiar neles.",
-    generatedStarterProfile: "Perfil inicial gerado",
+    generatedStarterProfile: "Perfil inicial a partir de dados do fabricante",
     generatedStarterProfileBody:
-      "Ainda não existe um perfil exato. O OpenFilament pode compor um perfil inicial para o formato de exportação escolhido com valores de catálogo/fabricante e um template genérico de impressora para esta classe. Os valores são calculados e não testados; calibre antes de usar em impressões de produção.",
+      "Construído a partir das temperaturas marca/catálogo deste filamento mais um template de classe de impressora. Geralmente um início mais sólido do que Generic PLA no slicer. Ainda não medido pela comunidade — afine antes de impressões críticas e partilhe a sua calibração quando puder.",
     downloadStarterProfile: "Descarregar perfil inicial",
     defaultNozzleNote: "A mostrar 0,4 mm por predefinição até escolher um nozzle.",
     highConfidence: "Confiança elevada",
     mediumConfidence: "Confiança média",
     lowConfidence: "Confiança baixa",
+    insufficientConfidence: "Ainda poucas amostras",
     howCalculated: "Como esta recomendação foi calculada",
     sampleCount: "Com base em {count} amostras medidas",
     notAvailable: "Não disponível",
@@ -199,7 +207,7 @@ export const messages: Messages = {
   },
   export: {
     heading: "Descarregar para slicer",
-    body: "Crie um preset de filamento, descarregue-o e importe-o no seu slicer. O OpenFilament não instala software nem altera ficheiros locais do slicer. Você controla o que é importado.",
+    body: "Crie um preset de filamento, descarregue-o e importe-o no seu slicer. Prefira um perfil comunitário medido quando existir; caso contrário, descarregue um perfil inicial baseado no fabricante para este filamento.",
     profileUuid: "ID do perfil",
     format: "Formato",
     submit: "Criar descarga",
@@ -208,6 +216,10 @@ export const messages: Messages = {
     installFail:
       "O helper falhou — use Descarregar. Não é obrigatório.",
     chooseProfile: "Escolha um perfil nas listas acima.",
+    starterEmptyHeading: "Ainda sem perfil medido — use um inicial",
+    starterEmptyBody:
+      "Esta cor ainda não tem calibração comunitária para descarregar. Um perfil inicial com valores fabricante/catálogo é geralmente uma melhor primeira importação do que Generic PLA. Escolha um formato de slicer abaixo, ou abra a página da cor para iniciais específicos da impressora.",
+    downloadStarter: "Descarregar inicial do fabricante",
     exportFirst: "Crie primeiro uma descarga.",
     download: "Descarregar ficheiro de preset",
     savePicker: "Guardar numa pasta…",

@@ -143,6 +143,7 @@ export type Messages = {
     measuredProfiles: string;
     viewProduct: string;
     viewVariant: string;
+    brandSpecsAvailable: string;
     provenance: {
       measured: string;
       catalog: string;
@@ -160,7 +161,10 @@ export type Messages = {
   };
   variant: {
     manufacturerSpecs: string;
+    manufacturerSpecsNote: string;
+    manufacturerFirstBadge: string;
     communityRecommendation: string;
+    communityEmpty: string;
     profiles: string;
     syntheticBanner: string;
     ofdAttribution: string;
@@ -200,6 +204,7 @@ export type Messages = {
     highConfidence: string;
     mediumConfidence: string;
     lowConfidence: string;
+    insufficientConfidence: string;
     howCalculated: string;
     sampleCount: string;
     notAvailable: string;
@@ -219,6 +224,9 @@ export type Messages = {
     installOk: string;
     installFail: string;
     chooseProfile: string;
+    starterEmptyHeading: string;
+    starterEmptyBody: string;
+    downloadStarter: string;
     exportFirst: string;
     download: string;
     savePicker: string;

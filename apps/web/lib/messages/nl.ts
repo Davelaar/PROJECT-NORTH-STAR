@@ -48,7 +48,7 @@ export const messages: Messages = {
   home: {
     heading:
       "Vind filamentprofielen, starterprofielen en QR/RFID-spoeltools voor je printer.",
-    lead: "Doorzoek de open catalogus, kies je printer en nozzle, download een gemeten profiel als dat er is of een duidelijk gemarkeerd berekend starterprofiel. Houd spoelen handmatig bij in grammen, gebruik QR/RFID en blijf in de browser. Geen desktop-app nodig. Beschikbaar in negen talen.",
+    lead: "Doorzoek de open catalogus, kies je printer en nozzle, download een gemeten profiel als dat er is — of een starter uit de fabrikantgegevens van dit filament (meestal sterker dan Generic PLA in je slicer). Houd spoelen bij in grammen, gebruik QR/RFID en blijf in de browser.",
     searchPlaceholder: "Naam, merk, SKU, EAN of kleur…",
     searchButton: "Zoeken",
     browse: "Alle filamenten bekijken",
@@ -68,10 +68,10 @@ export const messages: Messages = {
     hardwareLink: "RFID- en QR-hardware",
     catalogTitle: "Open filamentcatalogus",
     catalogBody:
-      "Een selectie merken en materialen uit de open catalogus. Doorzoek de volledige catalogus op kleuren, SKU's en gemeten profielen.",
+      "Een selectie merken en materialen uit de open catalogus. Zoek op kleuren, SKU's, fabrikanttemperaturen en profielen — merkfilamentdata is al een bruikbare eerste instelling.",
     profilesTitle: "Profielen voor jouw printer",
     profilesBody:
-      "Kies een printer en nozzle, download dan een passend profiel. Gemeten community-kalibraties krijgen voorrang; anders stelt OpenFilament een berekend, ongetest starterprofiel samen uit filamentdata en printertemplate-gemiddelden.",
+      "Gemeten community-kalibraties verfijnen flow, PA en printergedrag zodra die er zijn. Tot die tijd maakt OpenFilament een gelabelde starter uit de fabrikant-/cataloguswaarden van dit filament plus printerklasse-gemiddelden — meestal beter dan Generic PLA. Duidelijk gemarkeerd als berekend tot de community meet.",
     nozzlesNote: "Staat er niets gekozen, dan geldt standaard 0,4 mm.",
     communityTitle: "Deel je metingen",
     communityBody:
@@ -124,6 +124,7 @@ export const messages: Messages = {
     colours: "kleuren",
     nozzleProfiles: "profielen",
     measuredProfiles: "gemeten",
+    brandSpecsAvailable: "merkgegevens beschikbaar",
     viewProduct: "Product bekijken",
     viewVariant: "Kleur bekijken",
     provenance: {
@@ -143,7 +144,12 @@ export const messages: Messages = {
   },
   variant: {
     manufacturerSpecs: "Fabrikant- en catalogusspecificaties",
+    manufacturerSpecsNote:
+      "Aanbevolen bereiken voor dit filament uit merk/catalogus — een stevige eerste instelling, meestal beter dan Generic PLA in je slicer. Community-kalibraties verfijnen flow, PA en printergedrag wanneer iemand ze heeft gemeten.",
+    manufacturerFirstBadge: "Merk als eerste instelling",
     communityRecommendation: "Community-aanbeveling",
+    communityEmpty:
+      "Nog geen community-metingen voor deze kleur. Gebruik de fabrikantspecificaties en starter-download hieronder — die zijn al een sterke eerste instelling. Deel een kalibratie wanneer je gemeten waarden hebt.",
     profiles: "Kalibratieprofielen",
     syntheticBanner:
       "Demo- of placeholderdata — niet weergegeven als normaal openbaar catalogusmateriaal.",
@@ -173,20 +179,22 @@ export const messages: Messages = {
     writeRfid: "RFID schrijven",
     bestMatch: "Beste match",
     measuredProfiles: "Gemeten community-profielen",
-    starterProfiles: "Gegenereerde startprofielen",
+    starterProfiles: "Starterprofielen (op basis van fabrikant)",
     compatibleAlternatives: "Compatibele alternatieven",
     comparablePrinterProfiles: "Vergelijkbare printeropstelling",
-    noExactMatch: "Nog geen exacte gemeten match voor deze printer en nozzle.",
+    noExactMatch:
+      "Nog geen gemeten match voor deze printer en nozzle — fabrikantspecificaties en een starterprofiel hieronder blijven bruikbaar.",
     comparableNozzleAvailable:
       "Er zijn instellingen beschikbaar voor dezelfde nozzlemaat op een andere printer. Temperatuur, flow en nozzlemaat zijn nog steeds bruikbare startpunten; controleer printerspecifiek gedrag voordat je erop vertrouwt.",
-    generatedStarterProfile: "Gegenereerd starterprofiel",
+    generatedStarterProfile: "Starterprofiel uit fabrikantgegevens",
     generatedStarterProfileBody:
-      "Er bestaat nog geen exact profiel. OpenFilament kan een starterprofiel voor je gekozen exportformaat samenstellen uit catalogus-/fabrikantwaarden plus een generic printertemplate voor deze printerklasse. De waarden zijn berekend en ongetest; kalibreer voordat je het voor productieprints gebruikt.",
+      "Opgebouwd uit de merk-/catalogustemperaturen van dit filament plus een printerklasse-template. Meestal een sterkere start dan Generic PLA in je slicer. Nog niet community-gemeten — fine-tune voor kritieke prints en deel je kalibratie als je kunt.",
     downloadStarterProfile: "Starterprofiel downloaden",
     defaultNozzleNote: "Standaard 0,4 mm totdat je een nozzle kiest.",
     highConfidence: "Hoge betrouwbaarheid",
     mediumConfidence: "Gemiddelde betrouwbaarheid",
     lowConfidence: "Lage betrouwbaarheid",
+    insufficientConfidence: "Nog te weinig samples",
     howCalculated: "Hoe deze aanbeveling is berekend",
     sampleCount: "Gebaseerd op {count} gemeten monsters",
     notAvailable: "Niet beschikbaar",
@@ -199,7 +207,7 @@ export const messages: Messages = {
   },
   export: {
     heading: "Downloaden voor slicer",
-    body: "Maak een filamentpreset, download het bestand en importeer het in je slicer. OpenFilament installeert geen software en wijzigt geen lokale slicer-bestanden. Je houdt zelf de controle over wat er wordt geïmporteerd.",
+    body: "Maak een filamentpreset, download het bestand en importeer het in je slicer. Gebruik een gemeten communityprofiel als dat er is; anders een starter op basis van de fabrikantgegevens van dit filament.",
     profileUuid: "Profiel-ID",
     format: "Formaat",
     submit: "Download maken",
@@ -208,6 +216,10 @@ export const messages: Messages = {
     installFail:
       "Optionele helper mislukt — gebruik Download. De helper is niet verplicht.",
     chooseProfile: "Kies hierboven een profiel.",
+    starterEmptyHeading: "Nog geen gemeten profiel — gebruik een starter",
+    starterEmptyBody:
+      "Deze kleur heeft nog geen community-kalibratie om te downloaden. Een starter uit de fabrikant-/cataloguswaarden is meestal een betere eerste import dan Generic PLA. Kies hieronder een slicerformaat, of open de kleurpagina voor printer-specifieke starters.",
+    downloadStarter: "Download fabrikant-starter",
     exportFirst: "Maak eerst een download aan.",
     download: "Presetbestand downloaden",
     savePicker: "Opslaan in map…",

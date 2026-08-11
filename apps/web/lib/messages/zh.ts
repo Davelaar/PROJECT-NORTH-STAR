@@ -53,7 +53,7 @@ export const messages: Messages = {
   home: {
     heading:
       "为你的打印机查找耗材配置、入门配置和二维码/RFID 工具。",
-    lead: "搜索开放目录，选择打印机和喷嘴；如果有实测配置就下载实测配置，否则下载清楚标注的计算入门配置。用克为单位手动管理料盘库存，使用二维码/RFID 识别，并保持在浏览器中操作。无需桌面应用。支持九种语言。",
+    lead: "搜索开放目录，选择打印机和喷嘴；有实测配置就下载实测配置——或根据该耗材厂商数据生成的入门配置（通常比切片软件里的 Generic PLA 更可靠）。以克为单位管理料盘，使用二维码/RFID，并保持在浏览器中操作。",
     searchPlaceholder: "名称、品牌、SKU、条码或颜色…",
     searchButton: "搜索",
     browse: "浏览所有耗材",
@@ -73,10 +73,10 @@ export const messages: Messages = {
     hardwareLink: "RFID 与二维码硬件",
     catalogTitle: "开放耗材目录",
     catalogBody:
-      "来自开放目录的品牌与材料样本。搜索完整目录可查找颜色、SKU 和实测配置文件。",
+      "来自开放目录的品牌与材料样本。搜索颜色、SKU、厂商温度和建议配置——品牌耗材数据已是可用的第一组设置。",
     profilesTitle: "按打印机匹配的配置文件",
     profilesBody:
-      "选择打印机和喷嘴，然后下载匹配的配置文件。社区实测校准优先；如果没有，OpenFilament 会根据耗材数据和打印机模板平均值组合一个计算得出、未测试的入门配置。",
+      "有社区实测校准时，会细化流量、PA 和打印机特有行为。在此之前，OpenFilament 会根据该耗材的厂商/目录数值加上打印机类别平均值，生成带标注的入门配置——通常比 Generic PLA 更好的起点。在社区实测前标记为计算得出。",
     nozzlesNote: "未特别选择时，默认按 0.4 mm 喷嘴处理。",
     communityTitle: "分享你的测量数据",
     communityBody:
@@ -129,6 +129,7 @@ export const messages: Messages = {
     colours: "种颜色",
     nozzleProfiles: "个配置",
     measuredProfiles: "已实测",
+    brandSpecsAvailable: "有品牌参数",
     viewProduct: "查看产品",
     viewVariant: "查看颜色",
     provenance: {
@@ -148,7 +149,12 @@ export const messages: Messages = {
   },
   variant: {
     manufacturerSpecs: "厂商与目录参数",
+    manufacturerSpecsNote:
+      "该耗材来自品牌/目录的推荐范围——可靠的第一组设置，通常优于切片软件中的 Generic PLA。有人实测后，社区校准会细化流量、PA 和打印机特有行为。",
+    manufacturerFirstBadge: "品牌优先设置",
     communityRecommendation: "社区推荐",
+    communityEmpty:
+      "此颜色尚无社区实测。请使用下方厂商参数和入门下载——它们已是可靠的第一组设置。有实测值后请贡献校准。",
     profiles: "校准配置文件",
     syntheticBanner: "演示或占位数据——不作为正常公开目录内容显示。",
     ofdAttribution: "目录身份托管在 OpenFilament。部分条目最初从 Open Filament Database（MIT）导入作为种子数据。",
@@ -176,20 +182,22 @@ export const messages: Messages = {
     writeRfid: "写入 RFID",
     bestMatch: "最佳匹配",
     measuredProfiles: "社区实测配置文件",
-    starterProfiles: "生成的入门配置文件",
+    starterProfiles: "入门配置（基于厂商）",
     compatibleAlternatives: "兼容替代方案",
     comparablePrinterProfiles: "相近打印机配置",
-    noExactMatch: "该打印机和喷嘴暂无精确实测匹配。",
+    noExactMatch:
+      "该打印机和喷嘴尚无实测匹配——下方厂商参数和入门配置仍然适用。",
     comparableNozzleAvailable:
       "已有相同喷嘴尺寸但来自另一台打印机的设置。温度、流量和喷嘴尺寸仍然是有用的起点；正式依赖前请验证你的打印机特性。",
-    generatedStarterProfile: "生成的入门配置文件",
+    generatedStarterProfile: "基于厂商数据的入门配置",
     generatedStarterProfileBody:
-      "目前还没有精确匹配的配置文件。OpenFilament 可以根据目录/厂家参数和该打印机类别的通用打印机模板，为所选导出格式组合一个入门配置文件。这些数值是计算得出且未测试的；用于正式打印前请先校准。",
+      "由该耗材的品牌/目录温度加上打印机类别模板生成。通常比切片软件中的 Generic PLA 更可靠。尚未经社区实测——关键打印前请微调，并在可能时分享你的校准。",
     downloadStarterProfile: "下载入门配置文件",
     defaultNozzleNote: "在你选择喷嘴之前，默认显示 0.4 mm。",
     highConfidence: "高可信度",
     mediumConfidence: "中可信度",
     lowConfidence: "低可信度",
+    insufficientConfidence: "样本尚不足",
     howCalculated: "此推荐的计算方式",
     sampleCount: "基于 {count} 个实测样本",
     notAvailable: "不可用",
@@ -202,7 +210,7 @@ export const messages: Messages = {
   },
   export: {
     heading: "下载切片软件预设",
-    body: "创建耗材预设文件，下载后导入到你的切片软件中。OpenFilament 不会安装任何软件，也不会修改本地切片文件。导入什么由你决定。",
+    body: "创建耗材预设，下载后导入切片软件。优先使用已有的社区实测配置；否则下载基于该耗材厂商数据的入门配置。",
     profileUuid: "配置文件 ID",
     format: "格式",
     submit: "生成下载",
@@ -210,6 +218,10 @@ export const messages: Messages = {
     installOk: "已通过可选助手安装",
     installFail: "可选助手失败——请改用「下载」。助手不是必需的。",
     chooseProfile: "请先在上方列表中选择一个配置文件。",
+    starterEmptyHeading: "尚无实测配置——使用入门配置",
+    starterEmptyBody:
+      "此颜色尚无可下载的社区校准。基于厂商/目录数值的入门配置通常比 Generic PLA 更适合作为首次导入。请在下方选择切片格式，或打开颜色页获取特定打印机的入门配置。",
+    downloadStarter: "下载厂商入门配置",
     exportFirst: "请先创建下载。",
     download: "下载预设文件",
     savePicker: "保存到文件夹…",

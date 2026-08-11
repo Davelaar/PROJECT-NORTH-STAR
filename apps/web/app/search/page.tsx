@@ -440,11 +440,13 @@ export default async function SearchPage({
                       </span>
                       <span>
                         {p.materialCode} · {p.variantCount} {m.search.colours}
-                        {p.profileCount
-                          ? ` · ${p.profileCount} ${m.search.nozzleProfiles}`
-                          : ""}
                         {p.measuredProfileCount
                           ? ` · ${p.measuredProfileCount} ${m.search.measuredProfiles}`
+                          : p.nozzleTempMinC != null || p.bedTempMinC != null
+                            ? ` · ${m.search.brandSpecsAvailable}`
+                            : ""}
+                        {p.profileCount
+                          ? ` · ${p.profileCount} ${m.search.nozzleProfiles}`
                           : ""}
                       </span>
                     </p>

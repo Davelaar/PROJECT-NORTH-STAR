@@ -48,7 +48,7 @@ export const messages: Messages = {
   home: {
     heading:
       "Filamentprofile, Starterprofile und QR/RFID-Spulentools für deinen Drucker finden.",
-    lead: "Durchsuche den offenen Katalog, wähle Drucker und Düse und lade ein gemessenes Profil herunter, wenn es vorhanden ist, oder ein klar gekennzeichnetes berechnetes Starterprofil. Verwalte Spulen manuell in Gramm, nutze QR/RFID und bleibe im Browser. Keine Desktop-App nötig. Verfügbar in neun Sprachen.",
+    lead: "Durchsuche den offenen Katalog, wähle Drucker und Düse und lade ein gemessenes Profil herunter, wenn vorhanden — oder einen Starter aus den Herstellerdaten dieses Filaments (meist stärker als Generic PLA im Slicer). Verwalte Spulen in Gramm, nutze QR/RFID und bleibe im Browser.",
     searchPlaceholder: "Name, Marke, SKU, EAN oder Farbe…",
     searchButton: "Suchen",
     browse: "Alle Filamente durchsuchen",
@@ -68,10 +68,10 @@ export const messages: Messages = {
     hardwareLink: "RFID- und QR-Hardware",
     catalogTitle: "Offener Filamentkatalog",
     catalogBody:
-      "Eine Auswahl an Marken und Materialien aus dem offenen Katalog. Durchsuchen Sie den vollständigen Katalog nach Farben, SKUs und gemessenen Profilen.",
+      "Eine Auswahl an Marken und Materialien aus dem offenen Katalog. Suche nach Farben, SKUs, Herstellertemperaturen und Profilen — Markenfilamentdaten sind bereits eine brauchbare erste Einstellung.",
     profilesTitle: "Profile für Ihren Drucker",
     profilesBody:
-      "Wähle Drucker und Düse und lade dann ein passendes Profil herunter. Gemessene Community-Kalibrierungen haben Vorrang; sonst kann OpenFilament ein berechnetes, ungetestetes Starterprofil aus Filamentdaten und Druckertemplate-Durchschnitten erstellen.",
+      "Gemessene Community-Kalibrierungen verfeinern Flow, PA und druckerspezifisches Verhalten, wenn verfügbar. Bis dahin erstellt OpenFilament einen gekennzeichneten Starter aus den Hersteller-/Katalogwerten dieses Filaments plus Durchschnitten der Druckerklasse — meist ein besserer Start als Generic PLA. Als berechnet markiert, bis die Community misst.",
     nozzlesNote: "Ohne Auswahl gilt standardmäßig 0,4 mm.",
     communityTitle: "Teilen Sie Ihre Messungen",
     communityBody:
@@ -124,6 +124,7 @@ export const messages: Messages = {
     colours: "Farben",
     nozzleProfiles: "Profile",
     measuredProfiles: "gemessen",
+    brandSpecsAvailable: "Markenangaben verfügbar",
     viewProduct: "Produkt anzeigen",
     viewVariant: "Farbe anzeigen",
     provenance: {
@@ -143,7 +144,12 @@ export const messages: Messages = {
   },
   variant: {
     manufacturerSpecs: "Hersteller- und Katalogangaben",
+    manufacturerSpecsNote:
+      "Empfohlene Bereiche für dieses Filament aus Marke/Katalog — eine solide erste Einstellung, meist besser als Generic PLA im Slicer. Community-Kalibrierungen verfeinern Flow, PA und druckerspezifisches Verhalten, wenn jemand sie gemessen hat.",
+    manufacturerFirstBadge: "Marke als erste Einstellung",
     communityRecommendation: "Community-Empfehlung",
+    communityEmpty:
+      "Noch keine Community-Messungen für diese Farbe. Nutzen Sie die Herstellerangaben und den Starter-Download unten — das ist bereits eine starke erste Einstellung. Teilen Sie eine Kalibrierung, wenn Sie gemessene Werte haben.",
     profiles: "Kalibrierungsprofile",
     syntheticBanner:
       "Demo- oder Platzhalterdaten — nicht als normaler öffentlicher Kataloginhalt angezeigt.",
@@ -173,20 +179,22 @@ export const messages: Messages = {
     writeRfid: "RFID schreiben",
     bestMatch: "Bester Treffer",
     measuredProfiles: "Gemessene Community-Profile",
-    starterProfiles: "Generierte Starterprofile",
+    starterProfiles: "Starterprofile (herstellerbasiert)",
     compatibleAlternatives: "Kompatible Alternativen",
     comparablePrinterProfiles: "Vergleichbares Drucker-Setup",
-    noExactMatch: "Noch kein exakter gemessener Treffer für diesen Drucker und diese Düse.",
+    noExactMatch:
+      "Noch kein gemessener Treffer für diesen Drucker und diese Düse — Herstellerangaben und ein Starterprofil unten gelten trotzdem.",
     comparableNozzleAvailable:
       "Für dieselbe Düsengröße auf einem anderen Drucker sind Einstellungen verfügbar. Temperatur, Flow und Düsengröße sind weiterhin brauchbare Ausgangspunkte; prüfen Sie druckerspezifisches Verhalten, bevor Sie sich darauf verlassen.",
-    generatedStarterProfile: "Generiertes Starterprofil",
+    generatedStarterProfile: "Starterprofil aus Herstellerdaten",
     generatedStarterProfileBody:
-      "Es gibt noch kein exaktes Profil. OpenFilament kann aus Katalog-/Herstellerwerten plus einem generischen Druckertemplate für diese Druckerklasse ein Starterprofil für das gewählte Exportformat erstellen. Die Werte sind berechnet und ungetestet; kalibrieren Sie vor produktiven Drucken.",
+      "Erstellt aus den Marken-/Katalogtemperaturen dieses Filaments plus einem Template der Druckerklasse. Meist ein stärkerer Start als Generic PLA im Slicer. Noch nicht community-gemessen — vor kritischen Drucken feinabstimmen und Ihre Kalibrierung teilen, wenn möglich.",
     downloadStarterProfile: "Starterprofil herunterladen",
     defaultNozzleNote: "Zeigt standardmäßig 0,4 mm an, bis Sie eine Düse wählen.",
     highConfidence: "Hohe Zuverlässigkeit",
     mediumConfidence: "Mittlere Zuverlässigkeit",
     lowConfidence: "Niedrige Zuverlässigkeit",
+    insufficientConfidence: "Noch zu wenige Proben",
     howCalculated: "Wie diese Empfehlung berechnet wurde",
     sampleCount: "Basierend auf {count} gemessenen Proben",
     notAvailable: "Nicht verfügbar",
@@ -199,7 +207,7 @@ export const messages: Messages = {
   },
   export: {
     heading: "Für Slicer herunterladen",
-    body: "Erstellen Sie ein Filament-Preset, laden Sie es herunter und importieren Sie es in Ihren Slicer. OpenFilament installiert keine Software und ändert keine lokalen Slicer-Dateien. Sie behalten die Kontrolle über das, was importiert wird.",
+    body: "Erstellen Sie ein Filament-Preset, laden Sie es herunter und importieren Sie es in Ihren Slicer. Bevorzugen Sie ein gemessenes Community-Profil, wenn vorhanden; sonst einen herstellerbasierten Starter für dieses Filament.",
     profileUuid: "Profil-ID",
     format: "Format",
     submit: "Download erstellen",
@@ -208,6 +216,10 @@ export const messages: Messages = {
     installFail:
       "Helper fehlgeschlagen — nutzen Sie Download. Der Helper ist nicht Pflicht.",
     chooseProfile: "Wählen Sie oben ein Profil.",
+    starterEmptyHeading: "Noch kein gemessenes Profil — Starter nutzen",
+    starterEmptyBody:
+      "Für diese Farbe gibt es noch keine Community-Kalibrierung zum Download. Ein Starter aus den Hersteller-/Katalogwerten ist meist ein besserer erster Import als Generic PLA. Wählen Sie unten ein Slicer-Format oder öffnen Sie die Farbseite für druckerspezifische Starter.",
+    downloadStarter: "Hersteller-Starter herunterladen",
     exportFirst: "Erstellen Sie zuerst einen Download.",
     download: "Preset-Datei herunterladen",
     savePicker: "In Ordner speichern…",
