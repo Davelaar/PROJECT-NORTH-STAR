@@ -32,6 +32,10 @@ export function LoginForm() {
       if (data.user) {
         saveAuth({ user: data.user });
         setStatus(m.signedIn);
+        const next = new URLSearchParams(window.location.search).get("next");
+        if (next && next.startsWith("/") && !next.startsWith("//")) {
+          window.location.assign(next);
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : messages.common.error);

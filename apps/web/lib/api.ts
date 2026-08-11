@@ -25,6 +25,10 @@ function cookieValue(name: string): string | undefined {
     ?.slice(prefix.length);
 }
 
+export function isUnauthorizedError(err: unknown): boolean {
+  return err instanceof Error && /\bAPI 401\b/.test(err.message);
+}
+
 export async function apiGet<T>(path: string, token?: string): Promise<T> {
   const res = await fetch(`${getApiBase()}${path}`, {
     next: { revalidate: 0 },

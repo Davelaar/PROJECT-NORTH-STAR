@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useMessages } from "@/app/components/messages-provider";
-import { apiGet, apiPost } from "@/lib/api";
-import { loadAuth } from "@/lib/auth";
+import { apiGet, apiPost, isUnauthorizedError } from "@/lib/api";
+import { clearAuth, loadAuth } from "@/lib/auth";
 import { trackEvent } from "@/lib/analytics/ga";
 import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
 import type { Locale } from "@/lib/messages";
@@ -75,14 +75,27 @@ export default function MySpoolsCloudPage() {
     const a = loadAuth();
     setAuth(a);
     setLocale(document.documentElement.lang || "en");
+    setError("");
     try {
       const o = await apiGet<Offer>("/api/v1/billing/cloud/offer");
       setOffer(o);
       if (a) {
-        const e = await apiGet<Entitlement>(
-          "/api/v1/billing/cloud/entitlement",
-        );
-        setEntitlement(e);
+        try {
+          const e = await apiGet<Entitlement>(
+            "/api/v1/billing/cloud/entitlement",
+          );
+          setEntitlement(e);
+        } catch (e) {
+          if (isUnauthorizedError(e)) {
+            clearAuth();
+            setAuth(null);
+            setEntitlement(null);
+            return;
+          }
+          throw e;
+        }
+      } else {
+        setEntitlement(null);
       }
     } catch (e) {
       setError(String(e));
@@ -105,7 +118,13 @@ export default function MySpoolsCloudPage() {
       trackEvent("cloud_checkout_started");
       window.location.href = res.checkoutUrl;
     } catch (e) {
-      setError(String(e));
+      if (isUnauthorizedError(e)) {
+        clearAuth();
+        setAuth(null);
+        setError("");
+      } else {
+        setError(String(e));
+      }
       setBusy(false);
     }
   }
@@ -221,7 +240,7 @@ export default function MySpoolsCloudPage() {
         {!auth ? (
           <p>
             {m.cloud.loginRequired}{" "}
-            <Link href="/login">{m.nav.login}</Link>
+            <Link href="/login?next=/my-spools/cloud">{m.nav.login}</Link>
           </p>
         ) : (
           <div className="row gap">

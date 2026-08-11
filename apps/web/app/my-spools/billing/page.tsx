@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useMessages } from "@/app/components/messages-provider";
-import { apiGet } from "@/lib/api";
-import { loadAuth } from "@/lib/auth";
+import { apiGet, isUnauthorizedError } from "@/lib/api";
+import { clearAuth, loadAuth } from "@/lib/auth";
 
 type PaymentRow = {
   uuid: string;
@@ -53,7 +53,14 @@ export default function CloudBillingPage() {
       "/api/v1/billing/cloud/payments",
     )
       .then((r) => setRows(r.payments))
-      .catch((e) => setError(String(e)));
+      .catch((e) => {
+        if (isUnauthorizedError(e)) {
+          clearAuth();
+          setError(m.cloud.loginRequired);
+          return;
+        }
+        setError(String(e));
+      });
   }, [m.cloud.loginRequired]);
 
   return (
@@ -63,7 +70,14 @@ export default function CloudBillingPage() {
       <p>
         <strong>{m.cloud.noAutoRenewal}</strong>
       </p>
-      {error ? <p role="alert">{error}</p> : null}
+      {error ? (
+        <p role="alert">
+          {error}{" "}
+          {error === m.cloud.loginRequired ? (
+            <Link href="/login?next=/my-spools/billing">{m.nav.login}</Link>
+          ) : null}
+        </p>
+      ) : null}
       <div className="table-wrap">
         <table>
           <thead>
