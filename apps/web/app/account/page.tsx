@@ -32,6 +32,8 @@ export default function AccountPage() {
         <h1>{m.account.heading}</h1>
         <p>
           <Link href="/login">{m.nav.login}</Link>
+          {" · "}
+          <Link href="/register">{m.account.register}</Link>
         </p>
       </div>
     );

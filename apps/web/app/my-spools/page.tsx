@@ -251,7 +251,7 @@ export default function MySpoolsPage() {
       ) : (
         <p>
           <Link href="/login">{m.nav.login}</Link> /{" "}
-          <Link href="/account">{m.account.register}</Link> {m.spools.cloudMode}
+          <Link href="/register">{m.account.register}</Link> {m.spools.cloudMode}
         </p>
       )}
 

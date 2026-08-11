@@ -1051,3 +1051,22 @@ export const cloudAdminAuditLog = sqliteTable(
   },
   (t) => [index("cloud_admin_audit_target_idx").on(t.targetUserId)],
 );
+
+/** One-time password reset tokens (hashed). Email is only used to deliver the link. */
+export const passwordResetTokens = sqliteTable(
+  "password_reset_tokens",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    tokenHash: text("token_hash").notNull().unique(),
+    expiresAt: text("expires_at").notNull(),
+    usedAt: text("used_at"),
+    createdAt: text("created_at")
+      .notNull()
+      .default(sql`(datetime('now'))`),
+  },
+  (t) => [index("password_reset_tokens_user_idx").on(t.userId)],
+);

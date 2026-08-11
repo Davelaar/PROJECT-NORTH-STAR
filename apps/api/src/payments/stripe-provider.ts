@@ -86,6 +86,8 @@ export class StripeOneTimeCloudProvider
         customer_email: input.customerEmail || undefined,
         // Do NOT set setup_future_usage / payment_intent_data.setup_future_usage.
         // Do NOT create subscriptions.
+        // Do NOT set payment_method_types (Managed Payments / Dashboard config).
+        // Product must have a Stripe tax_code (set on the My Spools Cloud product).
         metadata: {
           openfilament_account_id: input.accountId,
           openfilament_payment_uuid: input.internalPaymentUuid,

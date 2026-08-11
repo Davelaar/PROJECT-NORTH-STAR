@@ -82,6 +82,8 @@ export async function buildServer(options?: { dbPath?: string }) {
     if (
       url === "/api/v1/auth/login" ||
       url === "/api/v1/auth/register" ||
+      url === "/api/v1/auth/forgot-password" ||
+      url === "/api/v1/auth/reset-password" ||
       url === "/api/v1/billing/webhooks/stripe"
     ) {
       return;

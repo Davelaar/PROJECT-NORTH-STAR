@@ -241,6 +241,8 @@ export default function MySpoolsCloudPage() {
           <p>
             {m.cloud.loginRequired}{" "}
             <Link href="/login?next=/my-spools/cloud">{m.nav.login}</Link>
+            {" · "}
+            <Link href="/register?next=/my-spools/cloud">{m.account.register}</Link>
           </p>
         ) : (
           <div className="row gap">

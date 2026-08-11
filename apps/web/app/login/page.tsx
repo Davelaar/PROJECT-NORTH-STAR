@@ -7,7 +7,7 @@ export default async function LoginPage() {
   return (
     <div>
       <h1>{messages.login.heading}</h1>
-      <p className="muted">{messages.login.seedHint}</p>
+      <p className="muted">{messages.login.privacyMinimal}</p>
       <LoginForm />
     </div>
   );

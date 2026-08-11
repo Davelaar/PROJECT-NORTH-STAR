@@ -118,6 +118,14 @@ function clearSessionCookies(
   ]);
 }
 
+function publicBaseUrlForAuth() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    process.env.WEB_ORIGIN?.split(",")[0]?.trim().replace(/\/$/, "") ||
+    "https://openfilament.nl"
+  );
+}
+
 export async function registerRoutes(app: FastifyInstance) {
   const db = () => app.db;
 
@@ -1860,10 +1868,10 @@ export async function registerRoutes(app: FastifyInstance) {
     config: { rateLimit: { max: 10, timeWindow: "1 hour" } },
     handler: async (req, reply) => {
     const bodySchema = z.object({
-      username: z.string().min(3).max(64),
       email: z.string().email(),
-      password: z.string().min(8),
-      displayName: z.string().optional(),
+      password: z.string().min(8).max(200),
+      username: z.string().min(3).max(64).optional(),
+      displayName: z.string().max(120).optional(),
     });
     const parsed = bodySchema.safeParse(req.body);
     if (!parsed.success) {
@@ -1876,10 +1884,51 @@ export async function registerRoutes(app: FastifyInstance) {
         user: publicUser(result.user),
       });
     } catch (err) {
-      return sendError(reply, 409, "conflict", "Username or email already exists", {
+      return sendError(reply, 409, "conflict", "Email already registered", {
         cause: err instanceof Error ? err.message : String(err),
       });
     }
+    },
+  });
+
+  app.post("/api/v1/auth/forgot-password", {
+    config: { rateLimit: { max: 5, timeWindow: "1 hour" } },
+    handler: async (req, reply) => {
+      const bodySchema = z.object({ email: z.string().email() });
+      const parsed = bodySchema.safeParse(req.body);
+      if (!parsed.success) return badRequest(reply, "Invalid body");
+      const email = parsed.data.email.trim().toLowerCase();
+      const user = db()
+        .select()
+        .from(schema.users)
+        .where(eq(schema.users.email, email))
+        .get();
+      // Always OK — do not reveal whether the email exists.
+      if (user?.passwordHash && user.status === "active") {
+        const { createPasswordResetAndNotify } = await import("./mail.js");
+        await createPasswordResetAndNotify(db(), user, publicBaseUrlForAuth());
+      }
+      return { ok: true };
+    },
+  });
+
+  app.post("/api/v1/auth/reset-password", {
+    config: { rateLimit: { max: 10, timeWindow: "1 hour" } },
+    handler: async (req, reply) => {
+      const bodySchema = z.object({
+        token: z.string().min(20).max(200),
+        password: z.string().min(8).max(200),
+      });
+      const parsed = bodySchema.safeParse(req.body);
+      if (!parsed.success) return badRequest(reply, "Invalid body");
+      const { consumePasswordResetToken } = await import("./mail.js");
+      const ok = await consumePasswordResetToken(
+        db(),
+        parsed.data.token,
+        parsed.data.password,
+      );
+      if (!ok) return badRequest(reply, "Invalid or expired reset link");
+      return { ok: true };
     },
   });
 

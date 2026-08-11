@@ -218,20 +218,42 @@ export async function loginWithPassword(
 export async function registerUser(
   db: AppDb,
   input: {
-    username: string;
+    username?: string;
     email: string;
     password: string;
     displayName?: string;
   },
 ) {
+  const email = input.email.trim().toLowerCase();
+  let username = input.username?.trim();
+  if (!username) {
+    const base =
+      email
+        .split("@")[0]
+        ?.replace(/[^a-zA-Z0-9_]/g, "")
+        .toLowerCase()
+        .slice(0, 20) || "user";
+    username = base.length >= 3 ? base : `user_${base}`;
+    let n = 0;
+    while (
+      db.select().from(schema.users).where(eq(schema.users.username, username)).get()
+    ) {
+      n += 1;
+      username = `${base.slice(0, 16)}${n}`;
+      if (n > 50) {
+        username = `u_${uuid().replace(/-/g, "").slice(0, 12)}`;
+        break;
+      }
+    }
+  }
   const passwordHash = await hashPassword(input.password);
   const [user] = db
     .insert(schema.users)
     .values({
       uuid: uuid(),
-      username: input.username,
-      email: input.email,
-      displayName: input.displayName ?? input.username,
+      username,
+      email,
+      displayName: input.displayName ?? username,
       passwordHash,
       role: "registered",
     })

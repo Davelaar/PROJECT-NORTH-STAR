@@ -356,10 +356,31 @@ export type Messages = {
   login: {
     heading: string;
     username: string;
+    email: string;
+    emailOrUsername: string;
     password: string;
+    passwordConfirm: string;
+    passwordMismatch: string;
     submit: string;
     seedHint: string;
     signedIn: string;
+    privacyMinimal: string;
+    createAccount: string;
+    forgotLink: string;
+    registerHeading: string;
+    registerLead: string;
+    registerSubmit: string;
+    registeredOk: string;
+    haveAccount: string;
+    forgotHeading: string;
+    forgotLead: string;
+    forgotSubmit: string;
+    forgotSent: string;
+    backToLogin: string;
+    resetHeading: string;
+    resetSubmit: string;
+    resetOk: string;
+    resetInvalid: string;
   };
   docsApi: {
     heading: string;
