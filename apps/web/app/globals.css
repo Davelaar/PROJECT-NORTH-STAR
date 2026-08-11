@@ -279,9 +279,13 @@ a:hover {
   font-size: 0.85rem;
 }
 
+.searchable-select-value {
+  color: var(--ink);
+}
+
 .searchable-select-panel {
   position: absolute;
-  z-index: 40;
+  z-index: 9500;
   top: calc(100% + 0.25rem);
   left: 0;
   right: 0;
@@ -323,6 +327,24 @@ a:hover {
 .searchable-select-list button:hover,
 .searchable-select-list button.is-selected {
   background: var(--interactive-hover);
+}
+
+.searchable-select-list button.searchable-select-create {
+  background: color-mix(in srgb, var(--accent) 16%, var(--card));
+  color: var(--ink);
+  font-weight: 600;
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+
+.searchable-select-list button.searchable-select-create:hover {
+  background: color-mix(in srgb, var(--accent) 24%, var(--card));
+  color: var(--ink);
+}
+
+.searchable-select-error {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--warn-ink);
 }
 
 .searchable-select-empty {
@@ -496,7 +518,7 @@ pre {
   }
 }
 
-/* â€”â€” Home landing â€”â€” */
+/* —— Home landing —— */
 .home {
   --home-ink: #15201c;
   --home-muted: #4a5a54;

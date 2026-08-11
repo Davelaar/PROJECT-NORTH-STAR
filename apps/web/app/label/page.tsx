@@ -50,11 +50,12 @@ export default function LabelIndexPage() {
   }, []);
 
   useEffect(() => {
-    if (!manufacturerUuid || !materialCode) {
+    if (!manufacturerUuid) {
       setFilaments([]);
       return;
     }
-    const qs = new URLSearchParams({ manufacturerUuid, materialCode });
+    const qs = new URLSearchParams({ manufacturerUuid });
+    if (materialCode) qs.set("materialCode", materialCode);
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
         [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
@@ -101,8 +102,14 @@ export default function LabelIndexPage() {
     [materials],
   );
   const filamentOptions = useMemo(
-    () => filaments.map((x) => ({ value: x.uuid, label: x.productName })),
-    [filaments],
+    () =>
+      filaments.map((x) => ({
+        value: x.uuid,
+        label: materialCode
+          ? x.productName
+          : `${x.productName} (${x.materialCode})`,
+      })),
+    [filaments, materialCode],
   );
   const variantOptions = useMemo(
     () =>
@@ -152,8 +159,16 @@ export default function LabelIndexPage() {
           value={materialCode}
           onChange={(v) => {
             setMaterialCode(v);
-            setFilamentUuid("");
-            setVariantUuid("");
+            if (filamentUuid) {
+              const product = filaments.find((row) => row.uuid === filamentUuid);
+              if (product && product.materialCode !== v) {
+                setFilamentUuid("");
+                setVariantUuid("");
+              }
+            } else {
+              setFilamentUuid("");
+              setVariantUuid("");
+            }
           }}
           options={materialOptions}
           placeholder={f.selectPlaceholder}
@@ -164,14 +179,16 @@ export default function LabelIndexPage() {
           label={f.product}
           value={filamentUuid}
           onChange={(v) => {
+            const product = filaments.find((row) => row.uuid === v);
             setFilamentUuid(v);
             setVariantUuid("");
+            if (product?.materialCode) setMaterialCode(product.materialCode);
           }}
           options={filamentOptions}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
-          disabled={!materialCode}
+          disabled={!manufacturerUuid}
         />
         <SearchableSelect
           label={f.variant}

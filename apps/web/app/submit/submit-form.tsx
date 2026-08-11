@@ -161,11 +161,12 @@ export function SubmitProfileForm({
   }, [variantUuid]);
 
   useEffect(() => {
-    if (!manufacturerUuid || !materialCode) {
+    if (!manufacturerUuid) {
       setFilaments([]);
       return;
     }
-    const qs = new URLSearchParams({ manufacturerUuid, materialCode });
+    const qs = new URLSearchParams({ manufacturerUuid });
+    if (materialCode) qs.set("materialCode", materialCode);
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
         [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
@@ -320,8 +321,16 @@ export function SubmitProfileForm({
           value={materialCode}
           onChange={(v) => {
             setMaterialCode(v);
-            setFilamentUuid("");
-            setVariantUuid("");
+            if (filamentUuid) {
+              const product = filaments.find((row) => row.uuid === filamentUuid);
+              if (product && product.materialCode !== v) {
+                setFilamentUuid("");
+                setVariantUuid("");
+              }
+            } else {
+              setFilamentUuid("");
+              setVariantUuid("");
+            }
           }}
           options={materials.map((x) => ({
             value: x.code,
@@ -336,17 +345,21 @@ export function SubmitProfileForm({
           label={f.product}
           value={filamentUuid}
           onChange={(v) => {
+            const product = filaments.find((row) => row.uuid === v);
             setFilamentUuid(v);
             setVariantUuid("");
+            if (product?.materialCode) setMaterialCode(product.materialCode);
           }}
           options={filaments.map((x) => ({
             value: x.uuid,
-            label: x.productName,
+            label: materialCode
+              ? x.productName
+              : `${x.productName} (${x.materialCode})`,
           }))}
           placeholder={f.selectPlaceholder}
           searchPlaceholder={f.searchPlaceholder}
           emptyText={f.noMatches}
-          disabled={!manufacturerUuid || !materialCode}
+          disabled={!manufacturerUuid}
           allowCreate={Boolean(manufacturerUuid && materialCode)}
           createLabel={(name) => fillName(m.addProduct, name)}
           creatingText={m.creating}

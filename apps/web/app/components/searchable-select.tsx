@@ -24,6 +24,14 @@ type Props = {
   creatingText?: string;
 };
 
+function optionMatchesQuery(option: SearchableOption, query: string) {
+  const q = query.trim().toLowerCase();
+  return (
+    option.label.trim().toLowerCase() === q ||
+    option.value.trim().toLowerCase() === q
+  );
+}
+
 /**
  * Accessible combobox: type to filter long lists, then pick an option.
  * Optional create-new path for community catalog contributions.
@@ -48,6 +56,9 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
+  /** Keeps the trigger readable while value is set but options haven't refreshed yet. */
+  const [pendingLabel, setPendingLabel] = useState<string | null>(null);
 
   const selected = options.find((o) => o.value === value) ?? null;
 
@@ -61,14 +72,21 @@ export function SearchableSelect({
     if (!allowCreate || !onCreate) return false;
     const q = query.trim();
     if (q.length < 1) return false;
-    return !options.some(
-      (o) => o.label.trim().toLowerCase() === q.toLowerCase(),
-    );
+    return !options.some((o) => optionMatchesQuery(o, q));
   }, [allowCreate, onCreate, options, query]);
 
   useEffect(() => {
     if (!open) setQuery("");
   }, [open, value]);
+
+  useEffect(() => {
+    if (!value) {
+      setPendingLabel(null);
+      return;
+    }
+    const opt = options.find((o) => o.value === value);
+    if (opt) setPendingLabel(null);
+  }, [value, options]);
 
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -78,7 +96,14 @@ export function SearchableSelect({
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
 
-  function pick(next: string) {
+  function pick(next: string, labelHint?: string) {
+    if (next) {
+      const opt = options.find((o) => o.value === next);
+      setPendingLabel(opt?.label ?? labelHint ?? null);
+    } else {
+      setPendingLabel(null);
+    }
+    setCreateError("");
     onChange(next);
     setOpen(false);
     setQuery("");
@@ -88,14 +113,21 @@ export function SearchableSelect({
     if (!canCreate || !onCreate || creating) return;
     const q = query.trim();
     setCreating(true);
+    setCreateError("");
     try {
       await onCreate(q);
+      setPendingLabel(q);
       setOpen(false);
       setQuery("");
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : String(err));
     } finally {
       setCreating(false);
     }
   }
+
+  const triggerLabel = selected?.label ?? pendingLabel ?? (value || null);
+  const showPlaceholder = !triggerLabel;
 
   return (
     <div className="searchable-select" ref={rootRef}>
@@ -108,11 +140,14 @@ export function SearchableSelect({
         aria-expanded={open}
         aria-controls={listId}
         onClick={() => {
-          if (!disabled) setOpen((v) => !v);
+          if (!disabled) {
+            setCreateError("");
+            setOpen((v) => !v);
+          }
         }}
       >
-        <span className={selected ? "" : "muted"}>
-          {selected?.label ?? placeholder}
+        <span className={showPlaceholder ? "muted" : "searchable-select-value"}>
+          {triggerLabel ?? placeholder}
         </span>
         <span aria-hidden="true" className="searchable-select-caret">
           ▾
@@ -120,6 +155,11 @@ export function SearchableSelect({
       </button>
       {required ? (
         <input type="hidden" value={value} required={required && !value} readOnly />
+      ) : null}
+      {createError ? (
+        <p className="searchable-select-error" role="alert">
+          {createError}
+        </p>
       ) : null}
       {open && !disabled ? (
         <div className="searchable-select-panel" role="presentation">
@@ -134,7 +174,11 @@ export function SearchableSelect({
               if (e.key === "Escape") setOpen(false);
               if (e.key === "Enter") {
                 e.preventDefault();
-                if (canCreate && filtered.length === 0) {
+                const q = query.trim();
+                const exact = filtered.find((o) => optionMatchesQuery(o, q));
+                if (exact) {
+                  pick(exact.value);
+                } else if (canCreate) {
                   void createFromQuery();
                 } else if (filtered[0]) {
                   pick(filtered[0].value);
@@ -143,23 +187,28 @@ export function SearchableSelect({
             }}
           />
           <ul id={listId} className="searchable-select-list" role="listbox">
-            <li role="option" aria-selected={!value}>
-              <button type="button" onClick={() => pick("")}>
-                {placeholder}
-              </button>
-            </li>
             {canCreate ? (
               <li role="option" aria-selected={false}>
                 <button
                   type="button"
                   className="searchable-select-create"
                   disabled={creating}
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => void createFromQuery()}
                 >
                   {creating ? creatingText : createLabel(query.trim())}
                 </button>
               </li>
             ) : null}
+            <li role="option" aria-selected={!value}>
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => pick("")}
+              >
+                {placeholder}
+              </button>
+            </li>
             {filtered.length === 0 && !canCreate ? (
               <li className="muted searchable-select-empty">{emptyText}</li>
             ) : (
@@ -168,6 +217,7 @@ export function SearchableSelect({
                   <button
                     type="button"
                     className={o.value === value ? "is-selected" : undefined}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => pick(o.value)}
                   >
                     {o.label}

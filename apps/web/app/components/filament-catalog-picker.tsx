@@ -117,11 +117,12 @@ export function FilamentCatalogPicker({
   }, [productUuid, materialCode]);
 
   useEffect(() => {
-    if (!manufacturerUuid || !materialCode) {
+    if (!manufacturerUuid) {
       setFilaments([]);
       return;
     }
-    const qs = new URLSearchParams({ manufacturerUuid, materialCode });
+    const qs = new URLSearchParams({ manufacturerUuid });
+    if (materialCode) qs.set("materialCode", materialCode);
     apiGet<Filament[]>(`/api/v1/filaments?${qs}`)
       .then((rows) =>
         [...rows].sort((a, b) => a.productName.localeCompare(b.productName)),
@@ -246,14 +247,26 @@ export function FilamentCatalogPicker({
         value={materialCode}
         disabled={disabled}
         onChange={(v) => {
-          emitPartial({
+          const patch: Partial<CatalogSelection> = {
             materialCode: v,
-            productUuid: "",
-            productName: "",
-            variantUuid: "",
-            variantName: "",
-            colorHex: null,
-          });
+          };
+          if (productUuid) {
+            const product = filaments.find((row) => row.uuid === productUuid);
+            if (product && product.materialCode !== v) {
+              patch.productUuid = "";
+              patch.productName = "";
+              patch.variantUuid = "";
+              patch.variantName = "";
+              patch.colorHex = null;
+            }
+          } else {
+            patch.productUuid = "";
+            patch.productName = "";
+            patch.variantUuid = "";
+            patch.variantName = "";
+            patch.colorHex = null;
+          }
+          emitPartial(patch);
         }}
         options={materials.map((x) => ({
           value: x.code,
@@ -268,12 +281,13 @@ export function FilamentCatalogPicker({
       <SearchableSelect
         label={L.product}
         value={productUuid}
-        disabled={disabled || !manufacturerUuid || !materialCode}
+        disabled={disabled || !manufacturerUuid}
         onChange={(v) => {
           const product = filaments.find((x) => x.uuid === v);
           emitPartial({
             productUuid: v,
             productName: product?.productName ?? "",
+            materialCode: product?.materialCode ?? materialCode,
             variantUuid: "",
             variantName: "",
             colorHex: null,
@@ -281,7 +295,9 @@ export function FilamentCatalogPicker({
         }}
         options={filaments.map((x) => ({
           value: x.uuid,
-          label: x.productName,
+          label: materialCode
+            ? x.productName
+            : `${x.productName} (${x.materialCode})`,
         }))}
         placeholder={L.selectPlaceholder}
         searchPlaceholder={L.searchPlaceholder}
