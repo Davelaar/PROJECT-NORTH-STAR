@@ -4,6 +4,7 @@ import {
   consentRu,
   footerRu,
   legalPagesRu,
+  supportRu,
   spoolsRu,
 } from "./prod-ru";
 
@@ -594,6 +595,7 @@ export const messages: Messages = {
   spools: spoolsRu,
   account: accountRu,
   legalPages: legalPagesRu,
+  support: supportRu,
   cloud: {
     navLink: "Cloud",
     billingLink: "История платежей",

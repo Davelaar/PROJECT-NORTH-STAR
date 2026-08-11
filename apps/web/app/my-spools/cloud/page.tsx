@@ -294,7 +294,7 @@ export default function MySpoolsCloudPage() {
 
       <p>
         <Link href="/terms">{m.cloud.termsLink}</Link> ·{" "}
-        <Link href="/privacy">{m.cloud.privacyLink}</Link>
+        <Link href="/privacy-policy">{m.cloud.privacyLink}</Link>
       </p>
     </article>
   );

@@ -13,7 +13,8 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <nav aria-label={m.footer.navAria} className="footer-nav">
-        <Link href="/privacy">{m.footer.privacy}</Link>
+        <Link href="/privacy-policy">{m.footer.privacy}</Link>
+        <Link href="/support">{m.footer.support}</Link>
         <Link href="/cookies">{m.footer.cookies}</Link>
         <button type="button" className="linkish" onClick={() => openCookieSettings()}>
           {m.footer.cookieSettings}

@@ -4,7 +4,7 @@
  * Hosting defaults reflect the known OpenFilament VPS deployment.
  */
 
-export const CONSENT_VERSION = process.env.NEXT_PUBLIC_CONSENT_VERSION ?? "2026-08-10";
+export const CONSENT_VERSION = process.env.NEXT_PUBLIC_CONSENT_VERSION ?? "2026-08-11";
 export const CONTRIBUTION_TERMS_VERSION =
   process.env.NEXT_PUBLIC_CONTRIBUTION_TERMS_VERSION ?? "2026-08-10";
 
@@ -48,7 +48,7 @@ export function getLegalConfig(): LegalConfig {
   const publicBaseUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://openfilament.nl";
   const effectiveDate =
-    process.env.NEXT_PUBLIC_LEGAL_EFFECTIVE_DATE?.trim() || "2026-08-10";
+    process.env.NEXT_PUBLIC_LEGAL_EFFECTIVE_DATE?.trim() || "2026-08-11";
 
   const placeholdersRemaining: string[] = [];
   if (ownerName.startsWith("[OWNER MUST PROVIDE")) {

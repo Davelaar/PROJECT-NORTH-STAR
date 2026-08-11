@@ -32,6 +32,7 @@ export const footerEn = {
   security: "Security",
   trust: "Trust center",
   mySpools: "My Spools",
+  support: "Support",
   tagline: "OpenFilament — browser-first filament intelligence.",
   legalPlaceholderWarn:
     "Legal owner details are still placeholders — see docs/PRODUCTION_LAUNCH_CHECKLIST.md before launch.",
@@ -112,6 +113,8 @@ export const accountEn = {
 
 export const legalPagesEn = {
   privacyTitle: "Privacy policy",
+  privacyMetaDescription:
+    "How OpenFilament processes account email, Stripe payments, My Spools and cookies.",
   cookiesTitle: "Cookie policy",
   termsTitle: "Terms of use",
   securityTitle: "Security",
@@ -124,46 +127,62 @@ export const legalPagesEn = {
   hosting: "Hosting",
   contact: "Contact",
   openSourceRepository: "Open-source repository",
-  cookieSettingsHint: "Use footer Cookie settings",
+  cookieSettingsHint:
+    "You can change analytics and preference cookies any time with Cookie settings. Consent version:",
   sections: {
     privacy: [
       {
-        heading: "What we process",
+        heading: "Accounts — what we store",
+        paragraphs: [
+          "Creating an account only requires an email address and a password. We store that email so you can sign in, receive payment receipts and reset your password. We do not ask for your real name; an internal username is generated automatically. Passwords are stored as scrypt hashes — never in plain text.",
+          "We do not use your email for marketing. Account recovery and essential service messages (for example payment or security notices) are the intended uses.",
+        ],
+      },
+      {
+        heading: "Payments (Stripe)",
+        paragraphs: [
+          "Optional My Spools Cloud purchases are paid through Stripe Checkout. You enter card or wallet details on Stripe’s hosted payment pages. Stripe is the payment processor: OpenFilament never receives or stores your full card number, CVC or equivalent wallet secrets.",
+          "On our side we keep only what is needed to deliver Cloud access and accounting: amount, currency, payment status, Stripe session/payment identifiers, timestamps and your Cloud entitlement period. Stripe processes payment data under Stripe’s own terms and privacy policy.",
+          "Cloud access is a one-time prepaid period (currently 12 months). There is no automatic renewal and no off-session charge unless you start a new Checkout yourself.",
+        ],
+      },
+      {
+        heading: "What else we process",
         items: [
-          "Account data, authentication sessions and security logs.",
-          "Cloud My Spools, private notes and QR/RFID identities when you explicitly sync.",
-          "Local My Spools remains in your browser until you sync or export it.",
-          "Public community contributions you choose to publish.",
-          "Consent preferences and optional Google Analytics 4 after consent only.",
+          "Authentication sessions (httpOnly cookies) and security logs.",
+          "My Spools Cloud inventory, private notes and QR/RFID identities only when you explicitly sync to Cloud.",
+          "Local My Spools stays in your browser until you sync or export it — signing in does not upload local spools by itself.",
+          "Public community contributions you choose to publish (calibrations, catalog tips).",
+          "Consent preferences and optional Google Analytics 4 only after you opt in.",
         ],
       },
       {
         heading: "Legal bases",
         items: [
-          "Contract or requested service for accounts, Cloud, exports and downloads.",
+          "Contract / requested service for accounts, Cloud, exports and downloads.",
           "Legitimate interest for security, abuse prevention and service integrity.",
-          "Consent for analytics cookies/storage, withdrawable via Cookie settings.",
+          "Consent for analytics cookies/storage — withdrawable via Cookie settings on this site.",
           "Legal obligation where security or accounting records must be retained.",
         ],
       },
       {
         heading: "My Spools",
         paragraphs: [
-          "Local My Spools stays on your device. Clearing site data, losing the device or switching browsers can remove it. Signing in never uploads local spools by itself.",
-          "My Spools Cloud is optional prepaid hosting for 12 months via one-time Stripe Checkout. It does not renew automatically. Sync requires an account, active entitlement and explicit confirmation. Public QR resolution does not expose private notes, locations or account identifiers.",
+          "Local My Spools is free and stays on your device. Clearing site data, losing the device or switching browsers can remove it.",
+          "My Spools Cloud is optional paid hosting for inventory sync and backup. Public QR resolution does not expose private notes, locations or account identifiers.",
         ],
       },
       {
         heading: "Your rights and retention",
         paragraphs: [
-          "You can request access, correction, deletion, restriction, portability and objection, and withdraw consent. Use Account export/delete, Cookie settings or email the privacy contact. You may complain to the configured supervisory authority.",
-          "Retention follows docs/DATA_RETENTION.md. Soft-deleted spools are purged on a schedule. Backups may retain deleted data until backup expiry.",
+          "You can request access, correction, deletion, restriction, portability and objection, and withdraw consent. Use Account export/delete, Cookie settings or email the privacy contact. You may complain to the supervisory authority listed for this site.",
+          "Soft-deleted Cloud spools are purged on a schedule. Payment and security records may be kept longer where required for accounting or fraud prevention. Backups may retain deleted data until backup expiry.",
         ],
       },
       {
         heading: "International transfers and changes",
         paragraphs: [
-          "If analytics is enabled, Google may process data outside the EEA under its safeguards. Hosting region is shown above. Material policy changes update the consent version and may re-prompt for consent.",
+          "Hosting for the application and database is on our EU VPS as shown above. If you enable analytics, Google may process analytics data outside the EEA under its safeguards. Stripe may process payment data in regions where Stripe operates. Material policy changes update the consent version and may re-prompt for consent.",
         ],
       },
     ],
@@ -190,21 +209,27 @@ export const legalPagesEn = {
       {
         heading: "Availability and liability",
         paragraphs: [
-          "The service is provided as-is without warranty of uninterrupted availability. To the extent permitted by law, liability is limited for free community tooling.",
+          "The service is provided as-is without warranty of uninterrupted availability. To the extent permitted by law, liability is limited for free community tooling. My Spools Cloud is offered in beta.",
         ],
       },
     ],
     cookies: [
       {
-        heading: "Browser storage",
+        heading: "Necessary storage",
         paragraphs: [
-          "OpenFilament uses necessary cookies and browser storage for language, consent, sessions, CSRF protection, local My Spools and the PWA shell. Analytics storage is only used after consent.",
+          "Required for the site to work: language (of_locale), consent choice (of_consent), signed-in session (of_session, httpOnly), CSRF protection (of_csrf), and local My Spools data in IndexedDB. A service worker / Cache Storage may keep the PWA shell offline-capable. These are not used for advertising.",
         ],
       },
       {
-        heading: "Choice",
+        heading: "Optional analytics",
         paragraphs: [
-          "Rejecting analytics does not disable search, My Spools, accounts, QR, RFID or downloads. Marketing storage is not used.",
+          "Only if you accept analytics we load privacy-conscious Google Analytics 4, which may set first-party cookies such as _ga. Rejecting analytics leaves search, My Spools, accounts, QR, RFID and downloads fully usable. Marketing cookies are not used.",
+        ],
+      },
+      {
+        heading: "Change your choice",
+        paragraphs: [
+          "Open Cookie settings from the footer or the privacy policy page any time. Changing your mind updates storage immediately and turns analytics off when you withdraw consent.",
         ],
       },
     ],
@@ -216,6 +241,7 @@ export const legalPagesEn = {
           "Session tokens hashed at rest and sent to the browser as httpOnly cookies.",
           "Private My Spools with server-side ownership checks.",
           "Public QR projections that omit notes, locations and account identifiers.",
+          "Payment card data handled by Stripe — not stored on OpenFilament servers.",
         ],
       },
       {
@@ -226,6 +252,42 @@ export const legalPagesEn = {
       },
     ],
   },
+};
+
+export const supportEn = {
+  title: "Support",
+  metaDescription:
+    "What OpenFilament is, what you can do, and how free My Spools differs from paid Cloud sync (beta).",
+  lead:
+    "Short operator-to-customer help: what this site is for, and how My Spools Local vs Cloud works — including that paid Cloud is still beta.",
+  productHeading: "What OpenFilament is",
+  productBody:
+    "OpenFilament is a browser-first filament catalog and calibration hub. Find filament data, download starter or measured profiles for your slicer, identify spools with QR or RFID, and keep an optional inventory with My Spools — without installing a desktop app for the core product.",
+  productItems: [
+    "Search brands, materials and colours; use manufacturer ranges as a strong first setting.",
+    "Download slicer presets (measured community profiles when available, otherwise manufacturer-based starters).",
+    "Print QR labels and use RFID flows when you have compatible hardware.",
+    "Contribute calibrations so others print better.",
+    "Optional account for Cloud inventory sync — browsing and Local My Spools work without paying.",
+  ],
+  mySpoolsHeading: "My Spools — free vs paid",
+  mySpoolsLocalTitle: "My Spools Local (free)",
+  mySpoolsLocalBody:
+    "Full inventory on this device: notes, drying, QR/RFID links, import/export. No account required. Data stays in your browser — export backups if you clear site data or switch devices.",
+  mySpoolsCloudTitle: "My Spools Cloud (paid, beta)",
+  mySpoolsCloudBody:
+    "Optional prepaid hosting (€19.99 for 12 months, one-time via Stripe, no auto-renewal). An account (email + password) is required so we can attach Cloud inventory and recover access.",
+  mySpoolsDiffItems: [
+    "Free Local: complete inventory tools on one browser/device.",
+    "Paid Cloud: the only extras are synchronising spools across devices and keeping server-side stock/backup on our VPS.",
+    "Cloud does not unlock better profiles, catalog privileges, RFID/QR features, or other inventory tools beyond what Local already has.",
+    "After the paid period ends you get a grace/export window; Local My Spools remains fully usable without Cloud.",
+  ],
+  betaNote:
+    "My Spools Cloud is in beta. Expect rough edges while we harden sync and billing. The paid product’s purpose remains narrow: spool sync and stock backup — nothing more.",
+  contactHeading: "Contact",
+  contactBody:
+    "Questions about privacy, billing or Cloud beta: email us. For cookie choices, use Cookie settings on the privacy policy page.",
 };
 
 export const cloudEn = {

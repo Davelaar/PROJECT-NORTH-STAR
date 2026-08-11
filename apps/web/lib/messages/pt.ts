@@ -4,6 +4,7 @@ import {
   consentPt,
   footerPt,
   legalPagesPt,
+  supportPt,
   spoolsPt,
 } from "./prod-pt";
 
@@ -594,6 +595,7 @@ export const messages: Messages = {
   spools: spoolsPt,
   account: accountPt,
   legalPages: legalPagesPt,
+  support: supportPt,
   cloud: {
     navLink: "Cloud",
     billingLink: "Histórico de pagamentos",

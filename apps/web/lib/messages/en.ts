@@ -6,6 +6,7 @@ import {
   legalPagesEn,
   spoolsEn,
   cloudEn,
+  supportEn,
 } from "./prod-en";
 
 export const messages: Messages = {
@@ -595,5 +596,6 @@ export const messages: Messages = {
   spools: spoolsEn,
   account: accountEn,
   legalPages: legalPagesEn,
+  support: supportEn,
   cloud: cloudEn,
 };

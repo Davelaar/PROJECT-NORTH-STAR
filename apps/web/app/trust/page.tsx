@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CookieSettingsButton } from "@/app/components/cookie-settings-button";
 import { getLocaleMessages } from "@/lib/messages";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { GITHUB_REPO_URL } from "@/lib/github";
@@ -16,7 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function TrustPage() {
   const { messages: m } = await getLocaleMessages();
   const links = [
-    { href: "/privacy", label: m.footer.privacy },
+    { href: "/privacy-policy", label: m.footer.privacy },
+    { href: "/support", label: m.footer.support },
     { href: "/cookies", label: m.footer.cookies },
     { href: "/terms", label: m.footer.terms },
     { href: "/security", label: m.footer.security },
@@ -43,10 +45,9 @@ export default async function TrustPage() {
         ))}
       </ul>
       <p>
-        <button type="button" className="btn btn-secondary" disabled>
-          {m.footer.cookieSettings} ({m.legalPages.cookieSettingsHint})
-        </button>
+        <CookieSettingsButton label={m.footer.cookieSettings} />
       </p>
+      <p className="muted">{m.legalPages.cookieSettingsHint}</p>
     </article>
   );
 }

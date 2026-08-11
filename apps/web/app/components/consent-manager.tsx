@@ -86,7 +86,9 @@ export function ConsentManager() {
               {m.consent.bannerText}{" "}
               <Link href="/cookies">{m.consent.cookiePolicy}</Link>
               {" · "}
-              <Link href="/privacy">{m.consent.privacyPolicy}</Link>
+              <Link href="/privacy-policy">{m.consent.privacyPolicy}</Link>
+              {" · "}
+              <Link href="/support">{m.footer.support}</Link>
             </p>
             <div className="consent-actions">
               <button

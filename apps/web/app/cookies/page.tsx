@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { CookieSettingsButton } from "@/app/components/cookie-settings-button";
 import { getLocaleMessages } from "@/lib/messages";
 import { CONSENT_VERSION, getLegalConfig, legalHasPlaceholders } from "@/lib/legal/config";
 import { buildPageMetadata } from "@/lib/seo/metadata";
@@ -23,7 +25,7 @@ export default async function CookiesPage() {
         <p className="legal-placeholder-warn">{m.legalPages.placeholderNotice}</p>
       ) : null}
       <p>
-        <code>{CONSENT_VERSION}</code>
+        {m.legalPages.cookieSettingsHint} <code>{CONSENT_VERSION}</code>
       </p>
       <p>
         {m.legalPages.operator}: {legal.ownerName}. {m.legalPages.contact}:{" "}
@@ -32,13 +34,30 @@ export default async function CookiesPage() {
       {m.legalPages.sections.cookies.map((section) => (
         <section key={section.heading}>
           <h2>{section.heading}</h2>
-          {section.paragraphs?.map((p) => <p key={p}>{p}</p>)}
+          {section.paragraphs?.map((p) => (
+            <p key={p}>{p}</p>
+          ))}
+          {section.items ? (
+            <ul>
+              {section.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : null}
         </section>
       ))}
-      <p>
+      <p className="muted">
         <code>of_locale</code>, <code>of_consent</code>, <code>of_session</code>,{" "}
-        <code>of_csrf</code>, <code>openfilament-spools</code>,{" "}
-        <code>Cache Storage</code>, <code>_ga</code>
+        <code>of_csrf</code>, IndexedDB (<code>openfilament-spools</code>), Cache
+        Storage, optional <code>_ga</code> after analytics consent.
+      </p>
+      <p>
+        <CookieSettingsButton label={m.footer.cookieSettings} />
+      </p>
+      <p>
+        <Link href="/privacy-policy">{m.footer.privacy}</Link>
+        {" · "}
+        <Link href="/support">{m.footer.support}</Link>
       </p>
     </article>
   );

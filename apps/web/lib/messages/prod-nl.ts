@@ -32,6 +32,7 @@ export const footerNl = {
   security: "Beveiliging",
   trust: "Trust center",
   mySpools: "My Spools",
+  support: "Ondersteuning",
   tagline: "OpenFilament — filamentinformatie, eerst in de browser.",
   legalPlaceholderWarn:
     "Juridische exploitantgegevens zijn nog placeholders — zie docs/PRODUCTION_LAUNCH_CHECKLIST.md vóór lancering.",
@@ -113,40 +114,169 @@ export const accountNl = {
 
 export const legalPagesNl = {
   privacyTitle: "Privacybeleid",
+  privacyMetaDescription: "Hoe OpenFilament account-e-mail, Stripe-betalingen, My Spools en cookies verwerkt.",
   cookiesTitle: "Cookiebeleid",
   termsTitle: "Gebruiksvoorwaarden",
   securityTitle: "Beveiliging",
   trustTitle: "Trust center",
-  placeholderNotice:
-    "Deze pagina bevat duidelijk gemarkeerde placeholders van de exploitant. Ze blokkeren de release tot ze zijn vervangen.",
+  placeholderNotice: "Deze pagina bevat duidelijk gemarkeerde placeholders van de exploitant. Ze blokkeren de release tot ze zijn vervangen.",
   effective: "Ingangsdatum",
   operator: "Operator",
   privacyContact: "Privacycontact",
   hosting: "Hosting",
   contact: "Contact",
   openSourceRepository: "Open-source repository",
-  cookieSettingsHint: "Gebruik Cookie-instellingen in de footer",
+  cookieSettingsHint: "Je kunt analytics- en voorkeurscookies altijd wijzigen via Cookie-instellingen. Toestemmingsversie:",
   sections: {
     privacy: [
-      { heading: "Wat we verwerken", items: ["Accountgegevens, authenticatiesessies en beveiligingslogs.", "Cloud My Spools, privénotities en QR/RFID-identiteiten wanneer je expliciet synchroniseert.", "Lokale My Spools blijft in je browser tot je synchroniseert of exporteert.", "Openbare communitybijdragen die je publiceert.", "Toestemmingsvoorkeuren en optionele Google Analytics 4 alleen na toestemming."] },
-      { heading: "Grondslagen", items: ["Overeenkomst of gevraagde dienst voor accounts, Cloud, export en downloads.", "Gerechtvaardigd belang voor beveiliging, misbruikpreventie en integriteit.", "Toestemming voor analytics-cookies/opslag, intrekbaar via Cookie-instellingen.", "Wettelijke verplichting waar beveiligings- of boekhoudrecords bewaard moeten worden."] },
-      { heading: "My Spools", paragraphs: ["Lokale My Spools blijft op je apparaat. Sitegegevens wissen, apparaatverlies of een andere browser kan dit verwijderen. Inloggen uploadt lokale spoelen nooit vanzelf.", "My Spools Cloud is optionele prepaid hosting voor 12 maanden via eenmalige Stripe Checkout. Er is geen automatische verlenging. Sync vereist een account, actief recht en expliciete bevestiging. Publieke QR-resolutie toont geen privénotities, locaties of account-ID’s."] },
-      { heading: "Je rechten en bewaartermijnen", paragraphs: ["Je kunt inzage, correctie, verwijdering, beperking, overdraagbaarheid en bezwaar vragen en toestemming intrekken. Gebruik account-export/verwijderen, Cookie-instellingen of mail het privacycontact. Je kunt klagen bij de ingestelde toezichthouder.", "Bewaren volgt docs/DATA_RETENTION.md. Zacht verwijderde spoelen worden gepland opgeschoond. Back-ups kunnen verwijderde data bewaren tot de back-up verloopt."] },
-      { heading: "Internationale doorgifte en wijzigingen", paragraphs: ["Als analytics is ingeschakeld, kan Google data buiten de EER verwerken onder eigen waarborgen. De hostingregio staat hierboven. Materiële beleidswijzigingen verhogen de toestemmingsversie en kunnen opnieuw om toestemming vragen."] },
+      {
+        heading: "Accounts — wat we bewaren",
+        paragraphs: [
+          "Voor een account volstaan een e-mailadres en een wachtwoord. We bewaren dat e-mailadres zodat je kunt inloggen, betalingsbewijzen ontvangen en je wachtwoord kunt resetten. We vragen niet om je echte naam; een interne gebruikersnaam wordt automatisch gegenereerd. Wachtwoorden worden als scrypt-hashes opgeslagen — nooit in platte tekst.",
+          "We gebruiken je e-mail niet voor marketing. Accountrecuperatie en essentiële serviceberichten (bijvoorbeeld over betaling of beveiliging) zijn de beoogde toepassingen.",
+        ],
+      },
+      {
+        heading: "Betalingen (Stripe)",
+        paragraphs: [
+          "Optionele aankopen van My Spools Cloud lopen via Stripe Checkout. Je voert kaart- of walletgegevens in op de gehoste betaalpagina’s van Stripe. Stripe is de payment processor: OpenFilament ontvangt of bewaart nooit je volledige kaartnummer, CVC of vergelijkbare walletgeheimen.",
+          "Aan onze kant bewaren we alleen wat nodig is voor Cloud-toegang en administratie: bedrag, valuta, betalingsstatus, Stripe-sessie-/betalings-ID’s, tijdstempels en je Cloud-rechtenperiode. Stripe verwerkt betaalgegevens onder de eigen voorwaarden en het privacybeleid van Stripe.",
+          "Cloud-toegang is een eenmalige vooruitbetaalde periode (momenteel 12 maanden). Er is geen automatische verlenging en geen off-session-afschrijving tenzij je zelf een nieuwe Checkout start.",
+        ],
+      },
+      {
+        heading: "Wat we verder verwerken",
+        items: [
+          "Authenticatiesessies (httpOnly-cookies) en beveiligingslogs.",
+          "My Spools Cloud-inventaris, privénotities en QR/RFID-identiteiten alleen wanneer je expliciet naar Cloud synchroniseert.",
+          "Lokale My Spools blijft in je browser tot je synchroniseert of exporteert — inloggen uploadt lokale spoelen niet vanzelf.",
+          "Openbare communitybijdragen die je zelf publiceert (kalibraties, catalogustips).",
+          "Toestemmingsvoorkeuren en optionele Google Analytics 4 alleen na opt-in.",
+        ],
+      },
+      {
+        heading: "Grondslagen",
+        items: [
+          "Overeenkomst / gevraagde dienst voor accounts, Cloud, export en downloads.",
+          "Gerechtvaardigd belang voor beveiliging, misbruikpreventie en dienstintegriteit.",
+          "Toestemming voor analytics-cookies/opslag — intrekbaar via Cookie-instellingen op deze site.",
+          "Wettelijke verplichting waar beveiligings- of boekhoudrecords bewaard moeten blijven.",
+        ],
+      },
+      {
+        heading: "My Spools",
+        paragraphs: [
+          "Lokale My Spools is gratis en blijft op je apparaat. Sitegegevens wissen, apparaatverlies of van browser wisselen kan dit verwijderen.",
+          "My Spools Cloud is optionele betaalde hosting voor inventarissync en back-up. Publieke QR-resolutie toont geen privénotities, locaties of account-ID’s.",
+        ],
+      },
+      {
+        heading: "Je rechten en bewaartermijnen",
+        paragraphs: [
+          "Je kunt inzage, correctie, verwijdering, beperking, overdraagbaarheid en bezwaar vragen en toestemming intrekken. Gebruik account-export/verwijderen, Cookie-instellingen of mail het privacycontact. Je mag klagen bij de voor deze site vermelde toezichthouder.",
+          "Zacht verwijderde Cloud-spoelen worden volgens planning opgeschoond. Betalings- en beveiligingsrecords kunnen langer bewaard blijven waar dat nodig is voor administratie of fraudepreventie. Back-ups kunnen verwijderde data bewaren tot de back-up verloopt.",
+        ],
+      },
+      {
+        heading: "Internationale doorgifte en wijzigingen",
+        paragraphs: [
+          "Hosting van de applicatie en database staat op onze EU-VPS zoals hierboven. Als je analytics inschakelt, kan Google analyticsgegevens buiten de EER verwerken onder eigen waarborgen. Stripe kan betaalgegevens verwerken in regio’s waar Stripe actief is. Materiële beleidswijzigingen verhogen de toestemmingsversie en kunnen opnieuw om toestemming vragen.",
+        ],
+      },
     ],
     terms: [
-      { heading: "Communityplatform", paragraphs: ["OpenFilament biedt een open catalogus, identificatietools en communitykalibraties. Profielen zijn community- of catalogusafgeleid en geen garantie voor printveiligheid. Je blijft zelf verantwoordelijk voor validatie op je printer."] },
-      { heading: "Accounts en My Spools", paragraphs: ["Accounts zijn optioneel voor browsen en downloads. My Spools Local is gratis en staat in je browser. My Spools Cloud is optioneel prepaid: €19,99 voor 12 maanden als eenmalige Stripe-betaling, zonder automatische verlenging of toekomstige afschrijving tenzij je zelf een nieuwe Checkout start.", "Na afloop gelden een respijtperiode en read-only exportvenster vóór Cloud-inventaris wordt verwijderd. Restituties en disputes volgen het Cloud-refundbeleid. Stripe verwerkt betaaldata; OpenFilament bewaart geen kaartnummers."] },
-      { heading: "Bijdragen", paragraphs: ["Door kalibraties in te dienen accepteer je de bijdragevoorwaarden die bij submit worden getoond en licentieer je de bijdrage voor publieke weergave onder de open voorwaarden van het project. E-mails van bijdragers blijven privé."] },
-      { heading: "Beschikbaarheid en aansprakelijkheid", paragraphs: ["De dienst wordt as-is geleverd zonder garantie op ononderbroken beschikbaarheid. Voor zover wettelijk toegestaan is aansprakelijkheid beperkt voor gratis communitytools."] },
+      {
+        heading: "Communityplatform",
+        paragraphs: [
+          "OpenFilament biedt een open catalogus, identificatietools en communitykalibraties. Profielen zijn community- of catalogusafgeleid en geen garantie voor printveiligheid. Je blijft zelf verantwoordelijk voor validatie op je printer.",
+        ],
+      },
+      {
+        heading: "Accounts en My Spools",
+        paragraphs: [
+          "Accounts zijn optioneel voor browsen en downloads. My Spools Local is gratis en staat in je browser. My Spools Cloud is een optionele prepaid dienst: €19,99 voor 12 maanden als eenmalige Stripe-betaling, zonder automatische verlenging of toekomstige afschrijving tenzij je zelf een nieuwe Checkout start.",
+          "Na afloop gelden een respijtperiode en read-only exportvenster vóór Cloud-inventaris wordt verwijderd. Restituties en disputes volgen het Cloud-refundbeleid. Stripe verwerkt betaalgegevens; OpenFilament bewaart geen kaartnummers.",
+        ],
+      },
+      {
+        heading: "Bijdragen",
+        paragraphs: [
+          "Door kalibraties in te dienen accepteer je de bijdragevoorwaarden die bij submit worden getoond en licentieer je de bijdrage voor publieke weergave onder de open voorwaarden van het project. E-mails van bijdragers blijven privé.",
+        ],
+      },
+      {
+        heading: "Beschikbaarheid en aansprakelijkheid",
+        paragraphs: [
+          "De dienst wordt as-is geleverd zonder garantie op ononderbroken beschikbaarheid. Voor zover wettelijk toegestaan is aansprakelijkheid beperkt voor gratis communitytools. My Spools Cloud wordt in bèta aangeboden.",
+        ],
+      },
     ],
     cookies: [
-      { heading: "Browseropslag", paragraphs: ["OpenFilament gebruikt noodzakelijke cookies en browseropslag voor taal, toestemming, sessies, CSRF-bescherming, lokale My Spools en de PWA-shell. Analytics-opslag wordt alleen na toestemming gebruikt."] },
-      { heading: "Keuze", paragraphs: ["Analytics weigeren schakelt zoeken, My Spools, accounts, QR, RFID of downloads niet uit. Marketingopslag wordt niet gebruikt."] },
+      {
+        heading: "Noodzakelijke opslag",
+        paragraphs: [
+          "Vereist om de site te laten werken: taal (of_locale), toestemmingskeuze (of_consent), ingelogde sessie (of_session, httpOnly), CSRF-bescherming (of_csrf) en lokale My Spools-data in IndexedDB. Een service worker / Cache Storage kan de PWA-shell offline houden. Dit wordt niet voor reclame gebruikt.",
+        ],
+      },
+      {
+        heading: "Optionele analytics",
+        paragraphs: [
+          "Alleen als je analytics accepteert laden we privacybewuste Google Analytics 4, die first-party cookies zoals _ga kan zetten. Analytics weigeren laat zoeken, My Spools, accounts, QR, RFID en downloads volledig bruikbaar. Marketingcookies worden niet gebruikt.",
+        ],
+      },
+      {
+        heading: "Je keuze wijzigen",
+        paragraphs: [
+          "Open Cookie-instellingen vanuit de footer of de privacybeleidpagina wanneer je wilt. Een andere keuze werkt de opslag meteen bij en zet analytics uit wanneer je toestemming intrekt.",
+        ],
+      },
     ],
     security: [
-      { heading: "Wat we beschermen", items: ["Accountgegevens met scrypt-wachtwoordhashes.", "Sessietokens gehasht at rest en als httpOnly-cookie naar de browser.", "Privé My Spools met server-side eigendomschecks.", "Publieke QR-projecties zonder notities, locaties en account-ID’s."] },
-      { heading: "Responsible disclosure", paragraphs: ["Meld kwetsbaarheden privé aan het ingestelde securitycontact. Publiceer geen secrets, exploits tegen live gebruikers of productiecredentials. Geef redelijke tijd voor herstel vóór publieke discussie."] },
+      {
+        heading: "Wat we beschermen",
+        items: [
+          "Accountgegevens met scrypt-wachtwoordhashes.",
+          "Sessietokens gehasht at rest en als httpOnly-cookies naar de browser.",
+          "Privé My Spools met server-side eigendomschecks.",
+          "Publieke QR-projecties zonder notities, locaties en account-ID’s.",
+          "Betaalkaartgegevens via Stripe — niet opgeslagen op OpenFilament-servers.",
+        ],
+      },
+      {
+        heading: "Responsible disclosure",
+        paragraphs: [
+          "Meld kwetsbaarheden privé aan het ingestelde securitycontact. Publiceer geen secrets, exploits tegen live gebruikers of productiecredentials. Geef redelijke tijd voor herstel vóór publieke discussie.",
+        ],
+      },
     ],
   },
+};
+
+export const supportNl = {
+  title: "Ondersteuning",
+  metaDescription: "Wat OpenFilament is, wat je kunt doen, en hoe gratis My Spools verschilt van betaalde Cloud-sync (bèta).",
+  lead: "Korte hulp van operator naar klant: waarvoor deze site is, en hoe My Spools Local vs Cloud werkt — inclusief dat betaalde Cloud nog bèta is.",
+  productHeading: "Wat OpenFilament is",
+  productBody: "OpenFilament is een browser-first filamentcatalogus en kalibratiehub. Vind filamentdata, download starter- of gemeten profielen voor je slicer, identificeer spoelen met QR of RFID, en houd optioneel inventaris bij met My Spools — zonder desktop-app voor het kernproduct.",
+  productItems: [
+    "Zoek merken, materialen en kleuren; gebruik fabrikantbereiken als sterke eerste instelling.",
+    "Download slicervoorkeuren (gemeten communityprofielen indien beschikbaar, anders starters op basis van de fabrikant).",
+    "Print QR-labels en gebruik RFID-flows als je compatibele hardware hebt.",
+    "Draag kalibraties bij zodat anderen beter printen.",
+    "Optioneel account voor Cloud-inventarissync — browsen en Local My Spools werken zonder te betalen.",
+  ],
+  mySpoolsHeading: "My Spools — gratis vs betaald",
+  mySpoolsLocalTitle: "My Spools Local (gratis)",
+  mySpoolsLocalBody: "Volledige inventaris op dit apparaat: notities, drogen, QR/RFID-koppelingen, import/export. Geen account nodig. Data blijft in je browser — exporteer back-ups als je sitegegevens wist of van apparaat wisselt.",
+  mySpoolsCloudTitle: "My Spools Cloud (betaald, bèta)",
+  mySpoolsCloudBody: "Optionele prepaid hosting (€19,99 voor 12 maanden, eenmalig via Stripe, geen auto-verlenging). Een account (e-mail + wachtwoord) is vereist zodat we Cloud-inventaris kunnen koppelen en toegang kunnen herstellen.",
+  mySpoolsDiffItems: [
+    "Gratis Local: volledige inventaristools op één browser/apparaat.",
+    "Betaalde Cloud: de enige extras zijn spoelen synchroniseren tussen apparaten en server-side voorraad/back-up op onze VPS.",
+    "Cloud ontgrendelt geen betere profielen, catalogusrechten, RFID/QR-functies of andere inventaristools die Local al heeft.",
+    "Na de betaalde periode krijg je een respijt-/exportvenster; Local My Spools blijft volledig bruikbaar zonder Cloud.",
+  ],
+  betaNote: "My Spools Cloud is in bèta. Verwacht scherpe randen terwijl we sync en billing versterken. Het betaalde product blijft smal van doel: spoelsync en voorraad-back-up — niets meer.",
+  contactHeading: "Contact",
+  contactBody: "Vragen over privacy, facturatie of Cloud-bèta: mail ons. Voor cookiekeuzes gebruik je Cookie-instellingen op de privacybeleidpagina.",
 };

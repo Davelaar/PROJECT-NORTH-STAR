@@ -4,6 +4,7 @@ import {
   consentEs,
   footerEs,
   legalPagesEs,
+  supportEs,
   spoolsEs,
 } from "./prod-es";
 
@@ -594,6 +595,7 @@ export const messages: Messages = {
   spools: spoolsEs,
   account: accountEs,
   legalPages: legalPagesEs,
+  support: supportEs,
   cloud: {
     navLink: "Cloud",
     billingLink: "Historial de pagos",

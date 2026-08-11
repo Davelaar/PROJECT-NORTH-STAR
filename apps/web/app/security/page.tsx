@@ -52,7 +52,7 @@ export default async function SecurityPage() {
         Source: <a href={GITHUB_REPO_URL}>{GITHUB_REPO_URL}</a>
       </p>
       <p>
-        <Link href="/trust">Trust center</Link> · <Link href="/privacy">Privacy</Link>
+        <Link href="/trust">Trust center</Link> · <Link href="/privacy-policy">Privacy</Link>
       </p>
     </article>
   );

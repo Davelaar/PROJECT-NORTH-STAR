@@ -4,6 +4,7 @@ import {
   consentZh,
   footerZh,
   legalPagesZh,
+  supportZh,
   spoolsZh,
 } from "./prod-zh";
 
@@ -600,6 +601,7 @@ export const messages: Messages = {
   spools: spoolsZh,
   account: accountZh,
   legalPages: legalPagesZh,
+  support: supportZh,
   cloud: {
     navLink: "Cloud",
     billingLink: "账单记录",

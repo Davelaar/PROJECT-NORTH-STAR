@@ -50,7 +50,7 @@ export default async function TermsPage() {
       <h2>{m.legalPages.contact}</h2>
       <p>
         <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a> ·{" "}
-        <Link href="/privacy">Privacy</Link> · <Link href="/security">Security</Link>
+        <Link href="/privacy-policy">Privacy</Link> · <Link href="/security">Security</Link>
       </p>
     </article>
   );

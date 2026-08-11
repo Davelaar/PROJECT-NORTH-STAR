@@ -600,6 +600,7 @@ export type Messages = {
     security: string;
     trust: string;
     mySpools: string;
+    support: string;
     tagline: string;
     legalPlaceholderWarn: string;
   };
@@ -668,6 +669,7 @@ export type Messages = {
   };
   legalPages: {
     privacyTitle: string;
+    privacyMetaDescription: string;
     cookiesTitle: string;
     termsTitle: string;
     securityTitle: string;
@@ -683,9 +685,26 @@ export type Messages = {
     sections: {
       privacy: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
       terms: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
-      cookies: Array<{ heading: string; paragraphs?: string[] }>;
+      cookies: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
       security: Array<{ heading: string; paragraphs?: string[]; items?: string[] }>;
     };
+  };
+  support: {
+    title: string;
+    metaDescription: string;
+    lead: string;
+    productHeading: string;
+    productBody: string;
+    productItems: string[];
+    mySpoolsHeading: string;
+    mySpoolsLocalTitle: string;
+    mySpoolsLocalBody: string;
+    mySpoolsCloudTitle: string;
+    mySpoolsCloudBody: string;
+    mySpoolsDiffItems: string[];
+    betaNote: string;
+    contactHeading: string;
+    contactBody: string;
   };
   cloud: {
     navLink: string;

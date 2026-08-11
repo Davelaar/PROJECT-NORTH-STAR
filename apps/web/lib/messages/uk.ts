@@ -4,6 +4,7 @@ import {
   consentUk,
   footerUk,
   legalPagesUk,
+  supportUk,
   spoolsUk,
 } from "./prod-uk";
 
@@ -594,6 +595,7 @@ export const messages: Messages = {
   spools: spoolsUk,
   account: accountUk,
   legalPages: legalPagesUk,
+  support: supportUk,
   cloud: {
     navLink: "Cloud",
     billingLink: "Історія платежів",
