@@ -277,6 +277,9 @@ export const messages: Messages = {
     pdfFailed: "PDF fehlgeschlagen",
     scansTo: "Verweist auf",
     identity: "Identität",
+    supvanHint:
+      "Etikett ist 40×30 mm für Drucker wie den SUPVAN T50M. Beim Drucken 40×30 mm / benutzerdefiniertes Papier wählen, damit nur der Aufkleber gedruckt wird — nicht die ganze Seite.",
+    height: "Höhe",
   },
   scan: {
     heading: "QR-Code scannen",

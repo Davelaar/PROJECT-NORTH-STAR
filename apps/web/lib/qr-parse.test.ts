@@ -29,7 +29,7 @@ describe("parseOpenFilamentQrPayload", () => {
 describe("buildSpoolLabelSvg", () => {
   it("embeds manufacturer and escapes markup", () => {
     const svg = buildSpoolLabelSvg({
-      qrSvg: '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>',
+      qrSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect/></svg>',
       manufacturer: 'Flash<script>',
       material: "ASA",
       variant: "Burnt Titanium",
@@ -37,7 +37,10 @@ describe("buildSpoolLabelSvg", () => {
       url: "https://example/f/x",
     });
     expect(svg).toContain("Flash&lt;script&gt;");
-    expect(svg).toContain("OPENFILAMENT");
+    expect(svg).toContain('width="40mm"');
+    expect(svg).toContain('height="30mm"');
     expect(svg).toContain("ASA");
+    // QR box is 75% of 300 viewBox units
+    expect(svg).toMatch(/scale\(0\.87890625\)|scale\(0\.87/);
   });
 });

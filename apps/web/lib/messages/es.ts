@@ -277,6 +277,9 @@ export const messages: Messages = {
     pdfFailed: "Error en el PDF",
     scansTo: "Apunta a",
     identity: "Identidad",
+    supvanHint:
+      "Etiqueta de 40×30 mm para impresoras como la SUPVAN T50M. Al imprimir, elige 40×30 mm / papel personalizado para imprimir solo la pegatina — no toda la página.",
+    height: "altura",
   },
   scan: {
     heading: "Escanear un código QR",

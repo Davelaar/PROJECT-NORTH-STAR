@@ -277,6 +277,9 @@ export const messages: Messages = {
     pdfFailed: "Ошибка PDF",
     scansTo: "Ведёт на",
     identity: "Идентичность",
+    supvanHint:
+      "Этикетка 40×30 мм для принтеров вроде SUPVAN T50M. При печати выберите 40×30 мм / свой размер, чтобы печаталась только наклейка — не вся страница.",
+    height: "высоты",
   },
   scan: {
     heading: "Сканировать QR-код",

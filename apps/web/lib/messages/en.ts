@@ -278,6 +278,9 @@ export const messages: Messages = {
     pdfFailed: "PDF failed",
     scansTo: "Scans to",
     identity: "Identity",
+    supvanHint:
+      "Label is 40×30 mm for printers like the SUPVAN T50M. Use Print label and choose 40×30 mm / custom paper so only the sticker prints — not the whole page.",
+    height: "height",
   },
   scan: {
     heading: "Scan a QR code",

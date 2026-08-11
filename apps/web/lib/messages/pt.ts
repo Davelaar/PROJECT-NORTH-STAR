@@ -277,6 +277,9 @@ export const messages: Messages = {
     pdfFailed: "PDF falhou",
     scansTo: "Aponta para",
     identity: "Identidade",
+    supvanHint:
+      "Etiqueta 40×30 mm para impressoras como a SUPVAN T50M. Ao imprimir, escolhe 40×30 mm / papel personalizado para imprimir só o autocolante — não a página inteira.",
+    height: "altura",
   },
   scan: {
     heading: "Digitalizar um código QR",

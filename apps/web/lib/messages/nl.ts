@@ -277,6 +277,9 @@ export const messages: Messages = {
     pdfFailed: "PDF mislukt",
     scansTo: "Scant naar",
     identity: "Identiteit",
+    supvanHint:
+      "Label is 40×30 mm voor printers zoals de SUPVAN T50M. Kies bij Printen papierformaat 40×30 mm / aangepast, zodat alleen de sticker print — niet de hele pagina.",
+    height: "hoogte",
   },
   scan: {
     heading: "QR scannen",

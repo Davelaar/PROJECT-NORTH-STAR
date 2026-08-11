@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import QRCode from "qrcode";
 import { getApiBase } from "@/lib/api";
 import { detectBrowserCapabilities } from "@/lib/capabilities";
 import {
+  LABEL_HEIGHT_MM,
+  LABEL_WIDTH_MM,
+  QR_HEIGHT_RATIO,
   buildMinimalPdfFromJpegDataUrl,
   buildSpoolLabelSvg,
   downloadBlob,
@@ -40,7 +43,6 @@ export function QrLabelPanel({ variantUuid }: { variantUuid: string }) {
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [canPrint, setCanPrint] = useState(false);
-  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setCanPrint(detectBrowserCapabilities().print);
@@ -62,8 +64,17 @@ export function QrLabelPanel({ variantUuid }: { variantUuid: string }) {
         const json = JSON.parse(text) as LabelMeta;
         const url = publicAbsoluteUrl(json.path, getBrowserOrigin());
         const [svg, png] = await Promise.all([
-          QRCode.toString(url, { type: "svg", margin: 1, width: 256 }),
-          QRCode.toDataURL(url, { margin: 1, width: 256 }),
+          QRCode.toString(url, {
+            type: "svg",
+            margin: 1,
+            width: 512,
+            color: { dark: "#000000", light: "#ffffff" },
+          }),
+          QRCode.toDataURL(url, {
+            margin: 1,
+            width: 512,
+            color: { dark: "#000000", light: "#ffffff" },
+          }),
         ]);
         if (cancelled) return;
         setMeta(json);
@@ -106,22 +117,43 @@ export function QrLabelPanel({ variantUuid }: { variantUuid: string }) {
     }
   }
 
+  function printLabel() {
+    document.body.classList.add("printing-qr-label");
+    const cleanup = () => {
+      document.body.classList.remove("printing-qr-label");
+      window.removeEventListener("afterprint", cleanup);
+    };
+    window.addEventListener("afterprint", cleanup);
+    window.print();
+    // Safari / some engines may not fire afterprint reliably.
+    window.setTimeout(cleanup, 2000);
+  }
+
   if (error) return <div className="banner-warn">{error}</div>;
   if (!meta || !labelSvg) return <p className="muted">{l.generating}</p>;
 
+  const qrMm = (LABEL_HEIGHT_MM * QR_HEIGHT_RATIO).toFixed(1);
+
   return (
     <div className="stack">
-      <div className="panel qr-label-preview" ref={printRef}>
-        <div
-          className="qr-label-svg"
-          dangerouslySetInnerHTML={{ __html: labelSvg }}
-        />
-        <p className="muted">
-          {l.scansTo} <code>{meta.path}</code> on this site (
-          <code>{scanUrl}</code>). {l.identity}: <code>{meta.identityUri}</code>
+      <p className="muted">{l.supvanHint}</p>
+      <div className="qr-label-stage">
+        <div className="qr-label-sheet panel">
+          <div
+            className="qr-label-svg"
+            dangerouslySetInnerHTML={{ __html: labelSvg }}
+          />
+        </div>
+        <p className="muted qr-label-size-note">
+          {LABEL_WIDTH_MM}×{LABEL_HEIGHT_MM} mm · QR ≈ {qrMm} mm (
+          {Math.round(QR_HEIGHT_RATIO * 100)}% {l.height})
         </p>
       </div>
-      <div className="home-cta-links">
+      <p className="muted">
+        {l.scansTo} <code>{meta.path}</code> on this site (
+        <code>{scanUrl}</code>). {l.identity}: <code>{meta.identityUri}</code>
+      </p>
+      <div className="home-cta-links no-print">
         <button
           type="button"
           onClick={() => downloadDataUrl(`${meta.label.shortId}-qr.png`, qrPng)}
@@ -145,16 +177,12 @@ export function QrLabelPanel({ variantUuid }: { variantUuid: string }) {
           {l.downloadPdf}
         </button>
         {canPrint ? (
-          <button
-            type="button"
-            className="secondary"
-            onClick={() => window.print()}
-          >
+          <button type="button" className="secondary" onClick={printLabel}>
             {l.printLabel}
           </button>
         ) : null}
       </div>
-      {status ? <div className="panel">{status}</div> : null}
+      {status ? <div className="panel no-print">{status}</div> : null}
     </div>
   );
 }

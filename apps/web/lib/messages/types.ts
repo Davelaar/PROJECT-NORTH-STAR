@@ -281,6 +281,8 @@ export type Messages = {
     pdfFailed: string;
     scansTo: string;
     identity: string;
+    supvanHint: string;
+    height: string;
   };
   scan: {
     heading: string;

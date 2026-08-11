@@ -278,6 +278,9 @@ export const messages: Messages = {
     pdfFailed: "PDF 生成失败",
     scansTo: "扫码跳转到",
     identity: "标识",
+    supvanHint:
+      "标签尺寸为 40×30 mm，适用于 SUPVAN T50M 等标签机。打印时请选择 40×30 mm / 自定义纸张，只打印贴纸，而不是整页。",
+    height: "高度",
   },
   scan: {
     heading: "扫描二维码",
