@@ -12,7 +12,13 @@ import {
   seed,
   type AppDb,
 } from "@open-filament/db";
-import { CSRF_COOKIE, CSRF_HEADER, getCookieValue, SESSION_COOKIE } from "./auth.js";
+import {
+  CSRF_COOKIE,
+  CSRF_HEADER,
+  csrfTokensMatch,
+  getCookieValue,
+  SESSION_COOKIE,
+} from "./auth.js";
 import { registerRoutes } from "./routes.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -94,7 +100,7 @@ export async function buildServer(options?: { dbPath?: string }) {
     if (!session) return;
     const cookieToken = getCookieValue(req.headers.cookie, CSRF_COOKIE);
     const headerToken = String(req.headers[CSRF_HEADER] ?? "");
-    if (!cookieToken || !headerToken || cookieToken !== headerToken) {
+    if (!cookieToken || !headerToken || !csrfTokensMatch(cookieToken, headerToken)) {
       return reply.status(403).send({
         error: {
           code: "csrf_required",

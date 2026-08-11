@@ -4,7 +4,7 @@ import Link from "next/link";
 import { listSlicerPresets } from "@open-filament/domain";
 import { useMessages } from "@/app/components/messages-provider";
 import { useEffect, useState } from "react";
-import { getApiBase } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import {
   detectBrowserCapabilities,
   slicerSaveMode,
@@ -42,7 +42,7 @@ export function InstallProfileButton({ profileUuid }: { profileUuid: string }) {
   }, []);
 
   async function exportPayload() {
-    const res = await fetch(`${getApiBase()}/api/v1/exports/${format}`, {
+    const res = await apiFetch(`/api/v1/exports/${format}`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ profileUuid }),

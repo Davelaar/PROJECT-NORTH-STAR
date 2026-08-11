@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMessages } from "@/app/components/messages-provider";
 import { SearchableSelect } from "@/app/components/searchable-select";
 import { useEffect, useMemo, useState } from "react";
-import { getApiBase, apiGet } from "@/lib/api";
+import { apiFetch, apiGet, getApiBase } from "@/lib/api";
 import {
   detectBrowserCapabilities,
   slicerSaveMode,
@@ -263,7 +263,7 @@ export function ExportForm({
       return;
     }
     try {
-      const res = await fetch(`${getApiBase()}/api/v1/exports/${format}`, {
+      const res = await apiFetch(`/api/v1/exports/${format}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ profileUuid }),

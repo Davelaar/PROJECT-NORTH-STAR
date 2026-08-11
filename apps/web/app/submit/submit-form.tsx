@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useMessages } from "@/app/components/messages-provider";
 import { SearchableSelect } from "@/app/components/searchable-select";
-import { apiGet, apiPost, getApiBase } from "@/lib/api";
+import { apiGet, apiPost } from "@/lib/api";
 
 type Manufacturer = { uuid: string; name: string };
 type Material = { uuid: string; code: string; name: string };
@@ -257,19 +257,14 @@ export function SubmitProfileForm({
     }
     setBusy(true);
     try {
-      await fetch(`${getApiBase()}/api/v1/contributions/terms`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          termsVersion:
-            process.env.NEXT_PUBLIC_CONTRIBUTION_TERMS_VERSION ?? "2026-08-10",
-          contributionRef: variantUuid || undefined,
-        }),
+      await apiPost("/api/v1/contributions/terms", {
+        termsVersion:
+          process.env.NEXT_PUBLIC_CONTRIBUTION_TERMS_VERSION ?? "2026-08-10",
+        contributionRef: variantUuid || undefined,
       });
-      const res = await fetch(`${getApiBase()}/api/v1/community/profiles`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
+      const data = await apiPost<{ profileUuid?: string }>(
+        "/api/v1/community/profiles",
+        {
           filamentVariantUuid: variantUuid,
           printerBrand,
           printerModel,
@@ -300,15 +295,8 @@ export function SubmitProfileForm({
           retractionSpeedMms: optionalNumber(retractionSpeedMms),
           diameterMm: optionalNumber(filamentDiameterMm),
           densityGCm3: optionalNumber(filamentDensityGCm3),
-        }),
-      });
-      const data = (await res.json()) as {
-        profileUuid?: string;
-        error?: { message?: string };
-      };
-      if (!res.ok) {
-        throw new Error(data.error?.message ?? m.errorGeneric);
-      }
+        },
+      );
       setProfileUuid(data.profileUuid ?? null);
     } catch (err) {
       setError(err instanceof Error ? err.message : m.errorGeneric);

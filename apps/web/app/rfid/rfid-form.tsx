@@ -3,7 +3,7 @@
 import { useMessages } from "@/app/components/messages-provider";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getApiBase } from "@/lib/api";
+import { apiFetch, getApiBase } from "@/lib/api";
 import { detectBrowserCapabilities } from "@/lib/capabilities";
 import {
   MemoryBrowserTransport,
@@ -105,8 +105,8 @@ export function RfidForm() {
       if (!NDEFReaderCtor) throw new Error(m.openPrintTagNoWebNfc);
       const uuid = openPrintTagVariantUuid.trim();
       if (!uuid) throw new Error(m.openPrintTagVariant);
-      const encoded = await fetch(
-        `${getApiBase()}/api/v1/variants/${encodeURIComponent(uuid)}/openprinttag/encode`,
+      const encoded = await apiFetch(
+        `/api/v1/variants/${encodeURIComponent(uuid)}/openprinttag/encode`,
         { method: "POST" },
       ).then(async (res) => {
         const text = await res.text();
@@ -144,7 +144,7 @@ export function RfidForm() {
   });
 
   async function encodeApi() {
-    const res = await fetch(`${getApiBase()}/api/v1/rfid/encode`, {
+    const res = await apiFetch(`/api/v1/rfid/encode`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(payload()),
@@ -155,7 +155,7 @@ export function RfidForm() {
   }
 
   async function verifyApi(ciphertextHex: string) {
-    const res = await fetch(`${getApiBase()}/api/v1/rfid/verify`, {
+    const res = await apiFetch(`/api/v1/rfid/verify`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ ciphertextHex }),
@@ -289,7 +289,7 @@ export function RfidForm() {
       setResolveInfo(JSON.stringify(resolveJson, null, 2));
       const profileUuid = resolveJson.profiles?.[0]?.uuid;
       if (!profileUuid) throw new Error(m.noMappedProfile);
-      const exported = await fetch(`${getApiBase()}/api/v1/exports/creality`, {
+      const exported = await apiFetch(`/api/v1/exports/creality`, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ profileUuid }),

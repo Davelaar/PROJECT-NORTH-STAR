@@ -46,6 +46,7 @@ import { randomBytes } from "node:crypto";
 import {
   CSRF_COOKIE,
   SESSION_COOKIE,
+  getCookieValue,
   loginWithPassword,
   registerUser,
   resolveRequestUser,
@@ -94,11 +95,15 @@ function cookieOptions(maxAgeSeconds: number): string {
   return `Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${secure}`;
 }
 
+function mintCsrfToken(): string {
+  return randomBytes(24).toString("hex");
+}
+
 function setSessionCookies(
   reply: { header: (name: string, value: string | string[]) => unknown },
   token: string,
 ) {
-  const csrf = randomBytes(24).toString("hex");
+  const csrf = mintCsrfToken();
   reply.header("Set-Cookie", [
     `${SESSION_COOKIE}=${encodeURIComponent(token)}; HttpOnly; ${cookieOptions(
       60 * 60 * 24 * 30,
@@ -107,6 +112,19 @@ function setSessionCookies(
       60 * 60 * 24 * 30,
     )}`,
   ]);
+}
+
+function setCsrfCookie(
+  reply: { header: (name: string, value: string | string[]) => unknown },
+  csrf = mintCsrfToken(),
+) {
+  reply.header(
+    "Set-Cookie",
+    `${CSRF_COOKIE}=${encodeURIComponent(csrf)}; ${cookieOptions(
+      60 * 60 * 24 * 30,
+    )}`,
+  );
+  return csrf;
 }
 
 function clearSessionCookies(
@@ -1945,6 +1963,22 @@ export async function registerRoutes(app: FastifyInstance) {
     if (token) revokeRawToken(db(), token);
     clearSessionCookies(reply);
     return { ok: true };
+  });
+
+  /** Mint or echo CSRF for cookie sessions (e.g. after deploy / missing of_csrf). */
+  app.get("/api/v1/auth/csrf", async (req, reply) => {
+    const user = await resolveRequestUser(db(), {
+      authorization: req.headers.authorization,
+      cookie: req.headers.cookie,
+    });
+    if (!user) {
+      return reply.status(401).send({
+        error: { code: "unauthorized", message: "Not signed in" },
+      });
+    }
+    const existing = getCookieValue(req.headers.cookie, CSRF_COOKIE);
+    if (existing) return { csrf: existing };
+    return { csrf: setCsrfCookie(reply) };
   });
 }
 

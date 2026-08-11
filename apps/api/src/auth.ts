@@ -94,6 +94,28 @@ export function getCookieValue(cookieHeader: string | undefined, name: string): 
   return parseCookies(cookieHeader)[name] ?? null;
 }
 
+/** Compare CSRF cookie vs header; tolerate optional encode/decode differences. */
+export function csrfTokensMatch(cookieToken: string, headerToken: string): boolean {
+  if (cookieToken === headerToken) return true;
+  const variants = (value: string): string[] => {
+    const out = new Set<string>([value]);
+    try {
+      out.add(decodeURIComponent(value));
+    } catch {
+      /* ignore */
+    }
+    try {
+      out.add(encodeURIComponent(value));
+    } catch {
+      /* ignore */
+    }
+    return [...out];
+  };
+  const cookieVariants = variants(cookieToken);
+  const headerVariants = variants(headerToken);
+  return cookieVariants.some((c) => headerVariants.includes(c));
+}
+
 export async function resolveRequestUser(
   db: AppDb,
   headers: { authorization?: string; cookie?: string },

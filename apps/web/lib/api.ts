@@ -25,15 +25,76 @@ function cookieValue(name: string): string | undefined {
     ?.slice(prefix.length);
 }
 
+/** Read of_csrf for X-CSRF-Token (cookie may already be decoded by the browser). */
+export function readCsrfToken(): string | undefined {
+  const raw = cookieValue("of_csrf");
+  if (!raw) return undefined;
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+export function csrfHeaders(): Record<string, string> {
+  const token = readCsrfToken();
+  return token ? { "x-csrf-token": token } : {};
+}
+
 export function isUnauthorizedError(err: unknown): boolean {
   return err instanceof Error && /\bAPI 401\b/.test(err.message);
 }
 
+export function isCsrfError(err: unknown): boolean {
+  return (
+    err instanceof Error &&
+    (/csrf_required/i.test(err.message) ||
+      /CSRF token is required/i.test(err.message))
+  );
+}
+
+/** Ensure of_csrf exists for cookie sessions (mint via API if missing). */
+export async function ensureCsrf(): Promise<string | undefined> {
+  const existing = readCsrfToken();
+  if (existing) return existing;
+  if (typeof window === "undefined") return undefined;
+  try {
+    const res = await fetch(`${getApiBase()}/api/v1/auth/csrf`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as { csrf?: string };
+    return data.csrf ?? readCsrfToken();
+  } catch {
+    return undefined;
+  }
+}
+
+/** Same-origin fetch with credentials + CSRF on mutating methods. */
+export async function apiFetch(
+  path: string,
+  init: RequestInit = {},
+): Promise<Response> {
+  const headers = new Headers(init.headers);
+  const method = (init.method ?? "GET").toUpperCase();
+  if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") {
+    const token = (await ensureCsrf()) ?? readCsrfToken();
+    if (token && !headers.has("x-csrf-token")) {
+      headers.set("x-csrf-token", token);
+    }
+  }
+  return fetch(`${getApiBase()}${path}`, {
+    ...init,
+    credentials: init.credentials ?? "include",
+    headers,
+  });
+}
+
 export async function apiGet<T>(path: string, token?: string): Promise<T> {
-  const res = await fetch(`${getApiBase()}${path}`, {
-    next: { revalidate: 0 },
+  const res = await apiFetch(path, {
+    method: "GET",
     cache: "no-store",
-    credentials: "include",
     headers: token ? { authorization: `Bearer ${token}` } : undefined,
   });
   if (!res.ok) {
@@ -48,13 +109,10 @@ export async function apiPost<T>(
   body: unknown,
   token?: string,
 ): Promise<T> {
-  const csrf = cookieValue("of_csrf");
-  const res = await fetch(`${getApiBase()}${path}`, {
+  const res = await apiFetch(path, {
     method: "POST",
-    credentials: "include",
     headers: {
       "content-type": "application/json",
-      ...(csrf ? { "x-csrf-token": decodeURIComponent(csrf) } : {}),
       ...(token ? { authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify(body),
