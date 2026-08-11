@@ -15,11 +15,18 @@ type Profile = {
   currentRevision: {
     uuid: string;
     status: string;
+    nozzleTempFirstLayerC: number | null;
     nozzleTempOtherLayersC: number | null;
+    bedTempFirstLayerC: number | null;
     bedTempOtherLayersC: number | null;
     flowRatio: number | null;
     pressureAdvance: number | null;
     maxVolumetricFlowMm3s: number | null;
+    fanMinPercent: number | null;
+    fanMaxPercent: number | null;
+    shrinkagePercentXy: number | null;
+    shrinkagePercentZ: number | null;
+    retractionDistanceMm: number | null;
     notes: string | null;
   } | null;
   openFilamentProfile: unknown;
@@ -53,15 +60,25 @@ export default async function ProfilePage({
           </h3>
           <dl className="kv">
             <dt>{sp.nozzleTemp}</dt>
-            <dd>{rev.nozzleTempOtherLayersC ?? "—"}</dd>
+            <dd>
+              {rev.nozzleTempFirstLayerC ?? "—"} /{" "}
+              {rev.nozzleTempOtherLayersC ?? "—"}
+            </dd>
             <dt>{sp.bedTemp}</dt>
-            <dd>{rev.bedTempOtherLayersC ?? "—"}</dd>
+            <dd>
+              {rev.bedTempFirstLayerC ?? "—"} /{" "}
+              {rev.bedTempOtherLayersC ?? "—"}
+            </dd>
             <dt>{sp.flow}</dt>
             <dd>{rev.flowRatio ?? "—"}</dd>
             <dt>{sp.pressureAdvance}</dt>
             <dd>{rev.pressureAdvance ?? "—"}</dd>
             <dt>{sp.maxVolumetric}</dt>
             <dd>{rev.maxVolumetricFlowMm3s ?? "—"}</dd>
+            <dt>{sp.shrinkageXy}</dt>
+            <dd>{rev.shrinkagePercentXy ?? "—"}</dd>
+            <dt>{sp.shrinkageZ}</dt>
+            <dd>{rev.shrinkagePercentZ ?? "—"}</dd>
           </dl>
           {rev.notes ? <p className="muted">{rev.notes}</p> : null}
         </div>

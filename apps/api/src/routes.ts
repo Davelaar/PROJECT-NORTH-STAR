@@ -1108,8 +1108,26 @@ export async function registerRoutes(app: FastifyInstance) {
         title: z.string().min(1).max(200).optional(),
         notes: z.string().max(4000).optional(),
         contributorName: z.string().max(120).optional(),
+        /** Optional calibrated print temps (defaults derived from min/max / bedTempC). */
+        nozzleTempFirstLayerC: z.number().min(0).max(500).optional(),
+        nozzleTempOtherLayersC: z.number().min(0).max(500).optional(),
+        bedTempFirstLayerC: z.number().min(0).max(200).optional(),
+        bedTempOtherLayersC: z.number().min(0).max(200).optional(),
         flowRatio: z.number().positive().max(2).optional(),
         pressureAdvance: z.number().min(0).max(2).optional(),
+        maxVolumetricFlowMm3s: z.number().positive().max(200).optional(),
+        minVolumetricFlowMm3s: z.number().min(0).max(200).optional(),
+        fanMinPercent: z.number().min(0).max(100).optional(),
+        fanMaxPercent: z.number().min(0).max(100).optional(),
+        bridgeFanPercent: z.number().min(0).max(100).optional(),
+        fanDisableFirstLayers: z.number().int().min(0).max(20).optional(),
+        shrinkagePercentXy: z.number().min(-5).max(20).optional(),
+        shrinkagePercentZ: z.number().min(-5).max(20).optional(),
+        retractionDistanceMm: z.number().min(0).max(20).optional(),
+        retractionSpeedMms: z.number().min(0).max(200).optional(),
+        /** Optional measured filament properties (stored on the product). */
+        diameterMm: z.number().positive().max(5).optional(),
+        densityGCm3: z.number().positive().max(5).optional(),
       })
       .superRefine((val, ctx) => {
         if (val.nozzleTempMaxC < val.nozzleTempMinC) {
@@ -1127,6 +1145,17 @@ export async function registerRoutes(app: FastifyInstance) {
             code: z.ZodIssueCode.custom,
             message: "chamberTempC is required when chamber heater was used",
             path: ["chamberTempC"],
+          });
+        }
+        if (
+          val.fanMinPercent != null &&
+          val.fanMaxPercent != null &&
+          val.fanMaxPercent < val.fanMinPercent
+        ) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "fanMaxPercent must be >= fanMinPercent",
+            path: ["fanMaxPercent"],
           });
         }
       });
@@ -1209,10 +1238,10 @@ export async function registerRoutes(app: FastifyInstance) {
         notes: noteParts.join("\n"),
         nozzleTempMinC: body.nozzleTempMinC,
         nozzleTempMaxC: body.nozzleTempMaxC,
-        nozzleTempFirstLayerC: body.nozzleTempMaxC,
-        nozzleTempOtherLayersC: midNozzle,
-        bedTempFirstLayerC: body.bedTempC,
-        bedTempOtherLayersC: body.bedTempC,
+        nozzleTempFirstLayerC: body.nozzleTempFirstLayerC ?? body.nozzleTempMaxC,
+        nozzleTempOtherLayersC: body.nozzleTempOtherLayersC ?? midNozzle,
+        bedTempFirstLayerC: body.bedTempFirstLayerC ?? body.bedTempC,
+        bedTempOtherLayersC: body.bedTempOtherLayersC ?? body.bedTempC,
         chamberHeaterActive: body.chamberHeaterActive,
         chamberTempC: body.chamberHeaterActive
           ? (body.chamberTempC ?? null)
@@ -1220,11 +1249,36 @@ export async function registerRoutes(app: FastifyInstance) {
         enclosureRecommended: body.chamberHeaterActive,
         flowRatio: body.flowRatio ?? null,
         pressureAdvance: body.pressureAdvance ?? null,
+        maxVolumetricFlowMm3s: body.maxVolumetricFlowMm3s ?? null,
+        minVolumetricFlowMm3s: body.minVolumetricFlowMm3s ?? null,
+        fanMinPercent: body.fanMinPercent ?? null,
+        fanMaxPercent: body.fanMaxPercent ?? null,
+        bridgeFanPercent: body.bridgeFanPercent ?? null,
+        fanDisableFirstLayers: body.fanDisableFirstLayers ?? null,
+        shrinkagePercentXy: body.shrinkagePercentXy ?? null,
+        shrinkagePercentZ: body.shrinkagePercentZ ?? null,
+        retractionDistanceMm: body.retractionDistanceMm ?? null,
+        retractionSpeedMms: body.retractionSpeedMms ?? null,
         userConfidence: 0.4,
         isSyntheticFixture: false,
       })
       .returning()
       .all();
+
+    if (body.diameterMm != null || body.densityGCm3 != null) {
+      const productPatch: {
+        diameterMm?: number;
+        densityGCm3?: number;
+        updatedAt: string;
+      } = { updatedAt: new Date().toISOString() };
+      if (body.diameterMm != null) productPatch.diameterMm = body.diameterMm;
+      if (body.densityGCm3 != null) productPatch.densityGCm3 = body.densityGCm3;
+      db()
+        .update(schema.filamentProducts)
+        .set(productPatch)
+        .where(eq(schema.filamentProducts.id, variant.filamentProductId))
+        .run();
+    }
 
     db()
       .update(schema.calibrationProfiles)

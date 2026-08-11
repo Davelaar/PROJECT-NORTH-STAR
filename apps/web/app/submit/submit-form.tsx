@@ -26,6 +26,8 @@ type VariantDetail = Variant & {
   manufacturerUuid: string;
   manufacturerName: string;
   materialCode: string;
+  diameterMm?: number | null;
+  densityGCm3?: number | null;
   manufacturerSpecs: {
     nozzleTempMinC: number | null;
     nozzleTempMaxC: number | null;
@@ -34,6 +36,8 @@ type VariantDetail = Variant & {
     chamberTempC: number | null;
     chamberTempMinC: number | null;
     chamberTempMaxC: number | null;
+    shrinkagePercentXy?: number | null;
+    shrinkagePercentZ?: number | null;
   };
 };
 type PrinterBrand = { name: string; models: Array<{ name: string }> };
@@ -42,6 +46,13 @@ const NOZZLE_OPTIONS = ["0.2", "0.25", "0.4", "0.6", "0.8", "1.0"];
 
 function fillName(template: string, name: string) {
   return template.replace("{name}", name);
+}
+
+function optionalNumber(raw: string): number | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? n : undefined;
 }
 
 export function SubmitProfileForm({
@@ -74,8 +85,24 @@ export function SubmitProfileForm({
   const [contributorName, setContributorName] = useState("");
   const [title, setTitle] = useState("");
   const [notes, setNotes] = useState("");
+  const [nozzleTempFirstLayerC, setNozzleTempFirstLayerC] = useState("");
+  const [nozzleTempOtherLayersC, setNozzleTempOtherLayersC] = useState("");
+  const [bedTempFirstLayerC, setBedTempFirstLayerC] = useState("");
+  const [bedTempOtherLayersC, setBedTempOtherLayersC] = useState("");
   const [flowRatio, setFlowRatio] = useState("");
   const [pressureAdvance, setPressureAdvance] = useState("");
+  const [maxVolumetricFlowMm3s, setMaxVolumetricFlowMm3s] = useState("");
+  const [minVolumetricFlowMm3s, setMinVolumetricFlowMm3s] = useState("");
+  const [fanMinPercent, setFanMinPercent] = useState("");
+  const [fanMaxPercent, setFanMaxPercent] = useState("");
+  const [bridgeFanPercent, setBridgeFanPercent] = useState("");
+  const [fanDisableFirstLayers, setFanDisableFirstLayers] = useState("");
+  const [shrinkagePercentXy, setShrinkagePercentXy] = useState("");
+  const [shrinkagePercentZ, setShrinkagePercentZ] = useState("");
+  const [filamentDiameterMm, setFilamentDiameterMm] = useState("");
+  const [filamentDensityGCm3, setFilamentDensityGCm3] = useState("");
+  const [retractionDistanceMm, setRetractionDistanceMm] = useState("");
+  const [retractionSpeedMms, setRetractionSpeedMms] = useState("");
 
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -145,6 +172,18 @@ export function SubmitProfileForm({
         if (chamberTemp != null) {
           setChamberHeaterActive(true);
           setChamberTempC((prev) => prev || String(chamberTemp));
+        }
+        if (specs.shrinkagePercentXy != null) {
+          setShrinkagePercentXy((prev) => prev || String(specs.shrinkagePercentXy));
+        }
+        if (specs.shrinkagePercentZ != null) {
+          setShrinkagePercentZ((prev) => prev || String(specs.shrinkagePercentZ));
+        }
+        if (variant.diameterMm != null) {
+          setFilamentDiameterMm((prev) => prev || String(variant.diameterMm));
+        }
+        if (variant.densityGCm3 != null) {
+          setFilamentDensityGCm3((prev) => prev || String(variant.densityGCm3));
         }
         setTitle((prev) =>
           prev ||
@@ -243,10 +282,24 @@ export function SubmitProfileForm({
           title: title.trim() || undefined,
           notes: notes.trim() || undefined,
           contributorName: contributorName.trim() || undefined,
-          flowRatio: flowRatio ? Number(flowRatio) : undefined,
-          pressureAdvance: pressureAdvance
-            ? Number(pressureAdvance)
-            : undefined,
+          nozzleTempFirstLayerC: optionalNumber(nozzleTempFirstLayerC),
+          nozzleTempOtherLayersC: optionalNumber(nozzleTempOtherLayersC),
+          bedTempFirstLayerC: optionalNumber(bedTempFirstLayerC),
+          bedTempOtherLayersC: optionalNumber(bedTempOtherLayersC),
+          flowRatio: optionalNumber(flowRatio),
+          pressureAdvance: optionalNumber(pressureAdvance),
+          maxVolumetricFlowMm3s: optionalNumber(maxVolumetricFlowMm3s),
+          minVolumetricFlowMm3s: optionalNumber(minVolumetricFlowMm3s),
+          fanMinPercent: optionalNumber(fanMinPercent),
+          fanMaxPercent: optionalNumber(fanMaxPercent),
+          bridgeFanPercent: optionalNumber(bridgeFanPercent),
+          fanDisableFirstLayers: optionalNumber(fanDisableFirstLayers),
+          shrinkagePercentXy: optionalNumber(shrinkagePercentXy),
+          shrinkagePercentZ: optionalNumber(shrinkagePercentZ),
+          retractionDistanceMm: optionalNumber(retractionDistanceMm),
+          retractionSpeedMms: optionalNumber(retractionSpeedMms),
+          diameterMm: optionalNumber(filamentDiameterMm),
+          densityGCm3: optionalNumber(filamentDensityGCm3),
         }),
       });
       const data = (await res.json()) as {
@@ -573,6 +626,7 @@ export function SubmitProfileForm({
 
       <section className="panel stack">
         <h2>{m.optionalHeading}</h2>
+        <p className="muted">{m.optionalCalibrationLead}</p>
         <label>
           {m.contributorName}
           <input
@@ -584,13 +638,68 @@ export function SubmitProfileForm({
           {m.title}
           <input value={title} onChange={(e) => setTitle(e.target.value)} />
         </label>
+
+        <h3>{m.printTempsHeading}</h3>
+        <label>
+          {m.nozzleTempFirstLayer}
+          <input
+            type="number"
+            inputMode="decimal"
+            value={nozzleTempFirstLayerC}
+            onChange={(e) => setNozzleTempFirstLayerC(e.target.value)}
+            min={0}
+            max={500}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.nozzleTempOtherLayers}
+          <input
+            type="number"
+            inputMode="decimal"
+            value={nozzleTempOtherLayersC}
+            onChange={(e) => setNozzleTempOtherLayersC(e.target.value)}
+            min={0}
+            max={500}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.bedTempFirstLayer}
+          <input
+            type="number"
+            inputMode="decimal"
+            value={bedTempFirstLayerC}
+            onChange={(e) => setBedTempFirstLayerC(e.target.value)}
+            min={0}
+            max={200}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.bedTempOtherLayers}
+          <input
+            type="number"
+            inputMode="decimal"
+            value={bedTempOtherLayersC}
+            onChange={(e) => setBedTempOtherLayersC(e.target.value)}
+            min={0}
+            max={200}
+            placeholder="—"
+          />
+        </label>
+
+        <h3>{m.extrusionHeading}</h3>
         <label>
           {m.flowRatio}
           <input
             type="number"
             step="0.01"
+            min={0.5}
+            max={2}
             value={flowRatio}
             onChange={(e) => setFlowRatio(e.target.value)}
+            placeholder="—"
           />
         </label>
         <label>
@@ -598,10 +707,161 @@ export function SubmitProfileForm({
           <input
             type="number"
             step="0.001"
+            min={0}
+            max={2}
             value={pressureAdvance}
             onChange={(e) => setPressureAdvance(e.target.value)}
+            placeholder="—"
           />
         </label>
+        <label>
+          {m.maxVolumetricFlow}
+          <input
+            type="number"
+            step="0.1"
+            min={0}
+            max={200}
+            value={maxVolumetricFlowMm3s}
+            onChange={(e) => setMaxVolumetricFlowMm3s(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.minVolumetricFlow}
+          <input
+            type="number"
+            step="0.1"
+            min={0}
+            max={200}
+            value={minVolumetricFlowMm3s}
+            onChange={(e) => setMinVolumetricFlowMm3s(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+
+        <h3>{m.coolingHeading}</h3>
+        <label>
+          {m.fanMin}
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={fanMinPercent}
+            onChange={(e) => setFanMinPercent(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.fanMax}
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={fanMaxPercent}
+            onChange={(e) => setFanMaxPercent(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.bridgeFan}
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={bridgeFanPercent}
+            onChange={(e) => setBridgeFanPercent(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.fanDisableFirstLayers}
+          <input
+            type="number"
+            min={0}
+            max={20}
+            step={1}
+            value={fanDisableFirstLayers}
+            onChange={(e) => setFanDisableFirstLayers(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+
+        <h3>{m.dimensionalHeading}</h3>
+        <label>
+          {m.filamentDiameter}
+          <input
+            type="number"
+            step="0.01"
+            min={0.5}
+            max={5}
+            value={filamentDiameterMm}
+            onChange={(e) => setFilamentDiameterMm(e.target.value)}
+            placeholder="1.75"
+          />
+        </label>
+        <label>
+          {m.filamentDensity}
+          <input
+            type="number"
+            step="0.01"
+            min={0.1}
+            max={5}
+            value={filamentDensityGCm3}
+            onChange={(e) => setFilamentDensityGCm3(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.shrinkageXy}
+          <input
+            type="number"
+            step="0.01"
+            min={-5}
+            max={20}
+            value={shrinkagePercentXy}
+            onChange={(e) => setShrinkagePercentXy(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.shrinkageZ}
+          <input
+            type="number"
+            step="0.01"
+            min={-5}
+            max={20}
+            value={shrinkagePercentZ}
+            onChange={(e) => setShrinkagePercentZ(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+
+        <h3>{m.retractionHeading}</h3>
+        <label>
+          {m.retractionDistance}
+          <input
+            type="number"
+            step="0.01"
+            min={0}
+            max={20}
+            value={retractionDistanceMm}
+            onChange={(e) => setRetractionDistanceMm(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+        <label>
+          {m.retractionSpeed}
+          <input
+            type="number"
+            step="1"
+            min={0}
+            max={200}
+            value={retractionSpeedMms}
+            onChange={(e) => setRetractionSpeedMms(e.target.value)}
+            placeholder="—"
+          />
+        </label>
+
         <label>
           {m.notes}
           <textarea
