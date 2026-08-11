@@ -618,7 +618,7 @@ export const messages: Messages = {
     includeSync: "Sincronização entre dispositivos",
     includeBackup: "Cópias de segurança no servidor no nosso VPS",
     includeRecovery: "Recuperação de conta para o inventário Cloud",
-    includeExport: "Exportação JSON da Cloud durante o acesso, a graça e a retenção",
+    includeExport: "Exportação JSON da Cloud durante o acesso e durante 30 dias após a expiração",
     notIncludedTitle: "Não incluído",
     notIncludedBody:
       "Sem ferramentas de inventário além do Local. A Cloud não acrescenta funções RFID/QR, perfis mais inteligentes nem privilégios de catálogo — apenas armazenamento e sync.",
@@ -651,7 +651,7 @@ export const messages: Messages = {
     termsLink: "Termos",
     privacyLink: "Privacidade",
     retentionHint:
-      "Após a expiração, mantém uma janela de graça, depois uma janela de exportação só de leitura e, por fim, a eliminação do inventário Cloud. My Spools Local continua plenamente utilizável.",
+      "Após a expiração mantemos o inventário Cloud 30 dias — ainda exportável — e depois pode ser eliminado. Sem renovação automática. As compras são finais (sem reembolsos). My Spools Local continua plenamente utilizável.",
     vatUnspecified:
       "A apresentação fiscal ainda não foi configurada pelo operador (IVA incluído/excluído).",
     vatNotApplicable: "IVA não aplicável — o preço apresentado é o montante cobrado.",

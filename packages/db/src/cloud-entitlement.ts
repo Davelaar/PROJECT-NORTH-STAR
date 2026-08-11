@@ -26,8 +26,8 @@ export function loadCloudConfigFromEnv(
 ): CloudConfig {
   const priceCents = Number(env.MY_SPOOLS_CLOUD_PRICE_EUR_CENTS ?? "1999");
   const accessMonths = Number(env.MY_SPOOLS_CLOUD_ACCESS_MONTHS ?? "12");
-  const graceDays = Number(env.MY_SPOOLS_CLOUD_GRACE_DAYS ?? "14");
-  const retentionDays = Number(env.MY_SPOOLS_CLOUD_RETENTION_DAYS ?? "90");
+  const graceDays = Number(env.MY_SPOOLS_CLOUD_GRACE_DAYS ?? "0");
+  const retentionDays = Number(env.MY_SPOOLS_CLOUD_RETENTION_DAYS ?? "30");
   const mode = (env.CLOUD_PRICE_DISPLAY_MODE ?? "not_applicable") as
     | "vat_inclusive"
     | "vat_exclusive"

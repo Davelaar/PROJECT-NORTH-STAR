@@ -109,7 +109,9 @@ export const legalPagesZh = {
   privacyTitle: "隐私政策",
   privacyMetaDescription: "OpenFilament 如何处理账户邮箱、Stripe 付款、My Spools 与 Cookie。",
   cookiesTitle: "Cookie 政策",
-  termsTitle: "使用条款",
+  termsTitle: "服务条款",
+  termsMetaDescription:
+    "OpenFilament 条款：按现状提供服务、Cloud 不退款、不自动续订、到期后 30 天 Cloud 导出窗口。",
   securityTitle: "安全",
   trustTitle: "Trust center",
   placeholderNotice: "本页含明确标注的运营方占位信息。在替换之前它们会阻止正式发布。",
@@ -179,16 +181,31 @@ export const legalPagesZh = {
     ],
     terms: [
       {
-        heading: "社区平台",
+        heading: "按现状提供的社区服务",
         paragraphs: [
-          "OpenFilament 提供开放目录、识别工具与社区校准。配置文件来自社区或目录，并非打印安全保证。你仍需在自己的打印机上验证设置。",
+          "OpenFilament 按现状及可用情况提供。目录数据、入门配置文件与社区校准并非打印安全保证。你仍需在自己的打印机上验证设置，并对打印结果负责。",
+          "在法律允许的范围内，我们不保证不间断可用、无错误运行或适用于特定用途。My Spools Cloud 以测试版提供。",
         ],
       },
       {
-        heading: "账户与 My Spools",
+        heading: "账户与免费使用",
         paragraphs: [
-          "浏览与下载不必创建账户。My Spools Local 免费并存储在浏览器中。My Spools Cloud 为可选预付服务：€19.99 / 12 个月，经 Stripe 一次性付款，除非你自行发起新的 Checkout，否则不会自动续订或未来扣款。",
-          "到期后，在删除 Cloud 库存前适用宽限期与只读导出窗口。退款与争议遵循 Cloud 退款政策。Stripe 处理付款数据；OpenFilament 不存储卡号。",
+          "浏览、搜索、配置文件下载与 My Spools Local 均为免费。账户（邮箱与密码）对免费使用为可选，仅在你购买 My Spools Cloud 时需要，以便我们关联库存并恢复访问。",
+        ],
+      },
+      {
+        heading: "My Spools Cloud — 付款、不续订、不退款",
+        paragraphs: [
+          "Cloud 为可选预付数字服务：当前为 €19.99 / 12 个月，通过 Stripe Checkout 一次性付款。不会自动续订，也不会进行会话外扣款。访问在付费期结束时终止，除非你自行发起新的 Checkout。",
+          "所有 Cloud 购买均为最终交易：不退款、不因买家反悔发起拒付，也不对未使用月份提供部分退款。Stripe 处理付款；OpenFilament 不存储卡号。",
+          "Cloud 仅增加跨设备线轴同步与服务器端库存/备份。不会在 Local 之外解锁额外的目录、配置文件或 RFID/QR 功能。",
+        ],
+      },
+      {
+        heading: "Cloud 到期后 — 30 天导出期",
+        paragraphs: [
+          "当 Cloud 期限结束时，我们会再保留你的 Cloud 库存 30 天。在这 30 天内你仍可导出 Cloud 数据（JSON）。到期后的同步与写入权限遵循产品规则（只读 / 导出窗口）。",
+          "这 30 天过后，Cloud 库存可能从我们的服务器永久删除。浏览器中的本地 My Spools 不受影响，且仍可免费使用。付款与安全记录在会计或防欺诈需要时可保留更久。",
         ],
       },
       {
@@ -198,9 +215,9 @@ export const legalPagesZh = {
         ],
       },
       {
-        heading: "可用性与责任",
+        heading: "责任",
         paragraphs: [
-          "服务按现状提供，不保证不间断可用。在法律允许范围内，对免费社区工具的责任有限。My Spools Cloud 以测试版提供。",
+          "在适用法律允许的范围内，OpenFilament 及其运营方不对因使用免费工具或测试版 Cloud 服务而产生的间接、附带或后果性损害承担责任。根据荷兰或欧盟法律不可放弃的强制性消费者权利不受影响。",
         ],
       },
     ],
@@ -267,9 +284,10 @@ export const supportZh = {
     "免费 Local：在一台浏览器/设备上提供完整库存工具。",
     "付费 Cloud：仅额外提供跨设备线轴同步，以及我们 VPS 上的服务端库存/备份。",
     "Cloud 不会解锁更好的配置、目录权限、RFID/QR 功能，或其他 Local 已有的库存工具。",
-    "付费期结束后有宽限/导出窗口；Local My Spools 在无 Cloud 时仍可完整使用。",
+    "付费期结束后，我们保留 Cloud 数据 30 天以便你仍可导出；之后可能删除。Local My Spools 在无 Cloud 时仍可完整使用。",
   ],
-  betaNote: "My Spools Cloud 处于测试版。在我们加固同步与计费期间，可能仍有粗糙之处。付费产品的目的保持狭窄：线轴同步与库存备份 — 仅此而已。",
+  betaNote:
+    "My Spools Cloud 处于测试版。在我们加固同步与计费期间，可能仍有粗糙之处。付费产品的目的保持狭窄：线轴同步与库存备份 — 仅此而已。购买为最终交易（不退款），且不会自动续订。",
   contactHeading: "联系",
   contactBody: "关于隐私、账单或 Cloud 测试版的问题：请发邮件给我们。Cookie 选择请使用隐私政策页上的 Cookie 设置。",
 };

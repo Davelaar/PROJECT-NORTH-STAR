@@ -18,9 +18,8 @@ export default async function TrustPage() {
   const { messages: m } = await getLocaleMessages();
   const links = [
     { href: "/privacy-policy", label: m.footer.privacy },
+    { href: "/terms-of-service", label: m.footer.terms },
     { href: "/support", label: m.footer.support },
-    { href: "/cookies", label: m.footer.cookies },
-    { href: "/terms", label: m.footer.terms },
     { href: "/security", label: m.footer.security },
     { href: "/account", label: m.account.exportData },
     { href: "/account", label: m.account.deleteAccount },

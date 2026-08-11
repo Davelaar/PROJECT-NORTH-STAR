@@ -672,6 +672,7 @@ export type Messages = {
     privacyMetaDescription: string;
     cookiesTitle: string;
     termsTitle: string;
+    termsMetaDescription: string;
     securityTitle: string;
     trustTitle: string;
     placeholderNotice: string;

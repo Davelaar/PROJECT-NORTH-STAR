@@ -116,7 +116,9 @@ export const legalPagesNl = {
   privacyTitle: "Privacybeleid",
   privacyMetaDescription: "Hoe OpenFilament account-e-mail, Stripe-betalingen, My Spools en cookies verwerkt.",
   cookiesTitle: "Cookiebeleid",
-  termsTitle: "Gebruiksvoorwaarden",
+  termsTitle: "Servicevoorwaarden",
+  termsMetaDescription:
+    "OpenFilament-voorwaarden: dienst as-is, geen restitutie op Cloud, geen automatische verlenging, 30 dagen Cloud-exportvenster na afloop.",
   securityTitle: "Beveiliging",
   trustTitle: "Trust center",
   placeholderNotice: "Deze pagina bevat duidelijk gemarkeerde placeholders van de exploitant. Ze blokkeren de release tot ze zijn vervangen.",
@@ -186,16 +188,31 @@ export const legalPagesNl = {
     ],
     terms: [
       {
-        heading: "Communityplatform",
+        heading: "Communitydienst as-is",
         paragraphs: [
-          "OpenFilament biedt een open catalogus, identificatietools en communitykalibraties. Profielen zijn community- of catalogusafgeleid en geen garantie voor printveiligheid. Je blijft zelf verantwoordelijk voor validatie op je printer.",
+          "OpenFilament wordt geleverd as-is en zoals beschikbaar. Catalogusdata, starterprofielen en communitykalibraties zijn geen garantie voor printveiligheid. Je blijft zelf verantwoordelijk voor het valideren van instellingen op je printer en voor printresultaten.",
+          "We garanderen geen ononderbroken beschikbaarheid, foutloze werking of geschiktheid voor een bepaald doel, voor zover de wet dat toelaat. My Spools Cloud wordt in bèta aangeboden.",
         ],
       },
       {
-        heading: "Accounts en My Spools",
+        heading: "Accounts en gratis gebruik",
         paragraphs: [
-          "Accounts zijn optioneel voor browsen en downloads. My Spools Local is gratis en staat in je browser. My Spools Cloud is een optionele prepaid dienst: €19,99 voor 12 maanden als eenmalige Stripe-betaling, zonder automatische verlenging of toekomstige afschrijving tenzij je zelf een nieuwe Checkout start.",
-          "Na afloop gelden een respijtperiode en read-only exportvenster vóór Cloud-inventaris wordt verwijderd. Restituties en disputes volgen het Cloud-refundbeleid. Stripe verwerkt betaalgegevens; OpenFilament bewaart geen kaartnummers.",
+          "Browsen, zoeken, profiel-downloads en My Spools Local zijn gratis. Een account (e-mail en wachtwoord) is optioneel voor gratis gebruik en alleen vereist als je My Spools Cloud koopt, zodat we inventaris kunnen koppelen en toegang kunnen herstellen.",
+        ],
+      },
+      {
+        heading: "My Spools Cloud — betaling, geen verlenging, geen restitutie",
+        paragraphs: [
+          "Cloud is een optionele prepaid digitale dienst: momenteel €19,99 voor 12 maanden, eenmalig betaald via Stripe Checkout. Er is geen automatische verlenging en geen off-session-afschrijving. Toegang eindigt wanneer de betaalde periode afloopt, tenzij je zelf een nieuwe Checkout start.",
+          "Alle Cloud-aankopen zijn definitief: geen restitutie, geen chargebacks uit spijt van de koper, en geen gedeeltelijke restitutie voor ongebruikte maanden. Stripe verwerkt de betaling; OpenFilament bewaart geen kaartnummers.",
+          "Cloud voegt alleen synchronisatie van spoelen tussen apparaten en server-side voorraad/back-up toe. Het ontgrendelt geen extra catalogus-, profiel- of RFID/QR-functies bovenop Local.",
+        ],
+      },
+      {
+        heading: "Na afloop van Cloud — 30 dagen om te exporteren",
+        paragraphs: [
+          "Wanneer je Cloud-periode eindigt, bewaren we je Cloud-inventaris nog 30 dagen. In die 30 dagen kun je je Cloud-data nog exporteren (JSON). Sync en schrijftoegang na afloop volgen de productregels (alleen-lezen / exportvenster).",
+          "Na die 30 dagen kan Cloud-inventaris permanent van onze servers worden verwijderd. Lokale My Spools in je browser blijft onaangetast en gratis te gebruiken. Betalings- en beveiligingsrecords kunnen langer bewaard blijven waar dat nodig is voor administratie of fraudepreventie.",
         ],
       },
       {
@@ -205,9 +222,9 @@ export const legalPagesNl = {
         ],
       },
       {
-        heading: "Beschikbaarheid en aansprakelijkheid",
+        heading: "Aansprakelijkheid",
         paragraphs: [
-          "De dienst wordt as-is geleverd zonder garantie op ononderbroken beschikbaarheid. Voor zover wettelijk toegestaan is aansprakelijkheid beperkt voor gratis communitytools. My Spools Cloud wordt in bèta aangeboden.",
+          "Voor zover toepasselijk recht dat toelaat, zijn OpenFilament en de exploitant niet aansprakelijk voor indirecte, incidentele of gevolgschade door gebruik van de gratis tools of de Cloud-bètadienst. Dwingende consumentenrechten die onder Nederlands of EU-recht niet kunnen worden uitgesloten, blijven onaangetast.",
         ],
       },
     ],
@@ -274,9 +291,10 @@ export const supportNl = {
     "Gratis Local: volledige inventaristools op één browser/apparaat.",
     "Betaalde Cloud: de enige extras zijn spoelen synchroniseren tussen apparaten en server-side voorraad/back-up op onze VPS.",
     "Cloud ontgrendelt geen betere profielen, catalogusrechten, RFID/QR-functies of andere inventaristools die Local al heeft.",
-    "Na de betaalde periode krijg je een respijt-/exportvenster; Local My Spools blijft volledig bruikbaar zonder Cloud.",
+    "Na de betaalde periode bewaren we Cloud-data 30 dagen zodat je nog kunt exporteren; daarna kan deze worden verwijderd. Local My Spools blijft volledig bruikbaar zonder Cloud.",
   ],
-  betaNote: "My Spools Cloud is in bèta. Verwacht scherpe randen terwijl we sync en billing versterken. Het betaalde product blijft smal van doel: spoelsync en voorraad-back-up — niets meer.",
+  betaNote:
+    "My Spools Cloud is in bèta. Verwacht scherpe randen terwijl we sync en billing versterken. Het betaalde product blijft smal van doel: spoelsync en voorraad-back-up — niets meer. Aankopen zijn definitief (geen restitutie) en verlengen niet automatisch.",
   contactHeading: "Contact",
   contactBody: "Vragen over privacy, facturatie of Cloud-bèta: mail ons. Voor cookiekeuzes gebruik je Cookie-instellingen op de privacybeleidpagina.",
 };

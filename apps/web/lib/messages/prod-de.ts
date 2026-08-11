@@ -117,6 +117,8 @@ export const legalPagesDe = {
   privacyMetaDescription: "Wie OpenFilament Konto-E-Mail, Stripe-Zahlungen, My Spools und Cookies verarbeitet.",
   cookiesTitle: "Cookie-Richtlinie",
   termsTitle: "Nutzungsbedingungen",
+  termsMetaDescription:
+    "OpenFilament-Bedingungen: Dienst wie besehen, keine Rückerstattung für Cloud, keine automatische Verlängerung, 30-Tage-Cloud-Exportfenster nach Ablauf.",
   securityTitle: "Sicherheit",
   trustTitle: "Trust center",
   placeholderNotice: "Diese Seite enthält klar markierte Platzhalter des Betreibers. Sie blockieren den Release, bis sie ersetzt sind.",
@@ -186,16 +188,31 @@ export const legalPagesDe = {
     ],
     terms: [
       {
-        heading: "Community-Plattform",
+        heading: "Community-Dienst wie besehen",
         paragraphs: [
-          "OpenFilament bietet einen offenen Katalog, Identifikationstools und Community-Kalibrierungen. Profile stammen aus Community oder Katalog und sind keine Drucksicherheitsgarantie. Du bleibst verantwortlich, Einstellungen an deinem Drucker zu validieren.",
+          "OpenFilament wird wie besehen und wie verfügbar bereitgestellt. Katalogdaten, Starterprofile und Community-Kalibrierungen sind keine Drucksicherheitsgarantie. Du bleibst verantwortlich, Einstellungen an deinem Drucker zu validieren und für Druckergebnisse.",
+          "Wir gewährleisten keine ununterbrochene Verfügbarkeit, fehlerfreien Betrieb oder Eignung für einen bestimmten Zweck, soweit gesetzlich zulässig. My Spools Cloud wird in der Beta angeboten.",
         ],
       },
       {
-        heading: "Konten und My Spools",
+        heading: "Konten und kostenlose Nutzung",
         paragraphs: [
-          "Konten sind fürs Durchsuchen und Downloads optional. My Spools Local ist kostenlos und wird in deinem Browser gespeichert. My Spools Cloud ist ein optionaler Prepaid-Dienst: 19,99 € für 12 Monate als einmalige Stripe-Zahlung, ohne automatische Verlängerung oder künftige Belastung, es sei denn, du startest selbst einen neuen Checkout.",
-          "Nach Ablauf gelten eine Nachfrist und ein schreibgeschütztes Exportfenster, bevor Cloud-Inventar gelöscht wird. Erstattungen und Streitfälle folgen der Cloud-Erstattungsrichtlinie. Stripe verarbeitet Zahlungsdaten; OpenFilament speichert keine Kartennummern.",
+          "Browsen, Suche, Profil-Downloads und My Spools Local sind kostenlos. Ein Konto (E-Mail und Passwort) ist für die kostenlose Nutzung optional und nur erforderlich, wenn du My Spools Cloud kaufst, damit wir Inventar zuordnen und Zugang wiederherstellen können.",
+        ],
+      },
+      {
+        heading: "My Spools Cloud — Zahlung, keine Verlängerung, keine Rückerstattung",
+        paragraphs: [
+          "Cloud ist ein optionaler vorausbezahlter digitaler Dienst: derzeit 19,99 € für 12 Monate, einmalig über Stripe Checkout. Es gibt keine automatische Verlängerung und keine Off-Session-Belastung. Der Zugang endet mit Ablauf der bezahlten Periode, es sei denn, du startest selbst einen neuen Checkout.",
+          "Alle Cloud-Käufe sind endgültig: keine Rückerstattungen, keine Chargebacks aus Käuferreue und keine Teilrückerstattungen für ungenutzte Monate. Stripe verarbeitet die Zahlung; OpenFilament speichert keine Kartennummern.",
+          "Cloud fügt nur die Synchronisation von Spulen über Geräte hinweg und serverseitiges Bestands-/Backup hinzu. Es schaltet keine zusätzlichen Katalog-, Profil- oder RFID/QR-Funktionen über Local hinaus frei.",
+        ],
+      },
+      {
+        heading: "Nach Ablauf von Cloud — 30 Tage zum Export",
+        paragraphs: [
+          "Wenn deine Cloud-Periode endet, behalten wir dein Cloud-Inventar weitere 30 Tage. In diesen 30 Tagen kannst du deine Cloud-Daten weiterhin exportieren (JSON). Sync und Schreibzugriff nach Ablauf folgen den Produktregeln (Nur-Lesen / Exportfenster).",
+          "Nach diesen 30 Tagen kann Cloud-Inventar dauerhaft von unseren Servern gelöscht werden. Lokale My Spools in deinem Browser bleiben unberührt und kostenlos nutzbar. Zahlungs- und Sicherheitsunterlagen können länger aufbewahrt werden, wenn Buchhaltung oder Betrugsprävention es erfordern.",
         ],
       },
       {
@@ -205,9 +222,9 @@ export const legalPagesDe = {
         ],
       },
       {
-        heading: "Verfügbarkeit und Haftung",
+        heading: "Haftung",
         paragraphs: [
-          "Der Dienst wird ohne Gewähr für ununterbrochene Verfügbarkeit bereitgestellt. Soweit gesetzlich zulässig, ist die Haftung für kostenlose Community-Werkzeuge begrenzt. My Spools Cloud wird in der Beta angeboten.",
+          "Soweit anwendbares Recht es zulässt, haften OpenFilament und der Betreiber nicht für indirekte, zufällige oder Folgeschäden aus der Nutzung der kostenlosen Tools oder des Beta-Cloud-Dienstes. Zwingende Verbraucherrechte, die nach niederländischem oder EU-Recht nicht abbedungen werden können, bleiben unberührt.",
         ],
       },
     ],
@@ -274,9 +291,10 @@ export const supportDe = {
     "Kostenloses Local: vollständige Inventarwerkzeuge auf einem Browser/Gerät.",
     "Bezahltes Cloud: die einzigen Extras sind Spulen-Sync über Geräte und serverseitiger Bestand/Backup auf unserem VPS.",
     "Cloud schaltet keine besseren Profile, Katalogprivilegien, RFID/QR-Funktionen oder andere Inventarwerkzeuge frei, die Local bereits hat.",
-    "Nach der bezahlten Periode erhältst du ein Nachfrist-/Exportfenster; Local My Spools bleibt ohne Cloud voll nutzbar.",
+    "Nach Ende der bezahlten Periode behalten wir Cloud-Daten 30 Tage, damit du sie noch exportieren kannst; danach können sie gelöscht werden. Local My Spools bleibt ohne Cloud voll nutzbar.",
   ],
-  betaNote: "My Spools Cloud ist in der Beta. Erwarte Kanten, während wir Sync und Billing härten. Der Zweck des bezahlten Produkts bleibt schmal: Spulen-Sync und Bestands-Backup — nichts weiter.",
+  betaNote:
+    "My Spools Cloud ist in der Beta. Erwarte Kanten, während wir Sync und Billing härten. Der Zweck des bezahlten Produkts bleibt schmal: Spulen-Sync und Bestands-Backup — nichts weiter. Käufe sind endgültig (keine Rückerstattung) und verlängern sich nicht automatisch.",
   contactHeading: "Kontakt",
   contactBody: "Fragen zu Datenschutz, Abrechnung oder Cloud-Beta: schreib uns. Für Cookie-Auswahl nutze Cookie-Einstellungen auf der Datenschutzseite.",
 };

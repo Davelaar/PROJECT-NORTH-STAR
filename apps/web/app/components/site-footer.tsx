@@ -15,11 +15,11 @@ export function SiteFooter() {
       <nav aria-label={m.footer.navAria} className="footer-nav">
         <Link href="/privacy-policy">{m.footer.privacy}</Link>
         <Link href="/support">{m.footer.support}</Link>
+        <Link href="/terms-of-service">{m.footer.terms}</Link>
         <Link href="/cookies">{m.footer.cookies}</Link>
         <button type="button" className="linkish" onClick={() => openCookieSettings()}>
           {m.footer.cookieSettings}
         </button>
-        <Link href="/terms">{m.footer.terms}</Link>
         <Link href="/security">{m.footer.security}</Link>
         <Link href="/trust">{m.footer.trust}</Link>
         <Link href="/my-spools">{m.footer.mySpools}</Link>

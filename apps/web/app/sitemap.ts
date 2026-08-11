@@ -29,6 +29,7 @@ const STATIC_PATHS = [
   "/privacy",
   "/support",
   "/cookies",
+  "/terms-of-service",
   "/terms",
   "/security",
   "/trust",

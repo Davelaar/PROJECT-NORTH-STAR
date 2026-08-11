@@ -116,7 +116,9 @@ export const legalPagesPt = {
   privacyTitle: "Política de privacidade",
   privacyMetaDescription: "Como a OpenFilament trata o e-mail da conta, pagamentos Stripe, My Spools e cookies.",
   cookiesTitle: "Política de cookies",
-  termsTitle: "Termos de utilização",
+  termsTitle: "Termos de serviço",
+  termsMetaDescription:
+    "Termos OpenFilament: serviço tal como está, sem reembolsos de Cloud, sem renovação automática, janela de exportação Cloud de 30 dias após expiração.",
   securityTitle: "Segurança",
   trustTitle: "Trust center",
   placeholderNotice: "Esta página inclui placeholders do operador claramente marcados. Bloqueiam o lançamento até serem substituídos.",
@@ -186,16 +188,31 @@ export const legalPagesPt = {
     ],
     terms: [
       {
-        heading: "Plataforma comunitária",
+        heading: "Serviço comunitário tal como está",
         paragraphs: [
-          "A OpenFilament disponibiliza um catálogo aberto, ferramentas de identificação e calibrações da comunidade. Os perfis são da comunidade ou do catálogo e não são garantia de segurança de impressão. Continuas responsável por validar as definições na tua impressora.",
+          "A OpenFilament é fornecida tal como está e conforme disponível. Dados do catálogo, perfis iniciais e calibrações da comunidade não são garantia de segurança de impressão. Continuas responsável por validar as definições na tua impressora e pelos resultados de impressão.",
+          "Não garantimos disponibilidade ininterrupta, funcionamento sem erros nem adequação a um fim específico, na medida permitida por lei. My Spools Cloud é oferecido em beta.",
         ],
       },
       {
-        heading: "Contas e My Spools",
+        heading: "Contas e uso gratuito",
         paragraphs: [
-          "As contas são opcionais para navegar e descarregar. My Spools Local é gratuito e fica no browser. My Spools Cloud é um serviço pré-pago opcional: 19,99 € por 12 meses como pagamento único Stripe, sem renovação automática nem cobrança futura salvo se iniciares um novo Checkout.",
-          "Após o fim, aplicam-se um período de carência e uma janela de exportação só de leitura antes da eliminação do inventário Cloud. Reembolsos e disputas seguem a política de reembolso Cloud. A Stripe processa pagamentos; a OpenFilament não guarda números de cartão.",
+          "Navegar, pesquisar, descarregar perfis e My Spools Local são gratuitos. Uma conta (e-mail e palavra-passe) é opcional para o uso gratuito e só é necessária se comprares My Spools Cloud, para podermos associar o inventário e recuperar o acesso.",
+        ],
+      },
+      {
+        heading: "My Spools Cloud — pagamento, sem renovação, sem reembolsos",
+        paragraphs: [
+          "Cloud é um serviço digital pré-pago opcional: atualmente 19,99 € por 12 meses, pago uma vez via Stripe Checkout. Não há renovação automática nem débito off-session. O acesso termina quando o período pago acaba, salvo se iniciares tu um novo Checkout.",
+          "Todas as compras Cloud são finais: sem reembolsos, sem chargebacks por arrependimento do comprador, nem reembolsos parciais por meses não usados. A Stripe processa o pagamento; a OpenFilament não guarda números de cartão.",
+          "Cloud só acrescenta sincronização de bobinas entre dispositivos e stock/cópia de segurança no servidor. Não desbloqueia funções extra de catálogo, perfil ou RFID/QR além do Local.",
+        ],
+      },
+      {
+        heading: "Após expirar a Cloud — 30 dias para exportar",
+        paragraphs: [
+          "Quando o teu período Cloud termina, mantemos o inventário Cloud durante mais 30 dias. Nesses 30 dias ainda podes exportar os teus dados Cloud (JSON). A sync e o acesso de escrita após a expiração seguem as regras do produto (só leitura / janela de exportação).",
+          "Após esses 30 dias, o inventário Cloud pode ser eliminado permanentemente dos nossos servidores. My Spools local no browser não é afetado e continua gratuito. Registos de pagamento e segurança podem ser mantidos mais tempo quando a contabilidade ou a prevenção de fraude o exijam.",
         ],
       },
       {
@@ -205,9 +222,9 @@ export const legalPagesPt = {
         ],
       },
       {
-        heading: "Disponibilidade e responsabilidade",
+        heading: "Responsabilidade",
         paragraphs: [
-          "O serviço é fornecido tal como está, sem garantia de disponibilidade ininterrupta. Na medida permitida por lei, a responsabilidade das ferramentas comunitárias gratuitas é limitada. My Spools Cloud é oferecido em beta.",
+          "Na medida permitida pela lei aplicável, a OpenFilament e o seu operador não respondem por danos indiretos, incidentais ou consequentes decorrentes do uso das ferramentas gratuitas ou do serviço Cloud em beta. Direitos de consumo imperativos que não podem ser renunciados ao abrigo do direito neerlandês ou da UE permanecem inalterados.",
         ],
       },
     ],
@@ -274,9 +291,10 @@ export const supportPt = {
     "Local gratuito: ferramentas de inventário completas num browser/dispositivo.",
     "Cloud pago: os únicos extras são sincronizar bobinas entre dispositivos e stock/cópia de segurança no servidor no nosso VPS.",
     "A Cloud não desbloqueia melhores perfis, privilégios de catálogo, funções RFID/QR nem outras ferramentas de inventário além do Local.",
-    "Após o período pago tens uma janela de carência/exportação; My Spools Local continua plenamente utilizável sem Cloud.",
+    "Após o período pago mantemos os dados Cloud 30 dias para ainda poderes exportá-los; depois podem ser eliminados. My Spools Local continua plenamente utilizável sem Cloud.",
   ],
-  betaNote: "My Spools Cloud está em beta. Espera arestas enquanto endurecemos sync e faturação. O produto pago mantém-se estreito: sync de bobinas e cópia de stock — nada mais.",
+  betaNote:
+    "My Spools Cloud está em beta. Espera arestas enquanto endurecemos sync e faturação. O produto pago mantém-se estreito: sync de bobinas e cópia de stock — nada mais. As compras são finais (sem reembolsos) e não se renovam automaticamente.",
   contactHeading: "Contacto",
   contactBody: "Perguntas sobre privacidade, faturação ou beta Cloud: envia-nos e-mail. Para cookies, usa Definições de cookies na página de privacidade.",
 };

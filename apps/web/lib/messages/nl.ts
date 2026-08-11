@@ -619,7 +619,7 @@ export const messages: Messages = {
     includeSync: "Synchronisatie tussen apparaten",
     includeBackup: "Serverback-ups op onze VPS",
     includeRecovery: "Accountherstel voor Cloud-inventaris",
-    includeExport: "Cloud JSON-export tijdens toegang, respijt en retentie",
+    includeExport: "Cloud JSON-export tijdens toegang en nog 30 dagen na afloop",
     notIncludedTitle: "Niet inbegrepen",
     notIncludedBody:
       "Geen extra inventaristools naast Local. Cloud voegt geen RFID/QR-functies, slimmere profielen of catalogusrechten toe — alleen opslag en sync.",
@@ -652,7 +652,7 @@ export const messages: Messages = {
     termsLink: "Voorwaarden",
     privacyLink: "Privacy",
     retentionHint:
-      "Na afloop houd je een respijtvenster, daarna een alleen-lezen exportvenster, daarna verwijdering van Cloud-inventaris. My Spools Local blijft bruikbaar.",
+      "Na afloop bewaren we Cloud-inventaris 30 dagen — nog exporteerbaar — daarna kan deze worden verwijderd. Geen automatische verlenging. Aankopen zijn definitief (geen restitutie). Local My Spools blijft volledig bruikbaar.",
     vatUnspecified:
       "BTW-weergave is nog niet door de exploitant geconfigureerd.",
     vatNotApplicable: "BTW niet van toepassing — getoonde prijs is het te betalen bedrag.",

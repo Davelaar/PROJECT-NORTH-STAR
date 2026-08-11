@@ -116,7 +116,9 @@ export const legalPagesEn = {
   privacyMetaDescription:
     "How OpenFilament processes account email, Stripe payments, My Spools and cookies.",
   cookiesTitle: "Cookie policy",
-  termsTitle: "Terms of use",
+  termsTitle: "Terms of service",
+  termsMetaDescription:
+    "OpenFilament terms: as-is service, no refunds on Cloud, no automatic renewal, 30-day Cloud export window after expiry.",
   securityTitle: "Security",
   trustTitle: "Trust center",
   placeholderNotice:
@@ -188,16 +190,31 @@ export const legalPagesEn = {
     ],
     terms: [
       {
-        heading: "Community platform",
+        heading: "As-is community service",
         paragraphs: [
-          "OpenFilament provides an open catalog, identification tools and community calibrations. Profiles are community or catalog-derived and are not a print-safety guarantee. You remain responsible for validating settings on your printer.",
+          "OpenFilament is provided as-is and as available. Catalog data, starter profiles and community calibrations are not a print-safety guarantee. You remain responsible for validating settings on your own printer and for any print outcomes.",
+          "We do not warrant uninterrupted availability, error-free operation or fitness for a particular purpose, to the extent permitted by law. My Spools Cloud is offered in beta.",
         ],
       },
       {
-        heading: "Accounts and My Spools",
+        heading: "Accounts and free use",
         paragraphs: [
-          "Accounts are optional for browsing and downloads. My Spools Local is free and stored in your browser. My Spools Cloud is an optional prepaid service: €19.99 for 12 months as a one-time Stripe payment, with no automatic renewal or future charge unless you start a new Checkout.",
-          "After expiry, a grace period and read-only export window apply before Cloud inventory deletion. Refunds and disputes follow the Cloud refund policy. Stripe processes payment data; OpenFilament does not store card numbers.",
+          "Browsing, search, profile downloads and My Spools Local are free. An account (email and password) is optional for free use and required only if you buy My Spools Cloud so we can attach inventory and recover access.",
+        ],
+      },
+      {
+        heading: "My Spools Cloud — payment, no renewal, no refunds",
+        paragraphs: [
+          "Cloud is an optional prepaid digital service: currently €19.99 for 12 months, paid once via Stripe Checkout. There is no automatic renewal and no off-session charge. Access ends when the paid period ends unless you start a new Checkout yourself.",
+          "All Cloud purchases are final: no refunds, chargebacks for buyer’s remorse, or partial refunds for unused months. Stripe processes the payment; OpenFilament does not store card numbers.",
+          "Cloud only adds synchronisation of spools across devices and server-side stock/backup. It does not unlock extra catalog, profile or RFID/QR features beyond Local.",
+        ],
+      },
+      {
+        heading: "After Cloud expires — 30 days to export",
+        paragraphs: [
+          "When your Cloud period ends, we keep your Cloud inventory for 30 more days. During those 30 days you can still export your Cloud data (JSON). Sync and write access after expiry follow the product rules (read-only / export window).",
+          "After those 30 days, Cloud inventory may be permanently deleted from our servers. Local My Spools in your browser is unaffected and remains free to use. Payment and security records may be retained longer where required for accounting or fraud prevention.",
         ],
       },
       {
@@ -207,9 +224,9 @@ export const legalPagesEn = {
         ],
       },
       {
-        heading: "Availability and liability",
+        heading: "Liability",
         paragraphs: [
-          "The service is provided as-is without warranty of uninterrupted availability. To the extent permitted by law, liability is limited for free community tooling. My Spools Cloud is offered in beta.",
+          "To the extent permitted by applicable law, OpenFilament and its operator are not liable for indirect, incidental or consequential damages arising from use of the free tools or beta Cloud service. Mandatory consumer rights that cannot be waived under Dutch or EU law remain unaffected.",
         ],
       },
     ],
@@ -281,10 +298,10 @@ export const supportEn = {
     "Free Local: complete inventory tools on one browser/device.",
     "Paid Cloud: the only extras are synchronising spools across devices and keeping server-side stock/backup on our VPS.",
     "Cloud does not unlock better profiles, catalog privileges, RFID/QR features, or other inventory tools beyond what Local already has.",
-    "After the paid period ends you get a grace/export window; Local My Spools remains fully usable without Cloud.",
+    "After the paid period ends we keep Cloud data for 30 days so you can still export it; then it may be deleted. Local My Spools remains fully usable without Cloud.",
   ],
   betaNote:
-    "My Spools Cloud is in beta. Expect rough edges while we harden sync and billing. The paid product’s purpose remains narrow: spool sync and stock backup — nothing more.",
+    "My Spools Cloud is in beta. Expect rough edges while we harden sync and billing. The paid product’s purpose remains narrow: spool sync and stock backup — nothing more. Purchases are final (no refunds) and do not auto-renew.",
   contactHeading: "Contact",
   contactBody:
     "Questions about privacy, billing or Cloud beta: email us. For cookie choices, use Cookie settings on the privacy policy page.",
@@ -313,7 +330,7 @@ export const cloudEn = {
   includeSync: "Synchronisation across devices",
   includeBackup: "Server-side backups on our VPS",
   includeRecovery: "Account recovery for Cloud inventory",
-  includeExport: "Cloud JSON export during access, grace and retention",
+  includeExport: "Cloud JSON export during access and for 30 days after expiry",
   notIncludedTitle: "Not included",
   notIncludedBody:
     "No extra inventory tools beyond Local. Cloud does not add RFID/QR features, smarter profiles, or catalog privileges — only storage and sync.",
@@ -346,7 +363,7 @@ export const cloudEn = {
   termsLink: "Terms",
   privacyLink: "Privacy",
   retentionHint:
-    "After expiry you keep a grace window, then a read-only export window, then Cloud inventory deletion. Local My Spools remains fully usable.",
+    "After expiry we keep Cloud inventory for 30 days — still exportable — then it may be deleted. No automatic renewal. Purchases are final (no refunds). Local My Spools remains fully usable.",
   vatUnspecified:
     "Tax presentation is not yet configured by the operator (VAT inclusive/exclusive).",
   vatNotApplicable: "VAT not applicable — price shown is the amount charged.",

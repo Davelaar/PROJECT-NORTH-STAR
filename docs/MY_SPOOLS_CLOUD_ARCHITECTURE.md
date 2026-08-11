@@ -38,9 +38,11 @@ After expiry, a new payment starts from the payment effective time.
 ## Retention lifecycle
 
 1. Active until `paid_until`
-2. Grace (`MY_SPOOLS_CLOUD_GRACE_DAYS`, default 14) — sync still allowed
-3. Read-only until grace + retention — export allowed, writes blocked
+2. Grace (`MY_SPOOLS_CLOUD_GRACE_DAYS`, default 0) — optional short write/sync extension after `paid_until`
+3. Read-only / export until `paid_until + grace + retention` (`MY_SPOOLS_CLOUD_RETENTION_DAYS`, default **30**) — export allowed
 4. Deletion of Cloud spool inventory; payment records retained
+
+Default posture: **30 days after expiry** the Cloud inventory remains exportable, then may be deleted.
 
 ## Hard product rule
 

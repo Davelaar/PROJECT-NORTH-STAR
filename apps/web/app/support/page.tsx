@@ -60,9 +60,11 @@ export default async function SupportPage() {
         <p>
           <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>
           {" · "}
-          <Link href="/privacy-policy">{m.footer.privacy}</Link>
-          {" · "}
-          <Link href="/register">{m.account.register}</Link>
+        <Link href="/privacy-policy">{m.footer.privacy}</Link>
+        {" · "}
+        <Link href="/terms-of-service">{m.footer.terms}</Link>
+        {" · "}
+        <Link href="/register">{m.account.register}</Link>
         </p>
       </section>
     </article>
