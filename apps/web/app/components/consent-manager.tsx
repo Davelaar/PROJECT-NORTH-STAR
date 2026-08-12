@@ -39,8 +39,11 @@ export function ConsentManager() {
     }
 
     // Opt-out: load GA when no refusal is stored (including first visit).
+    // If the visitor previously refused, keep analytics off even if head tried.
     let timeout: number | undefined;
-    if (analyticsAllowed(current) || !isConsentCurrent(current, CONSENT_VERSION)) {
+    if (isConsentCurrent(current, CONSENT_VERSION) && !analyticsAllowed(current)) {
+      disableAnalytics();
+    } else if (analyticsAllowed(current) || !isConsentCurrent(current, CONSENT_VERSION)) {
       timeout = window.setTimeout(
         () =>
           initAnalyticsIfAllowed(

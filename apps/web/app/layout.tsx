@@ -5,6 +5,7 @@ import { ServiceWorkerRegister } from "./components/sw-register";
 import { ConsentManager } from "./components/consent-manager";
 import { getLocaleMessages } from "@/lib/messages";
 import { jsonLdScript, absoluteUrl } from "@/lib/seo/metadata";
+import { gaHeadBootstrapInline, getMeasurementId } from "@/lib/analytics/ga";
 import { legalHasPlaceholders, legalMissingSummary } from "@/lib/legal/config";
 import type { Viewport } from "next";
 import "./globals.css";
@@ -38,6 +39,7 @@ export default async function RootLayout({
   const { locale, messages: m } = await getLocaleMessages();
   const showBuildWarn =
     process.env.NODE_ENV === "production" && legalHasPlaceholders();
+  const gaId = getMeasurementId();
 
   const websiteLd = {
     "@context": "https://schema.org",
@@ -68,6 +70,11 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={jsonLdScript([websiteLd, appLd])}
         />
+        {gaId ? (
+          <script
+            dangerouslySetInnerHTML={{ __html: gaHeadBootstrapInline(gaId) }}
+          />
+        ) : null}
       </head>
       <body>
         <MessagesProvider locale={locale} messages={m}>
