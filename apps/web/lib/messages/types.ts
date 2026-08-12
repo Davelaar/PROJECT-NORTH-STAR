@@ -720,6 +720,9 @@ export type Messages = {
     joybuyBody: string;
     joybuyInviteCta: string;
     joybuySearchCta: string;
+    amazonBrandsTitle: string;
+    amazonBrandsBody: string;
+    amazonBrandCta: string;
     hardwareTitle: string;
     hardwareLead: string;
     printsTitle: string;

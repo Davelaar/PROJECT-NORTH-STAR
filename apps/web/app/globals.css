@@ -1669,6 +1669,12 @@ pre {
     var(--card);
 }
 
+.shop-brand-link-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
 .shop-hub-card span,
 .shop-product h2 {
   display: block;

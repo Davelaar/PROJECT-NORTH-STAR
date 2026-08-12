@@ -9,6 +9,27 @@ const joybuyInviteUrl =
 const joybuySearchUrl =
   "https://www.joybuy.nl/s?k=3D-printen&l1=1891&l2=null&l3=4326&fromTrending=true";
 
+const amazonBrands = [
+  "Jayo",
+  "SUNLU",
+  "eSUN",
+  "Polymaker",
+  "Bambu Lab",
+  "ELEGOO",
+  "Creality",
+  "Anycubic",
+  "Geeetech",
+  "Overture",
+  "Spectrum",
+  "Fiberlogy",
+];
+
+function amazonSearchUrl(brand: string) {
+  const tag = process.env.AMAZON_AFFILIATE_TAG?.trim() || "3dapeldoorn-21";
+  const query = encodeURIComponent(`${brand} filament`);
+  return `https://www.amazon.nl/s?k=${query}&tag=${encodeURIComponent(tag)}`;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const { messages: m } = await getLocaleMessages();
   return buildPageMetadata({
@@ -46,6 +67,24 @@ export default async function ShopFilamentPage() {
           >
             {m.shop.joybuySearchCta}
           </a>
+        </div>
+      </section>
+      <section className="shop-deal-callout">
+        <p className="muted">Amazon.nl</p>
+        <h2>{m.shop.amazonBrandsTitle}</h2>
+        <p>{m.shop.amazonBrandsBody}</p>
+        <div className="shop-brand-link-grid">
+          {amazonBrands.map((brand) => (
+            <a
+              className="button secondary"
+              href={amazonSearchUrl(brand)}
+              key={brand}
+              rel="nofollow sponsored noopener"
+              target="_blank"
+            >
+              {brand} · {m.shop.amazonBrandCta}
+            </a>
+          ))}
         </div>
       </section>
       <ShopGrid products={products} messages={m.shop} mode="referral" />
