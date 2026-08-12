@@ -34,6 +34,10 @@ const STATIC_PATHS = [
   "/scan",
   "/rfid",
   "/submit",
+  "/shop",
+  "/shop/filament",
+  "/shop/hardware",
+  "/shop/prints",
 ];
 
 function entry(

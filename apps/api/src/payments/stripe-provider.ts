@@ -143,6 +143,14 @@ export class StripeOneTimeCloudProvider
       }
       case "checkout.session.async_payment_failed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.purchase_type === "shop_print") {
+          return {
+            type: "shop_checkout_failed",
+            providerEventId: event.id,
+            checkoutId: session.id,
+            orderUuid: session.metadata?.openfilament_order_uuid ?? null,
+          };
+        }
         return {
           type: "checkout_failed",
           providerEventId: event.id,
@@ -153,6 +161,13 @@ export class StripeOneTimeCloudProvider
       }
       case "checkout.session.expired": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.metadata?.purchase_type === "shop_print") {
+          return {
+            type: "shop_checkout_expired",
+            providerEventId: event.id,
+            checkoutId: session.id,
+          };
+        }
         return {
           type: "checkout_expired",
           providerEventId: event.id,
@@ -230,6 +245,9 @@ export class StripeOneTimeCloudProvider
       };
     }
     const purchaseType = session.metadata?.purchase_type;
+    if (purchaseType === "shop_print") {
+      return this.mapPaidShopSession(providerEventId, session);
+    }
     if (purchaseType !== "my_spools_cloud_12_months") {
       return {
         type: "ignored",
@@ -307,6 +325,62 @@ export class StripeOneTimeCloudProvider
       accountId,
       paymentUuid,
       paidAt: new Date((session.created || Math.floor(Date.now() / 1000)) * 1000).toISOString(),
+    };
+  }
+
+  private async mapPaidShopSession(
+    providerEventId: string,
+    session: Stripe.Checkout.Session,
+  ): Promise<VerifiedPaymentEvent> {
+    if (session.mode !== "payment") {
+      return {
+        type: "ignored",
+        providerEventId,
+        reason: "non_payment_mode_session",
+      };
+    }
+    const orderUuid = session.metadata?.openfilament_order_uuid ?? null;
+    if (!orderUuid) {
+      return {
+        type: "ignored",
+        providerEventId,
+        reason: "shop_order_uuid_missing",
+      };
+    }
+    if (session.payment_status !== "paid") {
+      return {
+        type: "shop_checkout_pending",
+        providerEventId,
+        checkoutId: session.id,
+        orderUuid,
+      };
+    }
+    const paymentIntentId =
+      typeof session.payment_intent === "string"
+        ? session.payment_intent
+        : session.payment_intent?.id;
+    if (!paymentIntentId) {
+      return {
+        type: "ignored",
+        providerEventId,
+        reason: "missing_payment_intent",
+      };
+    }
+    return {
+      type: "shop_checkout_paid",
+      providerEventId,
+      checkoutId: session.id,
+      paymentIntentId,
+      customerId:
+        typeof session.customer === "string" ? session.customer : session.customer?.id ?? null,
+      receiptUrl: null,
+      amountCents: session.amount_total ?? 0,
+      currency: session.currency ?? "eur",
+      orderUuid,
+      paidAt: new Date().toISOString(),
+      shippingJson: (session as { shipping_details?: unknown }).shipping_details
+        ? JSON.stringify((session as { shipping_details?: unknown }).shipping_details)
+        : null,
     };
   }
 

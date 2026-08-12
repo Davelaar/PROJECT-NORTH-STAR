@@ -44,6 +44,36 @@ export type VerifiedPaymentEvent =
       paidAt: string;
     }
   | {
+      type: "shop_checkout_paid";
+      providerEventId: string;
+      checkoutId: string;
+      paymentIntentId: string;
+      customerId: string | null;
+      receiptUrl: string | null;
+      amountCents: number;
+      currency: string;
+      orderUuid: string;
+      paidAt: string;
+      shippingJson: string | null;
+    }
+  | {
+      type: "shop_checkout_pending";
+      providerEventId: string;
+      checkoutId: string;
+      orderUuid: string | null;
+    }
+  | {
+      type: "shop_checkout_failed";
+      providerEventId: string;
+      checkoutId: string;
+      orderUuid: string | null;
+    }
+  | {
+      type: "shop_checkout_expired";
+      providerEventId: string;
+      checkoutId: string;
+    }
+  | {
       type: "checkout_pending";
       providerEventId: string;
       checkoutId: string;

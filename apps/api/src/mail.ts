@@ -16,7 +16,7 @@ function mailFrom(): string {
   return process.env.MAIL_FROM?.trim() || "OpenFilament <info@openfilament.nl>";
 }
 
-async function sendPlainEmail(to: string, subject: string, body: string) {
+export async function sendPlainEmail(to: string, subject: string, body: string) {
   const message = [
     `From: ${mailFrom()}`,
     `To: ${to}`,
@@ -41,6 +41,36 @@ async function sendPlainEmail(to: string, subject: string, body: string) {
     });
     child.stdin.end(message);
   });
+}
+
+export async function sendShopOrderNotification(input: {
+  to: string;
+  orderUuid: string;
+  email: string;
+  amountCents: number;
+  currency: string;
+  items: { title: string; quantity: number; unitAmountCents: number }[];
+  shippingJson?: string | null;
+}) {
+  const body = [
+    "New OpenFilament shop order paid.",
+    "",
+    `Order: ${input.orderUuid}`,
+    `Customer email: ${input.email}`,
+    `Total: ${input.currency.toUpperCase()} ${(input.amountCents / 100).toFixed(2)}`,
+    "",
+    "Items:",
+    ...input.items.map(
+      (i) =>
+        `- ${i.quantity}x ${i.title} (${input.currency.toUpperCase()} ${(i.unitAmountCents / 100).toFixed(2)} each)`,
+    ),
+    "",
+    "Shipping:",
+    input.shippingJson || "(not provided)",
+    "",
+    "— OpenFilament",
+  ].join("\n");
+  await sendPlainEmail(input.to, `OpenFilament shop order ${input.orderUuid}`, body);
 }
 
 export async function createPasswordResetAndNotify(

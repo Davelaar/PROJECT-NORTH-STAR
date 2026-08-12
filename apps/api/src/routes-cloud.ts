@@ -20,6 +20,10 @@ import {
   markPaymentDisputed,
   markPaymentRefunded,
   markReminderSent,
+  markShopOrderCheckoutStatus,
+  markShopOrderPaid,
+  getShopOrderByUuid,
+  getShopOrderItems,
   purgeExpiredCloudInventories,
   recomputeCloudEntitlement,
   revokeManualCloudAccess,
@@ -36,6 +40,7 @@ import {
 } from "./payments/stripe-provider.js";
 import { sendCloudExpiryReminder } from "./payments/reminders.js";
 import { assertCloudWriteAccess } from "./payments/access.js";
+import { sendShopOrderNotification } from "./mail.js";
 
 export { assertCloudWriteAccess };
 
@@ -371,6 +376,52 @@ export async function registerCloudBillingRoutes(app: FastifyInstance) {
           }
           case "checkout_pending": {
             // Wait for async success; do not grant.
+            break;
+          }
+          case "shop_checkout_paid": {
+            markShopOrderPaid(db(app), {
+              orderUuid: event.orderUuid,
+              checkoutId: event.checkoutId,
+              paymentIntentId: event.paymentIntentId,
+              customerId: event.customerId,
+              receiptUrl: event.receiptUrl,
+              amountCents: event.amountCents,
+              currency: event.currency,
+              paidAt: event.paidAt,
+              shippingJson: event.shippingJson,
+            });
+            const order = getShopOrderByUuid(db(app), event.orderUuid);
+            const to =
+              process.env.SHOP_NOTIFY_EMAIL?.trim() ||
+              process.env.MAIL_FROM?.match(/<([^>]+)>/)?.[1] ||
+              "info@openfilament.nl";
+            if (order && to) {
+              await sendShopOrderNotification({
+                to,
+                orderUuid: order.uuid,
+                email: order.email,
+                amountCents: order.amountCents,
+                currency: order.currency,
+                shippingJson: order.shippingJson,
+                items: getShopOrderItems(db(app), order.id).map((item) => ({
+                  title: item.title,
+                  quantity: item.quantity,
+                  unitAmountCents: item.unitAmountCents,
+                })),
+              });
+            }
+            break;
+          }
+          case "shop_checkout_failed":
+          case "shop_checkout_expired": {
+            markShopOrderCheckoutStatus(
+              db(app),
+              event.checkoutId,
+              event.type === "shop_checkout_expired" ? "expired" : "cancelled",
+            );
+            break;
+          }
+          case "shop_checkout_pending": {
             break;
           }
           case "payment_refunded": {

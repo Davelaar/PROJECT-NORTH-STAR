@@ -388,6 +388,14 @@ li {
   margin: 1rem 0;
 }
 
+.banner-ok {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+}
+
 .panel {
   background: var(--card);
   border: 1px solid var(--line);
@@ -1617,6 +1625,132 @@ pre {
   padding: 0.4rem 0.5rem;
   text-align: left;
   vertical-align: top;
+}
+
+.shop-hero {
+  padding: 2rem 0 1rem;
+}
+
+.shop-hub-grid,
+.shop-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 760px) {
+  .shop-hub-grid,
+  .shop-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.shop-hub-card,
+.shop-product,
+.shop-admin-editor,
+.shop-admin-product,
+.shop-cart {
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  padding: 1rem;
+}
+
+.shop-hub-card {
+  color: var(--ink);
+  min-height: 10rem;
+  text-decoration: none;
+}
+
+.shop-hub-card span,
+.shop-product h2 {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.shop-hub-card p,
+.shop-product p {
+  color: var(--muted);
+}
+
+.shop-product {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.shop-product img,
+.shop-product-image-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background:
+    linear-gradient(135deg, transparent 0 45%, var(--line) 45% 46%, transparent 46%),
+    radial-gradient(circle at 25% 20%, var(--bg-glow), var(--bg-deep));
+}
+
+.shop-product-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 1;
+}
+
+.button-muted {
+  background: transparent;
+  color: var(--muted);
+}
+
+.shop-cart-link {
+  grid-column: 1 / -1;
+}
+
+.shop-cart,
+.shop-admin-login,
+.shop-admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.shop-cart-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 7rem auto;
+  gap: 0.85rem;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.75rem;
+}
+
+.shop-cart-row input {
+  width: 100%;
+}
+
+.shop-total {
+  font-size: 1.2rem;
+}
+
+.shop-admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.shop-admin-editor {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.shop-admin-product {
+  display: grid;
+  gap: 0.5rem;
+}
+
+@media (min-width: 720px) {
+  .shop-admin-product {
+    grid-template-columns: 1.3fr 0.8fr 0.6fr repeat(3, auto);
+    align-items: center;
+  }
 }
 .table-wrap {
   overflow-x: auto;

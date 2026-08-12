@@ -1030,6 +1030,104 @@ export const processedWebhookEvents = sqliteTable(
   ],
 );
 
+export const SHOP_PRODUCT_PAGES = ["filament", "hardware", "prints"] as const;
+export const SHOP_ORDER_STATUSES = [
+  "pending",
+  "paid",
+  "fulfilled",
+  "cancelled",
+  "expired",
+] as const;
+
+export const shopProducts = sqliteTable(
+  "shop_products",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    page: text("page", { enum: SHOP_PRODUCT_PAGES }).notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    priceCents: integer("price_cents").notNull().default(0),
+    currency: text("currency").notNull().default("eur"),
+    referralUrl: text("referral_url"),
+    stock: integer("stock"),
+    active: integer("active", { mode: "boolean" }).notNull().default(true),
+    sortOrder: integer("sort_order").notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [
+    index("shop_products_page_idx").on(t.page),
+    index("shop_products_active_idx").on(t.active),
+  ],
+);
+
+export const shopProductImages = sqliteTable(
+  "shop_product_images",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => shopProducts.id, { onDelete: "cascade" }),
+    storagePath: text("storage_path").notNull(),
+    mimeType: text("mime_type").notNull(),
+    alt: text("alt").notNull().default(""),
+    sortOrder: integer("sort_order").notNull().default(0),
+    ...timestamps,
+  },
+  (t) => [
+    index("shop_images_product_idx").on(t.productId),
+    index("shop_images_uuid_idx").on(t.uuid),
+  ],
+);
+
+export const shopOrders = sqliteTable(
+  "shop_orders",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    uuid: text("uuid").notNull().unique(),
+    email: text("email").notNull(),
+    status: text("status", { enum: SHOP_ORDER_STATUSES })
+      .notNull()
+      .default("pending"),
+    provider: text("provider").notNull().default("stripe"),
+    providerCheckoutId: text("provider_checkout_id"),
+    providerPaymentId: text("provider_payment_id"),
+    providerCustomerId: text("provider_customer_id"),
+    providerReceiptUrl: text("provider_receipt_url"),
+    amountCents: integer("amount_cents").notNull(),
+    currency: text("currency").notNull().default("eur"),
+    shippingJson: text("shipping_json"),
+    checkoutToken: text("checkout_token").notNull().unique(),
+    rawProviderStatus: text("raw_provider_status"),
+    paidAt: text("paid_at"),
+    expiresAt: text("expires_at").notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex("shop_orders_checkout_unique").on(t.providerCheckoutId),
+    uniqueIndex("shop_orders_payment_id_unique").on(t.providerPaymentId),
+    index("shop_orders_status_idx").on(t.status),
+    index("shop_orders_expires_idx").on(t.expiresAt),
+  ],
+);
+
+export const shopOrderItems = sqliteTable(
+  "shop_order_items",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    orderId: integer("order_id")
+      .notNull()
+      .references(() => shopOrders.id, { onDelete: "cascade" }),
+    productUuid: text("product_uuid").notNull(),
+    title: text("title").notNull(),
+    unitAmountCents: integer("unit_amount_cents").notNull(),
+    quantity: integer("quantity").notNull(),
+    ...timestamps,
+  },
+  (t) => [index("shop_order_items_order_idx").on(t.orderId)],
+);
+
 export const cloudAdminAuditLog = sqliteTable(
   "cloud_admin_audit_log",
   {

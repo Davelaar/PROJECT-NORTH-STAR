@@ -28,6 +28,8 @@ export function SiteFooter() {
         <LocaleLink href="/compatibility">{m.nav.compatibility}</LocaleLink>
         <LocaleLink href="/docs/api">{m.nav.docsApi}</LocaleLink>
         <LocaleLink href="/contribute">{m.nav.contribute}</LocaleLink>
+        <LocaleLink href="/shop">{m.shop.nav}</LocaleLink>
+        <LocaleLink href="/shop/manage">{m.shop.manage}</LocaleLink>
       </nav>
       {showLegalWarn ? (
         <p className="legal-placeholder-warn" role="status">

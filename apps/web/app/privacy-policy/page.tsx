@@ -65,6 +65,10 @@ export default async function PrivacyPolicyPage() {
       </p>
 
       <LegalSections sections={m.legalPages.sections.privacy} />
+      <section>
+        <h2>{m.shop.nav}</h2>
+        <p>{m.shop.retentionNotice}</p>
+      </section>
 
       <section>
         <h2>{m.legalPages.cookiesTitle}</h2>
@@ -75,8 +79,9 @@ export default async function PrivacyPolicyPage() {
         <LegalSections sections={m.legalPages.sections.cookies} />
         <p className="muted">
           <code>of_locale</code>, <code>of_consent</code>, <code>of_session</code>,{" "}
-          <code>of_csrf</code>, IndexedDB (<code>openfilament-spools</code>), Cache
-          Storage / service worker, optional <code>_ga</code> unless analytics is refused.
+          <code>of_csrf</code>, <code>of_shop_admin</code>, shop cart localStorage,
+          IndexedDB (<code>openfilament-spools</code>), Cache Storage / service
+          worker, optional <code>_ga</code> unless analytics is refused.
         </p>
         <p>
           <CookieSettingsButton label={m.footer.cookieSettings} />

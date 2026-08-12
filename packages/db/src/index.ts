@@ -124,4 +124,23 @@ export {
   purgeExpiredCloudInventories,
 } from "./cloud-lifecycle.js";
 export type { ReminderKind } from "./cloud-lifecycle.js";
+export {
+  attachShopImage,
+  createPendingShopOrder,
+  deleteShopImage,
+  deleteShopProduct,
+  getShopImage,
+  getShopOrderByCheckout,
+  getShopOrderByUuid,
+  getShopOrderItems,
+  getShopProductByUuid,
+  listShopOrders,
+  listShopProducts,
+  markShopOrderCheckoutStatus,
+  markShopOrderPaid,
+  purgeExpiredShopOrders,
+  updateShopOrderCheckout,
+  upsertShopProduct,
+} from "./shop.js";
+export type { ShopPage, ShopProductInput, ShopOrderLineInput } from "./shop.js";
 

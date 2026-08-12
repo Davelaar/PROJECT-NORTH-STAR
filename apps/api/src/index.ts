@@ -124,6 +124,8 @@ export async function buildServer(options?: { dbPath?: string }) {
   await registerPrivacySpoolRoutes(app);
   const { registerCloudBillingRoutes } = await import("./routes-cloud.js");
   await registerCloudBillingRoutes(app);
+  const { registerShopRoutes } = await import("./routes-shop.js");
+  await registerShopRoutes(app);
 
   // Friendly root — browsers often open the API port and hit Fastify's bare 404.
   app.get("/", async (req, reply) => {

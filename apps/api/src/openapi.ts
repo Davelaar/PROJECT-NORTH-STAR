@@ -135,6 +135,19 @@ export function buildOpenApiDocument(baseUrl: string) {
           responses: ok,
         },
       },
+      "/api/v1/shop/products": {
+        get: { summary: "List shop products", responses: ok },
+      },
+      "/api/v1/shop/checkout": {
+        post: { summary: "Create guest Stripe Checkout for printed products", responses: ok },
+      },
+      "/api/v1/shop/orders/{uuid}": {
+        get: { summary: "Get guest-safe shop order status", responses: ok },
+      },
+      "/api/v1/shop/admin/products": {
+        get: { summary: "List shop products (admin cookie)", responses: ok },
+        post: { summary: "Create or update shop product (admin cookie)", responses: ok },
+      },
       "/api/v1/exports/creality": {
         post: {
           summary: "Export Creality Print user preset + bridge install payload",
