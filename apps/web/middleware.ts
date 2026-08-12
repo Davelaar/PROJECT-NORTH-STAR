@@ -2,11 +2,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE } from "@/lib/messages/types";
 import {
   contentLanguage,
+  isLocale,
   isLocaleExemptPath,
   isLikelyBot,
   isPrefixedLocale,
   localizedPath,
   LOCALE_HEADER,
+  preferredLocaleFromAcceptLanguage,
 } from "@/lib/i18n/routing";
 
 export function middleware(request: NextRequest) {
@@ -67,19 +69,38 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // Unprefixed: English for crawlers. Cookie users (non-bot) → prefixed URL.
+  // Unprefixed: English for crawlers. Visitors keep explicit cookie choice,
+  // otherwise use the browser's first supported language.
   const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
   const accept = request.headers.get("accept") ?? "";
   const wantsHtml = accept.includes("text/html");
+  const isBot = isLikelyBot(request.headers.get("user-agent"));
   if (
     request.method === "GET" &&
     wantsHtml &&
     isPrefixedLocale(cookieLocale) &&
-    !isLikelyBot(request.headers.get("user-agent"))
+    !isBot
   ) {
     const url = request.nextUrl.clone();
     url.pathname = localizedPath(cookieLocale, pathname);
     return NextResponse.redirect(url, 307);
+  }
+
+  if (request.method === "GET" && wantsHtml && !isLocale(cookieLocale) && !isBot) {
+    const preferredLocale = preferredLocaleFromAcceptLanguage(
+      request.headers.get("accept-language"),
+    );
+    if (isPrefixedLocale(preferredLocale)) {
+      const url = request.nextUrl.clone();
+      url.pathname = localizedPath(preferredLocale, pathname);
+      const response = NextResponse.redirect(url, 307);
+      response.cookies.set(LOCALE_COOKIE, preferredLocale, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+        sameSite: "lax",
+      });
+      return response;
+    }
   }
 
   const requestHeaders = new Headers(request.headers);

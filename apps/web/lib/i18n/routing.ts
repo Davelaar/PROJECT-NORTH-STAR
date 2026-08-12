@@ -35,6 +35,28 @@ export function localizedPath(locale: Locale, path: string): string {
   return `/${locale}${normalized}`;
 }
 
+export function preferredLocaleFromAcceptLanguage(header: string | null): Locale {
+  if (!header) return "en";
+
+  const matches = header
+    .split(",")
+    .map((entry, index) => {
+      const [rawTag, ...params] = entry.trim().split(";");
+      const qParam = params.find((p) => p.trim().startsWith("q="));
+      const q = qParam ? Number(qParam.trim().slice(2)) : 1;
+      const primary = rawTag.toLowerCase().split("-")[0];
+      return {
+        index,
+        locale: primary === "zh" ? "zh" : primary,
+        q: Number.isFinite(q) ? q : 0,
+      };
+    })
+    .filter((m): m is { index: number; locale: Locale; q: number } => isLocale(m.locale) && m.q > 0)
+    .sort((a, b) => b.q - a.q || a.index - b.index);
+
+  return matches[0]?.locale ?? "en";
+}
+
 /** BCP 47 / hreflang code (zh → zh-Hans). */
 export function hreflangCode(locale: Locale): string {
   return locale === "zh" ? "zh-Hans" : locale;
