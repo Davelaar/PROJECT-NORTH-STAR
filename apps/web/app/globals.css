@@ -1727,7 +1727,7 @@ pre {
 }
 
 @media (min-width: 620px) {
-  .shop-product-gallery {
+  .shop-product-gallery-multi {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

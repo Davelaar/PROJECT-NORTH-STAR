@@ -58,7 +58,13 @@ export default async function ShopProductPage({
 
   return (
     <article className="shop-product-detail">
-      <div className="shop-product-gallery">
+      <div
+        className={
+          product.images.length > 1
+            ? "shop-product-gallery shop-product-gallery-multi"
+            : "shop-product-gallery"
+        }
+      >
         {product.images.length > 0 ? (
           product.images.map((image) => (
             <img
