@@ -83,13 +83,22 @@ export function ShopGrid({
                   {messages.buyExternal}
                 </a>
               ) : (
-                <button
-                  className="button"
-                  type="button"
-                  onClick={() => add(product.uuid)}
-                >
-                  {addedProductUuid === product.uuid ? messages.addedToCart : messages.addToCart}
-                </button>
+                <div className="shop-product-actions">
+                  <button
+                    className="button"
+                    type="button"
+                    onClick={() => add(product.uuid)}
+                  >
+                    {addedProductUuid === product.uuid
+                      ? messages.addedToCart
+                      : messages.addToCart}
+                  </button>
+                  {addedProductUuid === product.uuid ? (
+                    <LocaleLink className="button secondary" href="/shop/cart">
+                      {messages.viewCart}
+                    </LocaleLink>
+                  ) : null}
+                </div>
               )}
             </div>
           </article>

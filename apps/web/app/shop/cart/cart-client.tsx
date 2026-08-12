@@ -98,7 +98,9 @@ export function CartClient({
             <div className="shop-cart-row" key={product.uuid}>
               <div>
                 <strong>{product.title}</strong>
-                <p className="muted">{formatShopPrice(product.priceCents, product.currency)}</p>
+                <p className="muted">
+                  {formatShopPrice(product.priceCents, product.currency)} × {line.quantity}
+                </p>
               </div>
               <label>
                 {messages.quantity}
@@ -128,20 +130,38 @@ export function CartClient({
               </button>
             </div>
           ))}
-          <p className="shop-total">
-            {messages.total}: <strong>{formatShopPrice(total)}</strong>
-          </p>
           <label>
             {messages.shippingCountry}
             <select
               value={shippingCountry}
               onChange={(e) => setShippingCountry(e.target.value as ShippingCountry)}
             >
-              <option value="NL">Nederland — {formatShopPrice(shippingRates.NL)}</option>
-              <option value="BE">België — {formatShopPrice(shippingRates.BE)}</option>
-              <option value="DE">Deutschland — {formatShopPrice(shippingRates.DE)}</option>
+              <option value="NL">
+                {messages.shippingNetherlands} — {formatShopPrice(shippingRates.NL)}
+              </option>
+              <option value="BE">
+                {messages.shippingBelgium} — {formatShopPrice(shippingRates.BE)}
+              </option>
+              <option value="DE">
+                {messages.shippingGermany} — {formatShopPrice(shippingRates.DE)}
+              </option>
             </select>
           </label>
+          <dl className="shop-cart-summary">
+            <div>
+              <dt>{messages.subtotal}</dt>
+              <dd>{formatShopPrice(subtotal)}</dd>
+            </div>
+            <div>
+              <dt>{messages.shipping}</dt>
+              <dd>{formatShopPrice(shipping)}</dd>
+            </div>
+            <div className="shop-total">
+              <dt>{messages.total}</dt>
+              <dd>{formatShopPrice(total)}</dd>
+            </div>
+          </dl>
+          <p className="banner-ok">{messages.stripeAddressNotice}</p>
           <label>
             {messages.email}
             <input

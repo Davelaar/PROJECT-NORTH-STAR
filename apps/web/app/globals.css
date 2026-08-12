@@ -1716,6 +1716,12 @@ pre {
   flex: 1;
 }
 
+.shop-product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
 .shop-product-detail {
   display: grid;
   gap: 1.25rem;
@@ -1787,6 +1793,25 @@ pre {
 
 .shop-total {
   font-size: 1.2rem;
+}
+
+.shop-cart-summary {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-top: 0.85rem;
+}
+
+.shop-cart-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.shop-cart-summary dd {
+  font-weight: 700;
+  margin: 0;
 }
 
 .shop-admin-tabs {

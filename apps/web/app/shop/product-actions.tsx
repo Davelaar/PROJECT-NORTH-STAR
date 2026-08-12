@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LocaleLink } from "../components/locale-link";
 import type { ShopMessages, ShopProduct } from "./types";
 import { addShopCartLine } from "./shop-grid";
 
@@ -20,9 +21,16 @@ export function ProductActions({
 
   if (product.page === "prints") {
     return (
-      <button className="button" type="button" onClick={add}>
-        {added ? messages.addedToCart : messages.addToCart}
-      </button>
+      <div className="home-cta-links">
+        <button className="button" type="button" onClick={add}>
+          {added ? messages.addedToCart : messages.addToCart}
+        </button>
+        {added ? (
+          <LocaleLink className="button secondary" href="/shop/cart">
+            {messages.viewCart}
+          </LocaleLink>
+        ) : null}
+      </div>
     );
   }
 
