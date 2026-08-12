@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { LocaleLink } from "../components/locale-link";
 import type { ShopMessages, ShopProduct } from "./types";
 import { formatShopPrice } from "./types";
@@ -44,6 +45,13 @@ export function ShopGrid({
   messages: ShopMessages;
   mode: "referral" | "prints";
 }) {
+  const [addedProductUuid, setAddedProductUuid] = useState<string | null>(null);
+
+  function add(productUuid: string) {
+    addShopCartLine(productUuid);
+    setAddedProductUuid(productUuid);
+  }
+
   if (products.length === 0) return <p className="muted">{messages.empty}</p>;
   return (
     <div className="shop-grid">
@@ -78,9 +86,9 @@ export function ShopGrid({
                 <button
                   className="button"
                   type="button"
-                  onClick={() => addShopCartLine(product.uuid)}
+                  onClick={() => add(product.uuid)}
                 >
-                  {messages.addToCart}
+                  {addedProductUuid === product.uuid ? messages.addedToCart : messages.addToCart}
                 </button>
               )}
             </div>

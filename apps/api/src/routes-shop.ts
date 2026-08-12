@@ -398,7 +398,10 @@ export async function registerShopRoutes(app: FastifyInstance) {
               shipping_country: body.data.shippingCountry,
             },
           },
-          ...( { integration_identifier: "openfilament_shop_abcdwxyz" } as object ),
+          ...( {
+            integration_identifier: "openfilament_shop_abcdwxyz",
+            managed_payments: { enabled: false },
+          } as object ),
         },
         { idempotencyKey: pending.order.checkoutToken },
       );

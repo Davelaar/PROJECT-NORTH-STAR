@@ -48,6 +48,7 @@ export type ShopMessages = {
   partnerLink: string;
   buyExternal: string;
   addToCart: string;
+  addedToCart: string;
   soldOut: string;
   empty: string;
   cartEmpty: string;
@@ -73,6 +74,7 @@ export type ShopMessages = {
   referralUrl: string;
   stock: string;
   active: string;
+  inactive: string;
   save: string;
   newProduct: string;
   uploadImage: string;

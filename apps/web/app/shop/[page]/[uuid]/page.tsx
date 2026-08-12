@@ -78,7 +78,13 @@ export default async function ShopProductPage({
         </p>
         <h1>{product.title}</h1>
         <strong>{formatShopPrice(product.priceCents, product.currency)}</strong>
-        {product.description ? <p>{product.description}</p> : null}
+        {product.description ? (
+          <div className="shop-product-description">
+            {product.description.split("\n").map((line, index) =>
+              line.trim() ? <p key={`${index}-${line}`}>{line}</p> : null,
+            )}
+          </div>
+        ) : null}
         <ProductActions messages={m.shop} product={product} />
       </div>
     </article>

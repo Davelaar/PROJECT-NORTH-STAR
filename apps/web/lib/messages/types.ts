@@ -735,6 +735,7 @@ export type Messages = {
     partnerLink: string;
     buyExternal: string;
     addToCart: string;
+    addedToCart: string;
     soldOut: string;
     empty: string;
     cartEmpty: string;
@@ -760,6 +761,7 @@ export type Messages = {
     referralUrl: string;
     stock: string;
     active: string;
+    inactive: string;
     save: string;
     newProduct: string;
     uploadImage: string;

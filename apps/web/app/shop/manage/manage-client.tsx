@@ -63,6 +63,12 @@ function localizedFallback(
   return keys.map((key) => String(draft[key] ?? "").trim()).find(Boolean) ?? fallback;
 }
 
+function pageLabel(page: ShopPage, messages: ShopMessages) {
+  if (page === "filament") return messages.filamentTitle;
+  if (page === "hardware") return messages.hardwareTitle;
+  return messages.printsTitle;
+}
+
 export function ManageClient({ messages }: { messages: ShopMessages }) {
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -229,7 +235,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
             type="button"
             onClick={() => setPage(p)}
           >
-            {p}
+            {pageLabel(p, messages)}
           </button>
         ))}
       </div>
@@ -319,7 +325,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
               <div className="shop-admin-product-main">
                 <strong>{product.title}</strong>
                 <span>{formatShopPrice(product.priceCents, product.currency)}</span>
-                <span>{product.active ? messages.active : "inactive"}</span>
+                <span>{product.active ? messages.active : messages.inactive}</span>
               </div>
               <div className="shop-admin-image-grid">
                 {product.images.map((image) => (
