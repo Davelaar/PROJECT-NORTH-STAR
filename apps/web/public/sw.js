@@ -1,5 +1,5 @@
-/* OpenFilament service worker — cache app shell only; never cache auth/API by default. */
-const SHELL_CACHE = "of-shell-v1";
+/* OpenFilament service worker — cache static shell only; documents stay network-first. */
+const SHELL_CACHE = "of-shell-v2";
 const SHELL = ["/", "/offline.html", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -26,23 +26,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(
-    fetch(req)
-      .then((res) => {
-        if (url.origin === self.location.origin && res.ok && req.destination === "document") {
-          const copy = res.clone();
-          caches.open(SHELL_CACHE).then((cache) => cache.put(req, copy));
-        }
-        return res;
-      })
-      .catch(async () => {
-        const cached = await caches.match(req);
-        if (cached) return cached;
-        if (req.destination === "document") {
-          const offline = await caches.match("/offline.html");
-          if (offline) return offline;
-        }
-        return new Response("Offline", { status: 503, statusText: "Offline" });
+  if (req.destination === "document") {
+    event.respondWith(
+      fetch(req).catch(async () => {
+        const offline = await caches.match("/offline.html");
+        return offline ?? new Response("Offline", { status: 503, statusText: "Offline" });
       }),
+    );
+    return;
+  }
+
+  event.respondWith(
+    fetch(req).catch(async () => {
+      const cached = await caches.match(req);
+      return cached ?? new Response("Offline", { status: 503, statusText: "Offline" });
+    }),
   );
 });
