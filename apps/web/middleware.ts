@@ -49,6 +49,8 @@ export function middleware(request: NextRequest) {
         : pathname.slice(first.length + 1) || "/";
     const url = request.nextUrl.clone();
     url.pathname = rest;
+    // Caddy terminates TLS; Next listens on HTTP. Keep internal rewrites on http.
+    url.protocol = "http:";
 
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set(LOCALE_HEADER, first);
