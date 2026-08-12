@@ -13,10 +13,13 @@ CREATE TABLE `shop_products` (
   `created_at` text DEFAULT (datetime('now')) NOT NULL,
   `updated_at` text DEFAULT (datetime('now')) NOT NULL
 );
+--> statement-breakpoint
 CREATE UNIQUE INDEX `shop_products_uuid_unique` ON `shop_products` (`uuid`);
+--> statement-breakpoint
 CREATE INDEX `shop_products_page_idx` ON `shop_products` (`page`);
+--> statement-breakpoint
 CREATE INDEX `shop_products_active_idx` ON `shop_products` (`active`);
-
+--> statement-breakpoint
 CREATE TABLE `shop_product_images` (
   `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   `uuid` text NOT NULL,
@@ -29,10 +32,13 @@ CREATE TABLE `shop_product_images` (
   `updated_at` text DEFAULT (datetime('now')) NOT NULL,
   FOREIGN KEY (`product_id`) REFERENCES `shop_products`(`id`) ON UPDATE no action ON DELETE cascade
 );
+--> statement-breakpoint
 CREATE UNIQUE INDEX `shop_product_images_uuid_unique` ON `shop_product_images` (`uuid`);
+--> statement-breakpoint
 CREATE INDEX `shop_images_product_idx` ON `shop_product_images` (`product_id`);
+--> statement-breakpoint
 CREATE INDEX `shop_images_uuid_idx` ON `shop_product_images` (`uuid`);
-
+--> statement-breakpoint
 CREATE TABLE `shop_orders` (
   `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   `uuid` text NOT NULL,
@@ -53,13 +59,19 @@ CREATE TABLE `shop_orders` (
   `created_at` text DEFAULT (datetime('now')) NOT NULL,
   `updated_at` text DEFAULT (datetime('now')) NOT NULL
 );
+--> statement-breakpoint
 CREATE UNIQUE INDEX `shop_orders_uuid_unique` ON `shop_orders` (`uuid`);
+--> statement-breakpoint
 CREATE UNIQUE INDEX `shop_orders_checkout_token_unique` ON `shop_orders` (`checkout_token`);
+--> statement-breakpoint
 CREATE UNIQUE INDEX `shop_orders_checkout_unique` ON `shop_orders` (`provider_checkout_id`);
+--> statement-breakpoint
 CREATE UNIQUE INDEX `shop_orders_payment_id_unique` ON `shop_orders` (`provider_payment_id`);
+--> statement-breakpoint
 CREATE INDEX `shop_orders_status_idx` ON `shop_orders` (`status`);
+--> statement-breakpoint
 CREATE INDEX `shop_orders_expires_idx` ON `shop_orders` (`expires_at`);
-
+--> statement-breakpoint
 CREATE TABLE `shop_order_items` (
   `id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
   `order_id` integer NOT NULL,
@@ -71,4 +83,5 @@ CREATE TABLE `shop_order_items` (
   `updated_at` text DEFAULT (datetime('now')) NOT NULL,
   FOREIGN KEY (`order_id`) REFERENCES `shop_orders`(`id`) ON UPDATE no action ON DELETE cascade
 );
+--> statement-breakpoint
 CREATE INDEX `shop_order_items_order_idx` ON `shop_order_items` (`order_id`);
