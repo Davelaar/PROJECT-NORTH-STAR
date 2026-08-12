@@ -11,6 +11,21 @@ import {
   preferredLocaleFromAcceptLanguage,
 } from "@/lib/i18n/routing";
 
+function publicRedirectUrl(request: NextRequest, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (siteUrl) {
+    const origin = new URL(siteUrl);
+    url.protocol = origin.protocol;
+    url.hostname = origin.hostname;
+    url.port = origin.port;
+  }
+
+  return url;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -39,8 +54,7 @@ export function middleware(request: NextRequest) {
       pathname === "/en" || pathname === "/en/"
         ? "/"
         : pathname.replace(/^\/en/, "") || "/";
-    const url = request.nextUrl.clone();
-    url.pathname = rest;
+    const url = publicRedirectUrl(request, rest);
     return NextResponse.redirect(url, 308);
   }
 
@@ -81,8 +95,7 @@ export function middleware(request: NextRequest) {
     isPrefixedLocale(cookieLocale) &&
     !isBot
   ) {
-    const url = request.nextUrl.clone();
-    url.pathname = localizedPath(cookieLocale, pathname);
+    const url = publicRedirectUrl(request, localizedPath(cookieLocale, pathname));
     return NextResponse.redirect(url, 307);
   }
 
@@ -91,8 +104,7 @@ export function middleware(request: NextRequest) {
       request.headers.get("accept-language"),
     );
     if (isPrefixedLocale(preferredLocale)) {
-      const url = request.nextUrl.clone();
-      url.pathname = localizedPath(preferredLocale, pathname);
+      const url = publicRedirectUrl(request, localizedPath(preferredLocale, pathname));
       const response = NextResponse.redirect(url, 307);
       response.cookies.set(LOCALE_COOKIE, preferredLocale, {
         path: "/",
