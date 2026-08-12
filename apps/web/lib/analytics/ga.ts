@@ -1,5 +1,5 @@
 /**
- * GA4 loader — opt-out analytics.
+ * GA4 loader — opt-out analytics with first-party collect.
  * Prefer the early <head> bootstrap in layout; this module is the client fallback
  * and the refuse/accept controller.
  */
@@ -16,6 +16,9 @@ declare global {
 }
 
 const MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "";
+
+/** Same-origin path; /of-metrics/g/collect proxies to Google. */
+export const GA_FIRST_PARTY_PATH = "/of-metrics";
 
 export function getMeasurementId(): string {
   if (process.env.NODE_ENV === "test") return "";
@@ -46,6 +49,23 @@ function debugModeEnabled(): boolean {
   }
 }
 
+function transportUrl(): string {
+  return `${window.location.origin}${GA_FIRST_PARTY_PATH}`;
+}
+
+function gaConfigOptions(id: string): Record<string, unknown> {
+  return {
+    anonymize_ip: true,
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    send_page_view: true,
+    transport_url: transportUrl(),
+    first_party_collection: true,
+    cookie_flags: "SameSite=Lax;Secure",
+    ...(debugModeEnabled() ? { debug_mode: true } : {}),
+  };
+}
+
 function setConsentGranted() {
   ensureGtagStub();
   window.gtag!("consent", "default", {
@@ -66,13 +86,7 @@ function configureGa(id: string) {
   ensureGtagStub();
   setConsentGranted();
   window.gtag!("js", new Date());
-  window.gtag!("config", id, {
-    anonymize_ip: true,
-    allow_google_signals: false,
-    allow_ad_personalization_signals: false,
-    send_page_view: true,
-    ...(debugModeEnabled() ? { debug_mode: true } : {}),
-  });
+  window.gtag!("config", id, gaConfigOptions(id));
 }
 
 /** Load GA4 when analytics is allowed (default on until refused). Idempotent. */
@@ -87,7 +101,6 @@ export function initAnalyticsIfAllowed(consent?: ConsentRecord | null): boolean 
   ) as HTMLScriptElement | null;
   if (window.__ofGaInitialized || existing) {
     window.__ofGaInitialized = true;
-    // Ensure consent stays granted if head bootstrap already ran.
     setConsentGranted();
     return true;
   }
@@ -162,6 +175,7 @@ export function trackEvent(
 /** Inline <head> bootstrap (opt-out). Skips load if of_consent has analytics:false. */
 export function gaHeadBootstrapInline(measurementId: string): string {
   const id = JSON.stringify(measurementId);
+  const path = JSON.stringify(GA_FIRST_PARTY_PATH);
   return `(()=>{
   try {
     var allow=true;
@@ -179,9 +193,18 @@ export function gaHeadBootstrapInline(measurementId: string): string {
       gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
       return;
     }
+    var transport=window.location.origin+${path};
     gtag('consent','default',{analytics_storage:'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
     gtag('js',new Date());
-    gtag('config',${id},{anonymize_ip:true,allow_google_signals:false,allow_ad_personalization_signals:false,send_page_view:true});
+    gtag('config',${id},{
+      anonymize_ip:true,
+      allow_google_signals:false,
+      allow_ad_personalization_signals:false,
+      send_page_view:true,
+      transport_url:transport,
+      first_party_collection:true,
+      cookie_flags:'SameSite=Lax;Secure'
+    });
     window.__ofGaInitialized=true;
     var s=document.createElement('script');
     s.async=true;

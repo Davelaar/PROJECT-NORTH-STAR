@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           "/admin",
           "/my-spools",
           "/api/",
+          "/of-metrics/",
           "/export",
           "/import",
         ],
