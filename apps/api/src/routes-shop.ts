@@ -13,6 +13,7 @@ import {
   getShopImage,
   getShopOrderByUuid,
   getShopOrderItems,
+  getShopProductDetails,
   listShopOrders,
   listShopProducts,
   purgeExpiredShopOrders,
@@ -166,6 +167,20 @@ export async function registerShopRoutes(app: FastifyInstance) {
       };
     },
   );
+
+  app.get<{
+    Params: { uuid: string };
+    Querystring: { locale?: ShopContentLocale };
+  }>("/api/v1/shop/products/:uuid", async (req, reply) => {
+    const locale = shopContentLocaleSchema.optional().safeParse(req.query.locale);
+    const product = getShopProductDetails(
+      db(app),
+      req.params.uuid,
+      locale.success ? locale.data : undefined,
+    );
+    if (!product) return notFound(reply, "Product not found");
+    return { product };
+  });
 
   app.get<{ Params: { uuid: string } }>(
     "/api/v1/shop/media/:uuid",

@@ -118,6 +118,29 @@ export function getShopProductByUuid(db: AppDb, productUuid: string) {
     .get();
 }
 
+export function getShopProductDetails(
+  db: AppDb,
+  productUuid: string,
+  locale?: ShopContentLocale,
+  admin = false,
+) {
+  const product = getShopProductByUuid(db, productUuid);
+  if (!product || (!admin && !product.active)) return null;
+  const images = db
+    .select()
+    .from(schema.shopProductImages)
+    .where(eq(schema.shopProductImages.productId, product.id))
+    .orderBy(asc(schema.shopProductImages.sortOrder), asc(schema.shopProductImages.id))
+    .all()
+    .map((img) => ({
+      uuid: img.uuid,
+      url: `/api/v1/shop/media/${img.uuid}`,
+      alt: img.alt,
+      sortOrder: img.sortOrder,
+    }));
+  return localizedProduct({ ...product, images }, admin ? undefined : locale);
+}
+
 export function upsertShopProduct(
   db: AppDb,
   input: ShopProductInput & { uuid?: string },

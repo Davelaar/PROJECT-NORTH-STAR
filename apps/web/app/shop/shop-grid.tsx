@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { LocaleLink } from "../components/locale-link";
 import type { ShopMessages, ShopProduct } from "./types";
 import { formatShopPrice } from "./types";
 
@@ -49,17 +49,21 @@ export function ShopGrid({
     <div className="shop-grid">
       {products.map((product) => {
         const image = product.images[0];
+        const detailHref = `/shop/${product.page}/${product.uuid}`;
         return (
           <article className="shop-product" key={product.uuid}>
-            {image ? (
-              <img src={image.url} alt={image.alt || product.title} loading="lazy" />
-            ) : (
-              <div className="shop-product-image-placeholder" aria-hidden="true" />
-            )}
+            <LocaleLink href={detailHref}>
+              {image ? (
+                <img src={image.url} alt={image.alt || product.title} loading="lazy" />
+              ) : (
+                <div className="shop-product-image-placeholder" aria-hidden="true" />
+              )}
+            </LocaleLink>
             <div className="shop-product-body">
               <p className="muted">{mode === "referral" ? messages.partnerLink : "OpenFilament"}</p>
-              <h2>{product.title}</h2>
-              <p>{product.description}</p>
+              <h2>
+                <LocaleLink href={detailHref}>{product.title}</LocaleLink>
+              </h2>
               <strong>{formatShopPrice(product.priceCents, product.currency)}</strong>
               {mode === "referral" ? (
                 <a
@@ -85,7 +89,7 @@ export function ShopGrid({
       })}
       {mode === "prints" ? (
         <p className="shop-cart-link">
-          <Link href="/shop/cart">{messages.cartTitle}</Link>
+          <LocaleLink href="/shop/cart">{messages.cartTitle}</LocaleLink>
         </p>
       ) : null}
     </div>

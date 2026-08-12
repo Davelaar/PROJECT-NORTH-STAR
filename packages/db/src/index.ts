@@ -133,6 +133,7 @@ export {
   getShopOrderByCheckout,
   getShopOrderByUuid,
   getShopOrderItems,
+  getShopProductDetails,
   getShopProductByUuid,
   listShopOrders,
   listShopProducts,

@@ -55,10 +55,6 @@ function centsFromEuroInput(value: string) {
   return Math.round(amount * 100);
 }
 
-function euroInputFromCents(cents: number | undefined) {
-  return ((cents ?? 0) / 100).toString();
-}
-
 function localizedFallback(
   draft: Partial<ShopProduct>,
   keys: readonly (LocalizedTitleKey | LocalizedDescriptionKey)[],
@@ -73,6 +69,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
   const [page, setPage] = useState<ShopPage>("filament");
   const [products, setProducts] = useState<ShopProduct[]>([]);
   const [draft, setDraft] = useState<Partial<ShopProduct>>(blank("filament"));
+  const [priceInput, setPriceInput] = useState("0");
   const [orders, setOrders] = useState<Order[]>([]);
   const [error, setError] = useState("");
 
@@ -97,6 +94,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
 
   useEffect(() => {
     setDraft(blank(page));
+    setPriceInput("0");
     if (authenticated) void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, authenticated]);
@@ -143,7 +141,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
         descriptionEn: draft.descriptionEn ?? null,
         descriptionDe: draft.descriptionDe ?? null,
         descriptionFr: draft.descriptionFr ?? null,
-        priceCents: Number(draft.priceCents ?? 0),
+        priceCents: centsFromEuroInput(priceInput),
         currency: "eur",
         referralUrl: page === "prints" ? null : draft.referralUrl,
         stock: null,
@@ -151,6 +149,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
         sortOrder: Number(draft.sortOrder ?? 0),
       });
       setDraft(blank(page));
+      setPriceInput("0");
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Save failed");
@@ -191,6 +190,11 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
     for (const file of Array.from(files)) {
       await upload(product, file);
     }
+  }
+
+  function editProduct(product: ShopProduct) {
+    setDraft(product);
+    setPriceInput(((product.priceCents ?? 0) / 100).toFixed(2));
   }
 
   if (!authenticated) {
@@ -277,13 +281,11 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
         <label>
           {messages.price} (€)
           <input
-            min={0}
-            step="0.01"
-            type="number"
-            value={euroInputFromCents(draft.priceCents)}
-            onChange={(e) =>
-              setDraft((d) => ({ ...d, priceCents: centsFromEuroInput(e.target.value) }))
-            }
+            inputMode="decimal"
+            pattern="[0-9]+([,.][0-9]{1,2})?"
+            type="text"
+            value={priceInput}
+            onChange={(e) => setPriceInput(e.target.value)}
           />
         </label>
         {page !== "prints" ? (
@@ -334,7 +336,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
                 ))}
               </div>
               <div className="shop-admin-actions">
-                <button type="button" onClick={() => setDraft(product)}>
+                <button type="button" onClick={() => editProduct(product)}>
                   {messages.save}
                 </button>
                 <label className="button button-muted">

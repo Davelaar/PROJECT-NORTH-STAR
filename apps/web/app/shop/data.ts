@@ -19,3 +19,20 @@ export async function fetchShopProducts(
     return [];
   }
 }
+
+export async function fetchShopProduct(
+  uuid: string,
+  locale?: Locale,
+): Promise<ShopProduct | null> {
+  try {
+    const params = new URLSearchParams();
+    if (locale && productLocales.has(locale)) params.set("locale", locale);
+    const qs = params.toString();
+    const data = await apiGet<{ product: ShopProduct }>(
+      `/api/v1/shop/products/${uuid}${qs ? `?${qs}` : ""}`,
+    );
+    return data.product;
+  } catch {
+    return null;
+  }
+}
