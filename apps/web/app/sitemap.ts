@@ -3,7 +3,7 @@ import { absoluteUrl } from "@/lib/seo/metadata";
 import { apiGet } from "@/lib/api";
 
 type Manufacturer = { uuid: string; updatedAt?: string };
-type Material = { uuid: string; updatedAt?: string };
+type Filament = { uuid: string; updatedAt?: string };
 
 const STATIC_PATHS = [
   "/",
@@ -26,11 +26,9 @@ const STATIC_PATHS = [
   "/compatibility",
   "/docs/api",
   "/privacy-policy",
-  "/privacy",
   "/support",
   "/cookies",
   "/terms-of-service",
-  "/terms",
   "/security",
   "/trust",
   "/label",
@@ -61,18 +59,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    // Materials endpoint may not exist — ignore failures
-    const materials = await apiGet<Material[]>("/api/v1/materials");
-    for (const m of materials.slice(0, 500)) {
+    const filaments = await apiGet<Filament[]>("/api/v1/filaments");
+    for (const f of filaments.slice(0, 40_000)) {
       entries.push({
-        url: absoluteUrl(`/materials/${m.uuid}`),
-        lastModified: m.updatedAt ? new Date(m.updatedAt) : undefined,
+        url: absoluteUrl(`/filaments/${f.uuid}`),
+        lastModified: f.updatedAt ? new Date(f.updatedAt) : undefined,
         changeFrequency: "weekly",
-        priority: 0.5,
+        priority: 0.7,
       });
     }
   } catch {
-    // optional
+    // optional catalog expansion
   }
 
   return entries;

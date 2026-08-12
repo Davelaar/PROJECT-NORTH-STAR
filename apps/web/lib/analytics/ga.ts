@@ -38,14 +38,15 @@ function ensureGtagStub() {
     };
 }
 
-/** Load GA4 when analytics is allowed (default on until refused). Idempotent. */
-export function initAnalyticsIfAllowed(consent?: ConsentRecord | null): boolean {
-  const record = consent === undefined ? readConsent() : consent;
-  if (!analyticsAllowed(record)) return false;
-  const id = getMeasurementId();
-  if (!id) return false;
-  if (window.__ofGaInitialized) return true;
+function debugModeEnabled(): boolean {
+  try {
+    return new URLSearchParams(window.location.search).has("ga_debug");
+  } catch {
+    return false;
+  }
+}
 
+function configureGa(id: string) {
   ensureGtagStub();
   window.gtag!("js", new Date());
   window.gtag!("consent", "update", {
@@ -59,14 +60,40 @@ export function initAnalyticsIfAllowed(consent?: ConsentRecord | null): boolean 
     allow_google_signals: false,
     allow_ad_personalization_signals: false,
     send_page_view: true,
+    ...(debugModeEnabled() ? { debug_mode: true } : {}),
   });
+}
+
+/** Load GA4 when analytics is allowed (default on until refused). Idempotent. */
+export function initAnalyticsIfAllowed(consent?: ConsentRecord | null): boolean {
+  const record = consent === undefined ? readConsent() : consent;
+  if (!analyticsAllowed(record)) return false;
+  const id = getMeasurementId();
+  if (!id) return false;
+  if (window.__ofGaInitialized) return true;
+
+  ensureGtagStub();
+  window.__ofGaInitialized = true;
+
+  const existing = document.querySelector(
+    'script[data-of-analytics="1"]',
+  ) as HTMLScriptElement | null;
+  if (existing) {
+    configureGa(id);
+    return true;
+  }
 
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
   script.dataset.ofAnalytics = "1";
+  script.onload = () => configureGa(id);
+  script.onerror = () => {
+    window.__ofGaInitialized = false;
+  };
+  // Queue consent + config before/while the script loads (official gtag pattern).
+  configureGa(id);
   document.head.appendChild(script);
-  window.__ofGaInitialized = true;
   return true;
 }
 

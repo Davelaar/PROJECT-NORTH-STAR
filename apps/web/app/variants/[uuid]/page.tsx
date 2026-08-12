@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { WhereToBuySection } from "@/app/components/where-to-buy-section";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
 import { isPlaceholderId } from "@/lib/identifiers";
+import {
+  absoluteUrl,
+  buildPageMetadata,
+  jsonLdScript,
+} from "@/lib/seo/metadata";
 import { ProfileFilter } from "./profile-filter";
 
 type Variant = {
@@ -66,6 +72,32 @@ type Variant = {
     note: string;
   };
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ uuid: string }>;
+}): Promise<Metadata> {
+  const { uuid } = await params;
+  try {
+    const variant = await apiGet<Variant>(`/api/v1/variants/${uuid}`);
+    const title = `${variant.manufacturerName} ${variant.productName} — ${variant.variantName}`;
+    const description = `${variant.materialCode} ${variant.variantName}: manufacturer temps, starter profiles and community calibrations on OpenFilament.`;
+    return buildPageMetadata({
+      title,
+      description: description.slice(0, 160),
+      path: `/variants/${uuid}`,
+      noIndex: variant.isSyntheticFixture,
+    });
+  } catch {
+    return buildPageMetadata({
+      title: "Variant",
+      description: "OpenFilament colour variant",
+      path: `/variants/${uuid}`,
+      noIndex: true,
+    });
+  }
+}
 
 type FieldAgg = {
   recommended: number | null;
@@ -314,8 +346,51 @@ export default async function VariantPage({
   const nozzleAgg = recommendation.recommendation.nozzleTempOtherLayersC;
   const bedAgg = recommendation.recommendation.bedTempOtherLayersC;
 
+  const title = `${variant.manufacturerName} ${variant.productName} — ${variant.variantName}`;
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: title,
+    description: `${variant.materialCode} ${variant.variantName} on OpenFilament`,
+    brand: { "@type": "Brand", name: variant.manufacturerName },
+    category: variant.materialCode,
+    color: variant.variantName,
+    sku: variant.identifiers?.sku || undefined,
+    gtin: variant.identifiers?.gtin || variant.identifiers?.ean || undefined,
+    url: absoluteUrl(`/variants/${uuid}`),
+    image: absoluteUrl(previewSrc),
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: absoluteUrl("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: variant.productName,
+        item: absoluteUrl(`/filaments/${variant.productUuid}`),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: variant.variantName,
+        item: absoluteUrl(`/variants/${uuid}`),
+      },
+    ],
+  };
+
   return (
     <div className="variant-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript([productLd, breadcrumbLd])}
+      />
       <div className="variant-hero">
         <div className="variant-preview">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -23,7 +23,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.stripe.com https://checkout.stripe.com",
+      "connect-src 'self' https://www.google-analytics.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://www.googletagmanager.com https://api.stripe.com https://checkout.stripe.com",
       "frame-src https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com",
       "worker-src 'self'",
       "manifest-src 'self'",

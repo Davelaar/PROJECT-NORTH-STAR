@@ -1,6 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import {
+  absoluteUrl,
+  buildPageMetadata,
+  jsonLdScript,
+} from "@/lib/seo/metadata";
 
 type Filament = {
   uuid: string;
@@ -29,6 +35,34 @@ function roundTemp(v: number | null | undefined): string {
   return String(Math.round(v));
 }
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ uuid: string }>;
+}): Promise<Metadata> {
+  const { uuid } = await params;
+  try {
+    const product = await apiGet<Filament>(`/api/v1/filaments/${uuid}`);
+    const title = `${product.manufacturerName} ${product.productName}`;
+    const description =
+      product.description?.trim() ||
+      `${product.materialCode} filament profiles, manufacturer temps and colour variants on OpenFilament.`;
+    return buildPageMetadata({
+      title,
+      description: description.slice(0, 160),
+      path: `/filaments/${uuid}`,
+      noIndex: product.isSyntheticFixture,
+    });
+  } catch {
+    return buildPageMetadata({
+      title: "Filament",
+      description: "OpenFilament catalog product",
+      path: `/filaments/${uuid}`,
+      noIndex: true,
+    });
+  }
+}
+
 export default async function FilamentPage({
   params,
 }: {
@@ -41,9 +75,49 @@ export default async function FilamentPage({
   const product = await apiGet<Filament>(`/api/v1/filaments/${uuid}`);
   const variants = await apiGet<Variant[]>(`/api/v1/filaments/${uuid}/variants`);
   const firstVariant = variants[0];
+  const title = `${product.manufacturerName} ${product.productName}`;
+  const productLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: title,
+    description:
+      product.description?.trim() ||
+      `${product.materialCode} filament on OpenFilament`,
+    brand: { "@type": "Brand", name: product.manufacturerName },
+    category: product.materialCode,
+    url: absoluteUrl(`/filaments/${uuid}`),
+  };
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: absoluteUrl("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.manufacturerName,
+        item: absoluteUrl(`/manufacturers/${product.manufacturerUuid}`),
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.productName,
+        item: absoluteUrl(`/filaments/${uuid}`),
+      },
+    ],
+  };
 
   return (
     <div className="filament-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript([productLd, breadcrumbLd])}
+      />
       <h1>
         {product.manufacturerName} {product.productName}
       </h1>
