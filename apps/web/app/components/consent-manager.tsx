@@ -25,7 +25,7 @@ export function ConsentManager() {
   const [showPrefs, setShowPrefs] = useState(false);
   const [prefs, setPrefs] = useState({
     preferences: false,
-    analytics: false,
+    analytics: true,
     marketing: false,
   });
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -36,23 +36,34 @@ export function ConsentManager() {
     setRecord(current);
     if (!isConsentCurrent(current, CONSENT_VERSION)) {
       setShowBanner(true);
-    } else if (analyticsAllowed(current)) {
-      // Defer analytics so it cannot block primary interaction.
-      const t = window.setTimeout(() => initAnalyticsIfAllowed(current), 0);
-      return () => window.clearTimeout(t);
+    }
+
+    // Opt-out: load GA when no refusal is stored (including first visit).
+    let timeout: number | undefined;
+    if (analyticsAllowed(current) || !isConsentCurrent(current, CONSENT_VERSION)) {
+      timeout = window.setTimeout(
+        () =>
+          initAnalyticsIfAllowed(
+            isConsentCurrent(current, CONSENT_VERSION) ? current : null,
+          ),
+        0,
+      );
     }
 
     function onOpenPrefs() {
       const c = readConsent();
       setPrefs({
         preferences: c?.categories.preferences ?? false,
-        analytics: c?.categories.analytics ?? false,
+        analytics: c?.categories.analytics ?? true,
         marketing: false,
       });
       setShowPrefs(true);
     }
     window.addEventListener("of:open-cookie-settings", onOpenPrefs);
-    return () => window.removeEventListener("of:open-cookie-settings", onOpenPrefs);
+    return () => {
+      if (timeout !== undefined) window.clearTimeout(timeout);
+      window.removeEventListener("of:open-cookie-settings", onOpenPrefs);
+    };
   }, []);
 
   useEffect(() => {
@@ -109,7 +120,7 @@ export function ConsentManager() {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => {
-                  setPrefs({ preferences: false, analytics: false, marketing: false });
+                  setPrefs({ preferences: false, analytics: true, marketing: false });
                   setShowPrefs(true);
                 }}
               >
@@ -181,7 +192,11 @@ export function ConsentManager() {
       </dialog>
 
       {/* Expose current state for tests */}
-      <span hidden data-consent-version={record?.version ?? ""} data-analytics={String(Boolean(record?.categories.analytics))} />
+      <span
+        hidden
+        data-consent-version={record?.version ?? ""}
+        data-analytics={String(analyticsAllowed(record))}
+      />
     </>
   );
 }

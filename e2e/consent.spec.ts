@@ -16,6 +16,8 @@ test.describe("cookie consent network", () => {
 
     await page.goto("/");
     await page.getByRole("button", { name: /Reject non-essential/i }).click();
+    // Clear any requests that fired before reject (opt-out loads GA until refuse).
+    gaRequests.length = 0;
     await page.goto("/search");
     await page.goto("/my-spools");
     await page.goto("/docs/slicers");
@@ -27,14 +29,15 @@ test.describe("cookie consent network", () => {
     );
   });
 
-  test("accept loads GA only when measurement id configured", async ({ page }) => {
-    // Without NEXT_PUBLIC_GA_MEASUREMENT_ID, accept must still not load GA.
+  test("without measurement id, first visit still does not load GA", async ({
+    page,
+  }) => {
+    // Local/e2e typically has no NEXT_PUBLIC_GA_MEASUREMENT_ID.
     const gaRequests: string[] = [];
     page.on("request", (req) => {
       if (req.url().includes("googletagmanager.com")) gaRequests.push(req.url());
     });
     await page.goto("/");
-    await page.getByRole("button", { name: /Accept all/i }).click();
     await page.waitForTimeout(500);
     expect(gaRequests).toEqual([]);
   });

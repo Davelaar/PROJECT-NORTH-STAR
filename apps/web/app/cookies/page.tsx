@@ -49,7 +49,7 @@ export default async function CookiesPage() {
       <p className="muted">
         <code>of_locale</code>, <code>of_consent</code>, <code>of_session</code>,{" "}
         <code>of_csrf</code>, IndexedDB (<code>openfilament-spools</code>), Cache
-        Storage, optional <code>_ga</code> after analytics consent.
+        Storage, optional <code>_ga</code> unless analytics is refused.
       </p>
       <p>
         <CookieSettingsButton label={m.footer.cookieSettings} />

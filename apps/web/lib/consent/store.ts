@@ -62,6 +62,11 @@ export function rejectNonEssential(locale: string) {
   return writeConsent({ ...DEFAULT_DENIED }, locale);
 }
 
+/**
+ * Opt-out: analytics is on until the visitor explicitly refuses
+ * (or saves preferences with analytics off). No stored choice → allowed.
+ */
 export function analyticsAllowed(record: ConsentRecord | null): boolean {
-  return Boolean(record?.categories.analytics);
+  if (!record) return true;
+  return Boolean(record.categories.analytics);
 }

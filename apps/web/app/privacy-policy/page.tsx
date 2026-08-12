@@ -76,7 +76,7 @@ export default async function PrivacyPolicyPage() {
         <p className="muted">
           <code>of_locale</code>, <code>of_consent</code>, <code>of_session</code>,{" "}
           <code>of_csrf</code>, IndexedDB (<code>openfilament-spools</code>), Cache
-          Storage / service worker, optional <code>_ga</code> after analytics consent.
+          Storage / service worker, optional <code>_ga</code> unless analytics is refused.
         </p>
         <p>
           <CookieSettingsButton label={m.footer.cookieSettings} />

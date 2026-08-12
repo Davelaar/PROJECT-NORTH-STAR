@@ -2,7 +2,7 @@
 export const consentFr = {
   bannerAria: "Consentement cookies",
   bannerText:
-    "Nous utilisons un stockage nécessaire au fonctionnement du site. Les analytics optionnels aident à améliorer OpenFilament. Tu peux refuser les cookies non essentiels sans perdre la recherche, My Spools, les téléchargements, QR ou RFID.",
+    "Nous utilisons un stockage nécessaire au fonctionnement du site. Des analytics respectueux de la vie privée aident à améliorer OpenFilament et restent actifs tant que tu ne les refuses pas. Tu peux refuser les cookies non essentiels sans perdre la recherche, My Spools, les téléchargements, QR ou RFID.",
   acceptAll: "Tout accepter",
   rejectNonEssential: "Refuser le non essentiel",
   manage: "Gérer les préférences",
@@ -10,13 +10,13 @@ export const consentFr = {
   privacyPolicy: "Politique de confidentialité",
   prefsTitle: "Préférences cookies",
   prefsLead:
-    "Le stockage nécessaire reste activé. Analytics et marketing restent désactivés sauf si tu les actives.",
+    "Le stockage nécessaire reste activé. L’analytics reste activé tant que tu ne le désactives pas. Le marketing n’est pas utilisé.",
   necessary: "Nécessaire",
   necessaryHelp: "Session, sécurité, choix de consentement, langue, My Spools local.",
   preferences: "Préférences",
   preferencesHelp: "Mémoriser les préférences d’interface non essentielles.",
   analytics: "Analytics",
-  analyticsHelp: "Google Analytics 4 respectueux de la vie privée, seulement après consentement.",
+  analyticsHelp: "Google Analytics 4 respectueux de la vie privée — actif jusqu’à refus.",
   marketing: "Marketing",
   marketingHelp: "Non utilisé. Reste désactivé.",
   savePrefs: "Enregistrer les préférences",
@@ -153,7 +153,7 @@ export const legalPagesFr = {
           "Inventaire My Spools Cloud, notes privées et identités QR/RFID uniquement lorsque tu synchronises explicitement vers le Cloud.",
           "My Spools local reste dans ton navigateur jusqu’à sync ou export — la connexion n’envoie pas les bobines locales toute seule.",
           "Contributions communautaires publiques que tu choisis de publier (calibrations, tips catalogue).",
-          "Préférences de consentement et Google Analytics 4 optionnel uniquement après opt-in.",
+          "Préférences de consentement et Google Analytics 4 respectueux de la vie privée sauf si tu refuses les cookies non essentiels.",
         ],
       },
       {
@@ -161,7 +161,7 @@ export const legalPagesFr = {
         items: [
           "Contrat / service demandé pour comptes, Cloud, exports et téléchargements.",
           "Intérêt légitime pour la sécurité, la prévention des abus et l’intégrité du service.",
-          "Consentement pour cookies/stockage analytics — révocable via Paramètres cookies sur ce site.",
+          "Cookies/stockage analytics jusqu’au refus — désactivables à tout moment via Paramètres cookies.",
           "Obligation légale lorsque des enregistrements de sécurité ou comptables doivent être conservés.",
         ],
       },
@@ -238,7 +238,7 @@ export const legalPagesFr = {
       {
         heading: "Analytics optionnel",
         paragraphs: [
-          "Seulement si tu acceptes l’analytics, nous chargeons Google Analytics 4 respectueux de la vie privée, qui peut poser des cookies first-party comme _ga. Refuser l’analytics laisse recherche, My Spools, comptes, QR, RFID et téléchargements pleinement utilisables. Aucun cookie marketing n’est utilisé.",
+          "Nous chargeons par défaut Google Analytics 4 respectueux de la vie privée, qui peut poser des cookies first-party comme _ga. Refuse les cookies non essentiels (ou désactive l’analytics dans Paramètres cookies) pour l’arrêter. Recherche, My Spools, comptes, QR, RFID et téléchargements restent utilisables. Aucun cookie marketing n’est utilisé.",
         ],
       },
       {

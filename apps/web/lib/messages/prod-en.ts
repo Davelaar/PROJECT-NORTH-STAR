@@ -2,7 +2,7 @@
 export const consentEn = {
   bannerAria: "Cookie consent",
   bannerText:
-    "We use necessary storage to run the site. Optional analytics help us improve OpenFilament. You can reject non-essential cookies without losing search, My Spools, downloads, QR or RFID.",
+    "We use necessary storage to run the site. Privacy-conscious analytics help improve OpenFilament and stay on unless you reject them. You can refuse non-essential cookies without losing search, My Spools, downloads, QR or RFID.",
   acceptAll: "Accept all",
   rejectNonEssential: "Reject non-essential",
   manage: "Manage preferences",
@@ -10,13 +10,13 @@ export const consentEn = {
   privacyPolicy: "Privacy policy",
   prefsTitle: "Cookie preferences",
   prefsLead:
-    "Necessary storage stays on. Analytics and marketing stay off unless you enable them.",
+    "Necessary storage stays on. Analytics stays on unless you turn it off. Marketing is not used.",
   necessary: "Necessary",
   necessaryHelp: "Session, security, consent choice, language, local My Spools.",
   preferences: "Preferences",
   preferencesHelp: "Remember non-essential UI preferences.",
   analytics: "Analytics",
-  analyticsHelp: "Privacy-conscious Google Analytics 4 after consent only.",
+  analyticsHelp: "Privacy-conscious Google Analytics 4 — on until you refuse.",
   marketing: "Marketing",
   marketingHelp: "Not used. Remains disabled.",
   savePrefs: "Save preferences",
@@ -155,7 +155,7 @@ export const legalPagesEn = {
           "My Spools Cloud inventory, private notes and QR/RFID identities only when you explicitly sync to Cloud.",
           "Local My Spools stays in your browser until you sync or export it — signing in does not upload local spools by itself.",
           "Public community contributions you choose to publish (calibrations, catalog tips).",
-          "Consent preferences and optional Google Analytics 4 only after you opt in.",
+          "Consent preferences and privacy-conscious Google Analytics 4 unless you reject non-essential cookies.",
         ],
       },
       {
@@ -163,7 +163,7 @@ export const legalPagesEn = {
         items: [
           "Contract / requested service for accounts, Cloud, exports and downloads.",
           "Legitimate interest for security, abuse prevention and service integrity.",
-          "Consent for analytics cookies/storage — withdrawable via Cookie settings on this site.",
+          "Analytics cookies/storage until you refuse — turn off any time via Cookie settings on this site.",
           "Legal obligation where security or accounting records must be retained.",
         ],
       },
@@ -184,7 +184,7 @@ export const legalPagesEn = {
       {
         heading: "International transfers and changes",
         paragraphs: [
-          "Hosting for the application and database is on our EU VPS as shown above. If you enable analytics, Google may process analytics data outside the EEA under its safeguards. Stripe may process payment data in regions where Stripe operates. Material policy changes update the consent version and may re-prompt for consent.",
+          "Hosting for the application and database is on our EU VPS as shown above. Unless you refuse analytics, Google may process analytics data outside the EEA under its safeguards. Stripe may process payment data in regions where Stripe operates. Material policy changes update the consent version and may re-prompt for a choice.",
         ],
       },
     ],
@@ -240,13 +240,13 @@ export const legalPagesEn = {
       {
         heading: "Optional analytics",
         paragraphs: [
-          "Only if you accept analytics we load privacy-conscious Google Analytics 4, which may set first-party cookies such as _ga. Rejecting analytics leaves search, My Spools, accounts, QR, RFID and downloads fully usable. Marketing cookies are not used.",
+          "We load privacy-conscious Google Analytics 4 by default, which may set first-party cookies such as _ga. Reject non-essential cookies (or turn analytics off in Cookie settings) to stop it. Search, My Spools, accounts, QR, RFID and downloads stay fully usable. Marketing cookies are not used.",
         ],
       },
       {
         heading: "Change your choice",
         paragraphs: [
-          "Open Cookie settings from the footer or the privacy policy page any time. Changing your mind updates storage immediately and turns analytics off when you withdraw consent.",
+          "Open Cookie settings from the footer or the privacy policy page any time. Changing your mind updates storage immediately and turns analytics off when you refuse it.",
         ],
       },
     ],

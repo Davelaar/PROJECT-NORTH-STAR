@@ -1,7 +1,7 @@
 /**
- * GA4 loader — basic consent only.
- * No network request until analytics consent is granted.
- * No cookieless / Advanced Consent Mode pings before consent.
+ * GA4 loader — opt-out analytics.
+ * Loads unless the visitor has explicitly refused analytics.
+ * No cookieless / Advanced Consent Mode pings after refusal.
  */
 
 import { analyticsAllowed, readConsent } from "../consent/store";
@@ -38,7 +38,7 @@ function ensureGtagStub() {
     };
 }
 
-/** Load GA4 script only after analytics consent. Idempotent. */
+/** Load GA4 when analytics is allowed (default on until refused). Idempotent. */
 export function initAnalyticsIfAllowed(consent?: ConsentRecord | null): boolean {
   const record = consent === undefined ? readConsent() : consent;
   if (!analyticsAllowed(record)) return false;
@@ -72,6 +72,7 @@ export function initAnalyticsIfAllowed(consent?: ConsentRecord | null): boolean 
 
 export function disableAnalytics(): void {
   if (typeof window === "undefined") return;
+  window.__ofGaInitialized = false;
   ensureGtagStub();
   window.gtag?.("consent", "update", {
     analytics_storage: "denied",
@@ -82,7 +83,6 @@ export function disableAnalytics(): void {
   document
     .querySelectorAll('script[data-of-analytics="1"]')
     .forEach((el) => el.remove());
-  // Do not send further events; leave stub so accidental calls no-op safely.
 }
 
 /** Privacy-safe product events — no PII, UUIDs, query text, or RFID/QR payloads. */
@@ -106,7 +106,11 @@ export function trackEvent(
   name: SafeAnalyticsEvent,
   params?: Record<string, string | number | boolean>,
 ): void {
+  if (typeof window === "undefined") return;
   if (!analyticsAllowed(readConsent())) return;
+  if (!window.__ofGaInitialized) {
+    initAnalyticsIfAllowed();
+  }
   if (!window.__ofGaInitialized) return;
   const safe: Record<string, string | number | boolean> = {};
   if (params) {

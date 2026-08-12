@@ -2,7 +2,7 @@
 export const consentNl = {
   bannerAria: "Cookietoestemming",
   bannerText:
-    "We gebruiken noodzakelijke opslag om de site te laten werken. Optionele analytics helpen OpenFilament te verbeteren. Je kunt niet-essentiële cookies weigeren zonder zoeken, My Spools, downloads, QR of RFID te verliezen.",
+    "We gebruiken noodzakelijke opslag om de site te laten werken. Privacybewuste analytics helpen OpenFilament te verbeteren en blijven aan tot je ze weigert. Je kunt niet-essentiële cookies weigeren zonder zoeken, My Spools, downloads, QR of RFID te verliezen.",
   acceptAll: "Alles accepteren",
   rejectNonEssential: "Niet-essentieel weigeren",
   manage: "Voorkeuren beheren",
@@ -10,13 +10,13 @@ export const consentNl = {
   privacyPolicy: "Privacybeleid",
   prefsTitle: "Cookievoorkeuren",
   prefsLead:
-    "Noodzakelijke opslag blijft aan. Analytics en marketing blijven uit tenzij je ze inschakelt.",
+    "Noodzakelijke opslag blijft aan. Analytics blijft aan tot je het uitzet. Marketing wordt niet gebruikt.",
   necessary: "Noodzakelijk",
   necessaryHelp: "Sessie, beveiliging, cookiekeuze, taal, lokale My Spools.",
   preferences: "Voorkeuren",
   preferencesHelp: "Niet-essentiële UI-voorkeuren onthouden.",
   analytics: "Analytics",
-  analyticsHelp: "Privacybewuste Google Analytics 4 alleen na toestemming.",
+  analyticsHelp: "Privacybewuste Google Analytics 4 — aan tot je weigert.",
   marketing: "Marketing",
   marketingHelp: "Niet in gebruik. Blijft uitgeschakeld.",
   savePrefs: "Voorkeuren opslaan",
@@ -153,7 +153,7 @@ export const legalPagesNl = {
           "My Spools Cloud-inventaris, privénotities en QR/RFID-identiteiten alleen wanneer je expliciet naar Cloud synchroniseert.",
           "Lokale My Spools blijft in je browser tot je synchroniseert of exporteert — inloggen uploadt lokale spoelen niet vanzelf.",
           "Openbare communitybijdragen die je zelf publiceert (kalibraties, catalogustips).",
-          "Toestemmingsvoorkeuren en optionele Google Analytics 4 alleen na opt-in.",
+          "Toestemmingsvoorkeuren en privacybewuste Google Analytics 4 tenzij je niet-essentiële cookies weigert.",
         ],
       },
       {
@@ -161,7 +161,7 @@ export const legalPagesNl = {
         items: [
           "Overeenkomst / gevraagde dienst voor accounts, Cloud, export en downloads.",
           "Gerechtvaardigd belang voor beveiliging, misbruikpreventie en dienstintegriteit.",
-          "Toestemming voor analytics-cookies/opslag — intrekbaar via Cookie-instellingen op deze site.",
+          "Analytics-cookies/opslag tot je weigert — uitzetten via Cookie-instellingen op deze site.",
           "Wettelijke verplichting waar beveiligings- of boekhoudrecords bewaard moeten blijven.",
         ],
       },
@@ -182,7 +182,7 @@ export const legalPagesNl = {
       {
         heading: "Internationale doorgifte en wijzigingen",
         paragraphs: [
-          "Hosting van de applicatie en database staat op onze EU-VPS zoals hierboven. Als je analytics inschakelt, kan Google analyticsgegevens buiten de EER verwerken onder eigen waarborgen. Stripe kan betaalgegevens verwerken in regio’s waar Stripe actief is. Materiële beleidswijzigingen verhogen de toestemmingsversie en kunnen opnieuw om toestemming vragen.",
+          "Hosting van de applicatie en database staat op onze EU-VPS zoals hierboven. Analytics (tenzij geweigerd) kan betekenen dat Google analyticsgegevens buiten de EER verwerkt onder eigen waarborgen. Stripe kan betaalgegevens verwerken in regio’s waar Stripe actief is. Materiële beleidswijzigingen verhogen de toestemmingsversie en kunnen opnieuw om een keuze vragen.",
         ],
       },
     ],
@@ -238,13 +238,13 @@ export const legalPagesNl = {
       {
         heading: "Optionele analytics",
         paragraphs: [
-          "Alleen als je analytics accepteert laden we privacybewuste Google Analytics 4, die first-party cookies zoals _ga kan zetten. Analytics weigeren laat zoeken, My Spools, accounts, QR, RFID en downloads volledig bruikbaar. Marketingcookies worden niet gebruikt.",
+          "We laden standaard privacybewuste Google Analytics 4, die first-party cookies zoals _ga kan zetten. Weiger niet-essentiële cookies (of zet analytics uit in Cookie-instellingen) om te stoppen. Zoeken, My Spools, accounts, QR, RFID en downloads blijven volledig bruikbaar. Marketingcookies worden niet gebruikt.",
         ],
       },
       {
         heading: "Je keuze wijzigen",
         paragraphs: [
-          "Open Cookie-instellingen vanuit de footer of de privacybeleidpagina wanneer je wilt. Een andere keuze werkt de opslag meteen bij en zet analytics uit wanneer je toestemming intrekt.",
+          "Open Cookie-instellingen vanuit de footer of de privacybeleidpagina wanneer je wilt. Een andere keuze werkt de opslag meteen bij en zet analytics uit wanneer je weigert.",
         ],
       },
     ],

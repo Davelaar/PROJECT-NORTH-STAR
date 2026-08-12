@@ -2,7 +2,7 @@
 export const consentDe = {
   bannerAria: "Cookie-Einwilligung",
   bannerText:
-    "Wir nutzen notwendige Speicherung, damit die Seite funktioniert. Optionale Analytics helfen, OpenFilament zu verbessern. Du kannst nicht essenzielle Cookies ablehnen und behältst Suche, My Spools, Downloads, QR und RFID.",
+    "Wir nutzen notwendige Speicherung, damit die Seite funktioniert. Datenschutzbewusste Analytics helfen, OpenFilament zu verbessern, und bleiben an, bis du sie ablehnst. Du kannst nicht essenzielle Cookies ablehnen und behältst Suche, My Spools, Downloads, QR und RFID.",
   acceptAll: "Alles akzeptieren",
   rejectNonEssential: "Nicht essenziell ablehnen",
   manage: "Einstellungen verwalten",
@@ -10,13 +10,13 @@ export const consentDe = {
   privacyPolicy: "Datenschutz",
   prefsTitle: "Cookie-Einstellungen",
   prefsLead:
-    "Notwendige Speicherung bleibt an. Analytics und Marketing bleiben aus, bis du sie aktivierst.",
+    "Notwendige Speicherung bleibt an. Analytics bleibt an, bis du es ausschaltest. Marketing wird nicht verwendet.",
   necessary: "Notwendig",
   necessaryHelp: "Sitzung, Sicherheit, Cookie-Wahl, Sprache, lokales My Spools.",
   preferences: "Einstellungen",
   preferencesHelp: "Nicht essenzielle UI-Einstellungen merken.",
   analytics: "Analytics",
-  analyticsHelp: "Datenschutzbewusste Google Analytics 4 nur nach Einwilligung.",
+  analyticsHelp: "Datenschutzbewusste Google Analytics 4 — an, bis du ablehnst.",
   marketing: "Marketing",
   marketingHelp: "Nicht verwendet. Bleibt deaktiviert.",
   savePrefs: "Einstellungen speichern",
@@ -153,7 +153,7 @@ export const legalPagesDe = {
           "My Spools Cloud-Inventar, private Notizen und QR/RFID-Identitäten nur, wenn du ausdrücklich in die Cloud synchronisierst.",
           "Lokale My Spools bleiben im Browser, bis du synchronisierst oder exportierst — die Anmeldung lädt lokale Spulen nicht von allein hoch.",
           "Öffentliche Community-Beiträge, die du veröffentlichst (Kalibrierungen, Katalogtipps).",
-          "Einwilligungspräferenzen und optionales Google Analytics 4 nur nach Opt-in.",
+          "Einwilligungspräferenzen und datenschutzbewusstes Google Analytics 4, sofern du nicht essenzielle Cookies nicht ablehnst.",
         ],
       },
       {
@@ -161,7 +161,7 @@ export const legalPagesDe = {
         items: [
           "Vertrag / angeforderte Leistung für Konten, Cloud, Exporte und Downloads.",
           "Berechtigtes Interesse für Sicherheit, Missbrauchsprävention und Dienstintegrität.",
-          "Einwilligung für Analyse-Cookies/Speicher — widerrufbar über Cookie-Einstellungen auf dieser Site.",
+          "Analyse-Cookies/Speicher bis zur Ablehnung — jederzeit über Cookie-Einstellungen abschaltbar.",
           "Rechtliche Verpflichtung, wo Sicherheits- oder Buchhaltungsunterlagen aufbewahrt werden müssen.",
         ],
       },
@@ -238,7 +238,7 @@ export const legalPagesDe = {
       {
         heading: "Optionale Analytics",
         paragraphs: [
-          "Nur wenn du Analytics akzeptierst, laden wir datenschutzbewusstes Google Analytics 4, das First-Party-Cookies wie _ga setzen kann. Ablehnen von Analytics lässt Suche, My Spools, Konten, QR, RFID und Downloads vollständig nutzbar. Marketing-Cookies werden nicht verwendet.",
+          "Wir laden standardmäßig datenschutzbewusstes Google Analytics 4, das First-Party-Cookies wie _ga setzen kann. Lehne nicht essenzielle Cookies ab (oder schalte Analytics in den Cookie-Einstellungen aus), um es zu stoppen. Suche, My Spools, Konten, QR, RFID und Downloads bleiben nutzbar. Marketing-Cookies werden nicht verwendet.",
         ],
       },
       {

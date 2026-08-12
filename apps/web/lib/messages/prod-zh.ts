@@ -2,20 +2,20 @@
 export const consentZh = {
   bannerAria: "Cookie 同意",
   bannerText:
-    "我们使用必要存储以保障网站运行。可选的分析功能用于改进 OpenFilament。你可以拒绝非必要 Cookie，同时继续使用搜索、My Spools、下载、QR 与 RFID。",
+    "我们使用必要存储以保障网站运行。注重隐私的分析用于改进 OpenFilament，默认开启，直到你拒绝。你可以拒绝非必要 Cookie，同时继续使用搜索、My Spools、下载、QR 与 RFID。",
   acceptAll: "全部接受",
   rejectNonEssential: "拒绝非必要",
   manage: "管理偏好",
   cookiePolicy: "Cookie 政策",
   privacyPolicy: "隐私政策",
   prefsTitle: "Cookie 偏好",
-  prefsLead: "必要存储保持开启。分析与营销默认关闭，除非你主动启用。",
+  prefsLead: "必要存储保持开启。分析默认开启，直到你关闭。营销未使用。",
   necessary: "必要",
   necessaryHelp: "会话、安全、同意选择、语言、本地 My Spools。",
   preferences: "偏好",
   preferencesHelp: "记住非必要的界面偏好。",
   analytics: "分析",
-  analyticsHelp: "仅在同意后启用注重隐私的 Google Analytics 4。",
+  analyticsHelp: "注重隐私的 Google Analytics 4 — 开启直至你拒绝。",
   marketing: "营销",
   marketingHelp: "未使用。保持关闭。",
   savePrefs: "保存偏好",
@@ -146,7 +146,7 @@ export const legalPagesZh = {
           "仅在你明确同步到 Cloud 时，才处理 My Spools Cloud 库存、私密备注与 QR/RFID 身份。",
           "本地 My Spools 保留在浏览器中，直到你同步或导出 — 登录本身不会上传本地线轴。",
           "你选择发布的公开社区贡献（校准、目录提示）。",
-          "同意偏好，以及仅在你选择加入后的可选 Google Analytics 4。",
+          "同意偏好，以及注重隐私的 Google Analytics 4（除非你拒绝非必要 Cookie）。",
         ],
       },
       {
@@ -154,7 +154,7 @@ export const legalPagesZh = {
         items: [
           "合同 / 所请求服务：账户、Cloud、导出与下载。",
           "合法利益：安全、防滥用与服务完整性。",
-          "同意：分析 Cookie/存储 — 可通过本站 Cookie 设置撤回。",
+          "分析 Cookie/存储默认开启直至你拒绝 — 可随时在 Cookie 设置中关闭。",
           "法定义务：在必须保留安全或会计记录时。",
         ],
       },
@@ -231,7 +231,7 @@ export const legalPagesZh = {
       {
         heading: "可选分析",
         paragraphs: [
-          "仅在你接受分析时，我们才会加载注重隐私的 Google Analytics 4，它可能设置如 _ga 等第一方 Cookie。拒绝分析后，搜索、My Spools、账户、QR、RFID 与下载仍可完整使用。不使用营销 Cookie。",
+          "我们默认加载注重隐私的 Google Analytics 4，它可能设置如 _ga 等第一方 Cookie。拒绝非必要 Cookie（或在 Cookie 设置中关闭分析）即可停止。搜索、My Spools、账户、QR、RFID 与下载仍可完整使用。不使用营销 Cookie。",
         ],
       },
       {
