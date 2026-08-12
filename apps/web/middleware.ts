@@ -18,6 +18,19 @@ export function middleware(request: NextRequest) {
 
   const first = pathname.split("/")[1];
 
+  // After a locale rewrite Next may re-invoke middleware on the bare path.
+  // Keep the locale already stamped on the request — do not reset to English.
+  const locked = request.headers.get(LOCALE_HEADER);
+  if (
+    !isPrefixedLocale(first) &&
+    first !== "en" &&
+    isPrefixedLocale(locked)
+  ) {
+    const response = NextResponse.next();
+    response.headers.set("Content-Language", contentLanguage(locked));
+    return response;
+  }
+
   // Canonicalize /en/... → unprefixed English URLs
   if (first === "en") {
     const rest =
@@ -78,10 +91,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all paths except static Next internals already filtered in-code.
-     * Keep matcher broad; exemptions are handled in middleware.
-     */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
