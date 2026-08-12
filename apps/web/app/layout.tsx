@@ -5,6 +5,7 @@ import { ServiceWorkerRegister } from "./components/sw-register";
 import { ConsentManager } from "./components/consent-manager";
 import { getLocaleMessages } from "@/lib/messages";
 import { jsonLdScript, absoluteUrl } from "@/lib/seo/metadata";
+import { htmlLang, localizedPath } from "@/lib/i18n/routing";
 import { gaHeadBootstrapInline, getMeasurementId } from "@/lib/analytics/ga";
 import { legalHasPlaceholders, legalMissingSummary } from "@/lib/legal/config";
 import type { Viewport } from "next";
@@ -45,10 +46,11 @@ export default async function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "OpenFilament",
-    url: absoluteUrl("/"),
+    url: absoluteUrl(localizedPath(locale, "/")),
+    inLanguage: htmlLang(locale),
     potentialAction: {
       "@type": "SearchAction",
-      target: `${absoluteUrl("/search")}?q={search_term_string}`,
+      target: `${absoluteUrl(localizedPath(locale, "/search"))}?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
   };
@@ -59,12 +61,13 @@ export default async function RootLayout({
     name: "OpenFilament",
     applicationCategory: "UtilitiesApplication",
     operatingSystem: "Web",
-    url: absoluteUrl("/"),
+    url: absoluteUrl(localizedPath(locale, "/")),
+    inLanguage: htmlLang(locale),
     offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
   };
 
   return (
-    <html lang={locale}>
+    <html lang={htmlLang(locale)}>
       <head>
         <script
           type="application/ld+json"

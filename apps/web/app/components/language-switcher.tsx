@@ -6,6 +6,7 @@ import {
   LOCALES,
   type Locale,
 } from "@/lib/messages/types";
+import { localizedPath, stripLocalePrefix } from "@/lib/i18n/routing";
 import { useLocale, useMessages } from "./messages-provider";
 
 export function LanguageSwitcher() {
@@ -14,7 +15,14 @@ export function LanguageSwitcher() {
 
   function onChange(next: Locale) {
     document.cookie = `${LOCALE_COOKIE}=${next};path=/;max-age=31536000;SameSite=Lax`;
-    window.location.reload();
+    const bare = stripLocalePrefix(window.location.pathname);
+    const target = localizedPath(next, bare);
+    const nextUrl = `${target}${window.location.search}${window.location.hash}`;
+    if (nextUrl === `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+      window.location.reload();
+      return;
+    }
+    window.location.assign(nextUrl);
   }
 
   return (

@@ -378,6 +378,20 @@ export async function registerRoutes(app: FastifyInstance) {
     });
   });
 
+  /** Lightweight UUID list for sitemap / community indexing. */
+  app.get("/api/v1/variants", async () => {
+    return db()
+      .select({
+        uuid: schema.filamentVariants.uuid,
+        updatedAt: schema.filamentVariants.updatedAt,
+        isSyntheticFixture: schema.filamentVariants.isSyntheticFixture,
+      })
+      .from(schema.filamentVariants)
+      .all()
+      .filter((r) => !r.isSyntheticFixture)
+      .map(({ uuid, updatedAt }) => ({ uuid, updatedAt }));
+  });
+
   app.get<{ Params: { uuid: string } }>(
     "/api/v1/filaments/:uuid",
     async (req, reply) => {

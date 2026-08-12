@@ -30,5 +30,5 @@
 
 - Homepage still SSR-fetches health + preview (bounded but network-bound)
 - Scan page ships a larger client bundle (jsQR)
-- Cookie-locale SEO without path prefixes
+- Locale path prefixes (`/nl/...`) for crawlable multilingual SEO (see docs/SEO_AUDIT.md)
 - GA after consent adds third-party cost when enabled

@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { openCookieSettings } from "./consent-manager";
 import { useMessages } from "./messages-provider";
+import { LocaleLink } from "./locale-link";
 import { legalHasPlaceholders } from "@/lib/legal/config";
 
 export function SiteFooter() {
@@ -13,21 +13,21 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <nav aria-label={m.footer.navAria} className="footer-nav">
-        <Link href="/privacy-policy">{m.footer.privacy}</Link>
-        <Link href="/support">{m.footer.support}</Link>
-        <Link href="/terms-of-service">{m.footer.terms}</Link>
-        <Link href="/cookies">{m.footer.cookies}</Link>
+        <LocaleLink href="/privacy-policy">{m.footer.privacy}</LocaleLink>
+        <LocaleLink href="/support">{m.footer.support}</LocaleLink>
+        <LocaleLink href="/terms-of-service">{m.footer.terms}</LocaleLink>
+        <LocaleLink href="/cookies">{m.footer.cookies}</LocaleLink>
         <button type="button" className="linkish" onClick={() => openCookieSettings()}>
           {m.footer.cookieSettings}
         </button>
-        <Link href="/security">{m.footer.security}</Link>
-        <Link href="/trust">{m.footer.trust}</Link>
-        <Link href="/my-spools">{m.footer.mySpools}</Link>
-        <Link href="/docs/slicers">{m.export.supportedSlicersLink}</Link>
-        <Link href="/docs/usage-tracking">{m.nav.usageTracking}</Link>
-        <Link href="/compatibility">{m.nav.compatibility}</Link>
-        <Link href="/docs/api">{m.nav.docsApi}</Link>
-        <Link href="/contribute">{m.nav.contribute}</Link>
+        <LocaleLink href="/security">{m.footer.security}</LocaleLink>
+        <LocaleLink href="/trust">{m.footer.trust}</LocaleLink>
+        <LocaleLink href="/my-spools">{m.footer.mySpools}</LocaleLink>
+        <LocaleLink href="/docs/slicers">{m.export.supportedSlicersLink}</LocaleLink>
+        <LocaleLink href="/docs/usage-tracking">{m.nav.usageTracking}</LocaleLink>
+        <LocaleLink href="/compatibility">{m.nav.compatibility}</LocaleLink>
+        <LocaleLink href="/docs/api">{m.nav.docsApi}</LocaleLink>
+        <LocaleLink href="/contribute">{m.nav.contribute}</LocaleLink>
       </nav>
       {showLegalWarn ? (
         <p className="legal-placeholder-warn" role="status">

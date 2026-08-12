@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { brandedTitle, clipForTitle } from "./titles";
+import { languageAlternates } from "./metadata";
 
 describe("seo titles", () => {
   it("brands unique page titles", () => {
@@ -22,5 +23,16 @@ describe("seo titles", () => {
     expect(clipForTitle("Hello world from OpenFilament catalog", 18)).toBe(
       "Hello world from…",
     );
+  });
+});
+
+describe("hreflang alternates", () => {
+  it("emits distinct URLs per locale", () => {
+    const alts = languageAlternates("/identify");
+    expect(alts.en).toMatch(/\/identify$/);
+    expect(alts.nl).toMatch(/\/nl\/identify$/);
+    expect(alts["zh-Hans"]).toMatch(/\/zh\/identify$/);
+    expect(alts["x-default"]).toBe(alts.en);
+    expect(alts.nl).not.toBe(alts.en);
   });
 });

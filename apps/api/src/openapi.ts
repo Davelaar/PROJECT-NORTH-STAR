@@ -23,6 +23,9 @@ export function buildOpenApiDocument(baseUrl: string) {
       "/api/v1/filaments/{uuid}/variants": {
         get: { summary: "List variants for product", responses: ok },
       },
+      "/api/v1/variants": {
+        get: { summary: "List variant UUIDs (sitemap)", responses: ok },
+      },
       "/api/v1/variants/{uuid}": { get: { summary: "Get variant", responses: ok } },
       "/api/v1/variants/{uuid}/profiles": {
         get: { summary: "Profiles for variant", responses: ok },

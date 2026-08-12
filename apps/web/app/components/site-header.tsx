@@ -1,16 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useState } from "react";
+import { stripLocalePrefix } from "@/lib/i18n/routing";
 import { useMessages } from "./messages-provider";
 import { LanguageSwitcher } from "./language-switcher";
+import { LocaleLink } from "./locale-link";
 
 type NavItem = { href: string; label: string };
 
 export function SiteHeader() {
   const m = useMessages();
   const pathname = usePathname();
+  const barePath = stripLocalePrefix(pathname);
   const [open, setOpen] = useState(false);
   const menuId = useId();
 
@@ -35,26 +37,26 @@ export function SiteHeader() {
   }, []);
 
   function isActive(href: string) {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(`${href}/`);
+    if (href === "/") return barePath === "/";
+    return barePath === href || barePath.startsWith(`${href}/`);
   }
 
   return (
     <header className="site-header">
       <div className="site-header-bar">
-        <Link href="/" className="brand">
+        <LocaleLink href="/" className="brand">
           {m.brand}
-        </Link>
+        </LocaleLink>
         <nav className="nav-desktop" aria-label={m.nav.primaryAria}>
           {primary.map((item) => (
-            <Link
+            <LocaleLink
               key={item.href}
               href={item.href}
               className={isActive(item.href) ? "nav-active" : undefined}
               aria-current={isActive(item.href) ? "page" : undefined}
             >
               {item.label}
-            </Link>
+            </LocaleLink>
           ))}
           <LanguageSwitcher />
         </nav>
@@ -72,25 +74,25 @@ export function SiteHeader() {
       {open ? (
         <nav id={menuId} className="nav-mobile" aria-label={m.nav.primaryAria}>
           {primary.map((item) => (
-            <Link
+            <LocaleLink
               key={item.href}
               href={item.href}
               className={isActive(item.href) ? "nav-active" : undefined}
               aria-current={isActive(item.href) ? "page" : undefined}
             >
               {item.label}
-            </Link>
+            </LocaleLink>
           ))}
           <div className="nav-mobile-secondary">
-            <Link href="/docs/slicers">{m.export.supportedSlicersLink}</Link>
-            <Link href="/docs/usage-tracking">{m.nav.usageTracking}</Link>
-            <Link href="/compatibility">{m.nav.compatibility}</Link>
-            <Link href="/scan">{m.nav.scan}</Link>
-            <Link href="/rfid">{m.nav.rfid}</Link>
-            <Link href="/export">{m.export.downloadForSlicer}</Link>
-            <Link href="/hardware">{m.nav.hardware}</Link>
-            <Link href="/account">{m.nav.me}</Link>
-            <Link href="/docs/api">{m.nav.docsApi}</Link>
+            <LocaleLink href="/docs/slicers">{m.export.supportedSlicersLink}</LocaleLink>
+            <LocaleLink href="/docs/usage-tracking">{m.nav.usageTracking}</LocaleLink>
+            <LocaleLink href="/compatibility">{m.nav.compatibility}</LocaleLink>
+            <LocaleLink href="/scan">{m.nav.scan}</LocaleLink>
+            <LocaleLink href="/rfid">{m.nav.rfid}</LocaleLink>
+            <LocaleLink href="/export">{m.export.downloadForSlicer}</LocaleLink>
+            <LocaleLink href="/hardware">{m.nav.hardware}</LocaleLink>
+            <LocaleLink href="/account">{m.nav.me}</LocaleLink>
+            <LocaleLink href="/docs/api">{m.nav.docsApi}</LocaleLink>
           </div>
           <LanguageSwitcher />
         </nav>
