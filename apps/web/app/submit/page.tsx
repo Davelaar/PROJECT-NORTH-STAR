@@ -1,6 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { SubmitProfileForm } from "./submit-form";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages: m } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: m.submitProfile.heading,
+    description: m.submitProfile.lead,
+    path: "/submit",
+  });
+}
 
 export default async function SubmitPage({
   searchParams,

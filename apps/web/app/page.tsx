@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export async function generateMetadata(): Promise<Metadata> {
   const { messages: m } = await getLocaleMessages();
   return buildPageMetadata({
-    title: m.brand,
+    title: m.home.heading,
     description: m.home.lead,
     path: "/",
   });

@@ -1,14 +1,40 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import {
   USAGE_COMPATIBILITY_REGISTRY,
   usageCompatibilityById,
 } from "@open-filament/domain";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
 
 export function generateStaticParams() {
   return USAGE_COMPATIBILITY_REGISTRY.map((entry) => ({ integration: entry.id }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ integration: string }>;
+}): Promise<Metadata> {
+  const { integration } = await params;
+  const entry = usageCompatibilityById(integration);
+  const { locale } = await getLocaleMessages();
+  const t = getUsageTrackingCopy(locale);
+  if (!entry) {
+    return buildPageMetadata({
+      title: t.title,
+      description: t.lead,
+      path: `/docs/usage-tracking/${integration}`,
+      noIndex: true,
+    });
+  }
+  return buildPageMetadata({
+    title: `${t.title}: ${entry.product}`,
+    description: t.centralRule,
+    path: `/docs/usage-tracking/${integration}`,
+  });
 }
 
 export default async function UsageTrackingIntegrationPage({

@@ -1,6 +1,8 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { InstallProfileButton } from "../../components/install-profile-button";
 import { ProfileVoteButtons } from "../../components/profile-vote-buttons";
 
@@ -31,6 +33,32 @@ type Profile = {
   } | null;
   openFilamentProfile: unknown;
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ uuid: string }>;
+}): Promise<Metadata> {
+  const { uuid } = await params;
+  try {
+    const profile = await apiGet<Profile>(`/api/v1/profiles/${uuid}`);
+    return buildPageMetadata({
+      title: profile.title || "Calibration profile",
+      description:
+        profile.currentRevision?.notes?.trim() ||
+        "Measured filament calibration profile on OpenFilament",
+      path: `/profiles/${uuid}`,
+      noIndex: profile.isSyntheticFixture,
+    });
+  } catch {
+    return buildPageMetadata({
+      title: "Calibration profile",
+      description: "OpenFilament calibration profile",
+      path: `/profiles/${uuid}`,
+      noIndex: true,
+    });
+  }
+}
 
 export default async function ProfilePage({
   params,

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getSlicerEntry } from "@open-filament/domain";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getSlicerGuides, type GuideBlock } from "@/lib/slicer-guides";
 import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
 
@@ -49,6 +51,30 @@ function renderBlocks(blocks: GuideBlock[]) {
 
 export function generateStaticParams() {
   return SLUGS.map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  if (!SLUGS.includes(slug as Slug)) {
+    return buildPageMetadata({
+      title: "Slicer guide",
+      description: "OpenFilament slicer documentation",
+      path: `/docs/slicers/${slug}`,
+      noIndex: true,
+    });
+  }
+  const { locale } = await getLocaleMessages();
+  const bundle = await getSlicerGuides(locale);
+  const guide = bundle.guides[slug as Slug];
+  return buildPageMetadata({
+    title: guide.title,
+    description: guide.lead,
+    path: `/docs/slicers/${slug}`,
+  });
 }
 
 export default async function SlicerGuidePage({

@@ -1,6 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { AddPrinterForm } from "@/app/components/add-printer-form";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages: m } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: m.hardware.heading,
+    description: m.hardware.intro,
+    path: "/hardware",
+  });
+}
 
 export default async function HardwarePage() {
   const { messages: m } = await getLocaleMessages();

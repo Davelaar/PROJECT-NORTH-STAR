@@ -1,5 +1,16 @@
 import { getApiBase } from "@/lib/api";
+import type { Metadata } from "next";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: messages.docsApi.heading,
+    description: messages.docsApi.body,
+    path: "/docs/api",
+  });
+}
 
 export default async function DocsApiPage() {
   const { messages } = await getLocaleMessages();

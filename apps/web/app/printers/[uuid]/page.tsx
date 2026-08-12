@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 type Printer = {
   uuid: string;
@@ -17,6 +19,31 @@ type Printer = {
     nozzleMaterial: string | null;
   }>;
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ uuid: string }>;
+}): Promise<Metadata> {
+  const { uuid } = await params;
+  try {
+    const printer = await apiGet<Printer>(`/api/v1/printers/${uuid}`);
+    const title = `${printer.manufacturerName} ${printer.model}`;
+    return buildPageMetadata({
+      title,
+      description: `${title} printer specs and toolheads on OpenFilament`,
+      path: `/printers/${uuid}`,
+      noIndex: printer.isSyntheticFixture,
+    });
+  } catch {
+    return buildPageMetadata({
+      title: "Printer",
+      description: "OpenFilament printer",
+      path: `/printers/${uuid}`,
+      noIndex: true,
+    });
+  }
+}
 
 export default async function PrinterPage({
   params,

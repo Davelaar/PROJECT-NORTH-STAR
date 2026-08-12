@@ -1,6 +1,18 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { ExportForm } from "./export-form";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: messages.export.heading,
+    description: messages.export.body,
+    path: "/export",
+    noIndex: true,
+  });
+}
 
 export default async function ExportPage({
   searchParams,

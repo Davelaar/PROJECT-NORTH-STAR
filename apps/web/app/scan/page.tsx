@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { QrScanPanel } from "../components/qr-scan-panel";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages: m } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: m.scan.heading,
+    description: m.scan.lead,
+    path: "/scan",
+  });
+}
 
 export default async function ScanPage() {
   const { messages: m } = await getLocaleMessages();

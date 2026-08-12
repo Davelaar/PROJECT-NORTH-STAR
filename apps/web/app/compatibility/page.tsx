@@ -1,8 +1,20 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { USAGE_COMPATIBILITY_REGISTRY } from "@open-filament/domain";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
 import { CompatibilityChecker } from "./compatibility-checker";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale } = await getLocaleMessages();
+  const t = getUsageTrackingCopy(locale);
+  return buildPageMetadata({
+    title: t.checker.title,
+    description: t.checker.lead,
+    path: "/compatibility",
+  });
+}
 
 export default async function CompatibilityPage() {
   const { locale } = await getLocaleMessages();

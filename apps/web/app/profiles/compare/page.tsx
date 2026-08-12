@@ -1,6 +1,8 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { apiGet } from "@/lib/api";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 
 type Profile = {
   uuid: string;
@@ -13,6 +15,16 @@ type Profile = {
     maxVolumetricFlowMm3s: number | null;
   } | null;
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: messages.compare.heading,
+    description: messages.compare.needIds,
+    path: "/profiles/compare",
+    noIndex: true,
+  });
+}
 
 export default async function ComparePage({
   searchParams,

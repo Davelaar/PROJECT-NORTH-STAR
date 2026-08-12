@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   GITHUB_ISSUES_URL,
   GITHUB_NEW_ISSUE_URL,
@@ -6,6 +7,16 @@ import {
 } from "@/lib/github";
 import { CONTACT_EMAIL, samplesMailto } from "@/lib/contact";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages: m } = await getLocaleMessages();
+  return buildPageMetadata({
+    title: m.contribute.heading,
+    description: m.contribute.lead,
+    path: "/contribute",
+  });
+}
 
 export default async function ContributePage() {
   const { messages: m } = await getLocaleMessages();

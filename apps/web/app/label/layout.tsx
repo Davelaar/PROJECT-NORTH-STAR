@@ -5,14 +5,13 @@ import { buildPageMetadata } from "@/lib/seo/metadata";
 export async function generateMetadata(): Promise<Metadata> {
   const { messages } = await getLocaleMessages();
   return buildPageMetadata({
-    title: messages.spools.heading,
-    description: messages.spools.lead,
-    path: "/my-spools",
-    noIndex: true,
+    title: messages.label.heading,
+    description: messages.label.lead,
+    path: "/label",
   });
 }
 
-export default function MySpoolsLayout({
+export default function LabelLayout({
   children,
 }: {
   children: React.ReactNode;

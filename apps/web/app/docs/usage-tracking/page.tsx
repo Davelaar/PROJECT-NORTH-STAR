@@ -1,7 +1,19 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { USAGE_COMPATIBILITY_REGISTRY } from "@open-filament/domain";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getUsageTrackingCopy } from "@/lib/usage-tracking-copy";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale } = await getLocaleMessages();
+  const t = getUsageTrackingCopy(locale);
+  return buildPageMetadata({
+    title: t.title,
+    description: t.lead,
+    path: "/docs/usage-tracking",
+  });
+}
 
 export default async function UsageTrackingDocsPage() {
   const { locale } = await getLocaleMessages();

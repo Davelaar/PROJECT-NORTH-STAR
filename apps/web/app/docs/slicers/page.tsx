@@ -1,11 +1,23 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import {
   SLICER_REGISTRY,
   listInterchangeFormats,
   listSlicerPresets,
 } from "@open-filament/domain";
 import { getLocaleMessages } from "@/lib/messages";
+import { buildPageMetadata } from "@/lib/seo/metadata";
 import { getSlicerGuides } from "@/lib/slicer-guides";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale } = await getLocaleMessages();
+  const g = await getSlicerGuides(locale);
+  return buildPageMetadata({
+    title: g.overview.heading,
+    description: g.overview.lead,
+    path: "/docs/slicers",
+  });
+}
 
 export default async function SlicersOverviewPage() {
   const { locale, messages } = await getLocaleMessages();
