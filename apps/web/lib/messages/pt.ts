@@ -613,6 +613,8 @@ export const messages: Messages = {
     cartTitle: "Carrinho",
     cartLead: "Não é necessária conta. Guardamos carrinhos e pedidos não finalizados por no máximo 30 dias.",
     retentionNotice: "Carrinhos e dados de checkout não finalizados são removidos automaticamente após 30 dias. Pedidos pagos ficam guardados pelo tempo necessário para entrega e administração.",
+    shippingNotice: "Envio apenas para Países Baixos (4,95 €), Bélgica (9,95 €) e Alemanha (9,95 €). Entrega em 2-3 dias úteis. IVA não aplicável.",
+    shippingCountry: "País de envio",
     partnerLink: "Link de parceiro",
     buyExternal: "Abrir loja",
     addToCart: "Adicionar ao carrinho",

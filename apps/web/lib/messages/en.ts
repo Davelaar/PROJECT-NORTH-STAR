@@ -614,6 +614,8 @@ export const messages: Messages = {
     cartTitle: "Cart",
     cartLead: "No account is needed. We only keep unfinished cart/order data for 30 days.",
     retentionNotice: "Unfinished carts and checkout details are removed automatically after 30 days. Paid orders are kept as long as needed for delivery and administration.",
+    shippingNotice: "Ships only to the Netherlands (€4.95), Belgium (€9.95) and Germany (€9.95). Delivery time is 2-3 business days. VAT is not applicable.",
+    shippingCountry: "Shipping country",
     partnerLink: "Partner link",
     buyExternal: "Open shop",
     addToCart: "Add to cart",

@@ -20,6 +20,7 @@ export default async function ShopPrintsPage() {
     <div className="stack">
       <h1>{m.shop.printsTitle}</h1>
       <p className="home-lead">{m.shop.printsLead}</p>
+      <p className="banner-warn">{m.shop.shippingNotice}</p>
       <ShopGrid products={products} messages={m.shop} mode="prints" />
     </div>
   );

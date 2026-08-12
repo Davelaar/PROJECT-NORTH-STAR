@@ -25,7 +25,7 @@ function blank(page: ShopPage): Partial<ShopProduct> {
     priceCents: 0,
     currency: "eur",
     referralUrl: "",
-    stock: page === "prints" ? 1 : null,
+    stock: null,
     active: true,
     sortOrder: 0,
   };
@@ -92,7 +92,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
         priceCents: Number(draft.priceCents ?? 0),
         currency: "eur",
         referralUrl: page === "prints" ? null : draft.referralUrl,
-        stock: page === "prints" ? Number(draft.stock ?? 0) : null,
+        stock: null,
         active: draft.active ?? true,
         sortOrder: Number(draft.sortOrder ?? 0),
       });
@@ -190,16 +190,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
             }
           />
         </label>
-        {page === "prints" ? (
-          <label>
-            {messages.stock}
-            <input
-              type="number"
-              value={draft.stock ?? 0}
-              onChange={(e) => setDraft((d) => ({ ...d, stock: Number(e.target.value) }))}
-            />
-          </label>
-        ) : (
+        {page !== "prints" ? (
           <label>
             {messages.referralUrl}
             <input
@@ -207,7 +198,7 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
               onChange={(e) => setDraft((d) => ({ ...d, referralUrl: e.target.value }))}
             />
           </label>
-        )}
+        ) : null}
         <label className="checkbox-row">
           <input
             checked={draft.active ?? true}

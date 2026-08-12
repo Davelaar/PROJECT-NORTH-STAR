@@ -613,6 +613,8 @@ export const messages: Messages = {
     cartTitle: "Panier",
     cartLead: "Aucun compte requis. Les paniers et commandes non finalisés sont conservés 30 jours maximum.",
     retentionNotice: "Les paniers et données de checkout non finalisés sont supprimés automatiquement après 30 jours. Les commandes payées sont conservées le temps nécessaire à la livraison et à l’administration.",
+    shippingNotice: "Expédition uniquement vers les Pays-Bas (4,95 €), la Belgique (9,95 €) et l’Allemagne (9,95 €). Délai de livraison : 2-3 jours ouvrés. TVA non applicable.",
+    shippingCountry: "Pays de livraison",
     partnerLink: "Lien partenaire",
     buyExternal: "Ouvrir la boutique",
     addToCart: "Ajouter au panier",

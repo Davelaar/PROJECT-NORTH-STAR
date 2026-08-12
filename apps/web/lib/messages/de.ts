@@ -613,6 +613,8 @@ export const messages: Messages = {
     cartTitle: "Warenkorb",
     cartLead: "Kein Konto nötig. Unfertige Warenkorb- und Bestelldaten speichern wir höchstens 30 Tage.",
     retentionNotice: "Unfertige Warenkörbe und Checkout-Daten werden nach 30 Tagen automatisch gelöscht. Bezahlte Bestellungen speichern wir so lange wie für Lieferung und Buchhaltung nötig.",
+    shippingNotice: "Versand nur in die Niederlande (4,95 €), nach Belgien (9,95 €) und Deutschland (9,95 €). Lieferzeit: 2-3 Werktage. MwSt. ist nicht anwendbar.",
+    shippingCountry: "Versandland",
     partnerLink: "Partnerlink",
     buyExternal: "Shop öffnen",
     addToCart: "In den Warenkorb",

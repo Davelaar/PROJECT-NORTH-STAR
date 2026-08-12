@@ -8,6 +8,13 @@ import { CART_KEY, CART_TTL_MS } from "../shop-grid";
 
 type CartLine = { productUuid: string; quantity: number };
 type Cart = { expiresAt: number; lines: CartLine[] };
+type ShippingCountry = "NL" | "BE" | "DE";
+
+const shippingRates: Record<ShippingCountry, number> = {
+  NL: 495,
+  BE: 995,
+  DE: 995,
+};
 
 function readCart(): Cart {
   try {
@@ -36,6 +43,7 @@ export function CartClient({
 }) {
   const [cart, setCart] = useState<Cart>({ expiresAt: Date.now() + CART_TTL_MS, lines: [] });
   const [email, setEmail] = useState("");
+  const [shippingCountry, setShippingCountry] = useState<ShippingCountry>("NL");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -55,10 +63,12 @@ export function CartClient({
       product: products.find((p) => p.uuid === line.productUuid),
     }))
     .filter((r): r is { line: CartLine; product: ShopProduct } => Boolean(r.product));
-  const total = useMemo(
+  const subtotal = useMemo(
     () => rows.reduce((sum, r) => sum + r.product.priceCents * r.line.quantity, 0),
     [rows],
   );
+  const shipping = rows.length > 0 ? shippingRates[shippingCountry] : 0;
+  const total = subtotal + shipping;
 
   async function checkout() {
     setError("");
@@ -66,6 +76,7 @@ export function CartClient({
     try {
       const res = await apiPost<{ checkoutUrl: string }>("/api/v1/shop/checkout", {
         email,
+        shippingCountry,
         lines: rows.map((r) => r.line),
       });
       window.location.href = res.checkoutUrl;
@@ -78,6 +89,7 @@ export function CartClient({
   return (
     <div className="stack">
       <p className="banner-warn">{messages.retentionNotice}</p>
+      <p className="banner-warn">{messages.shippingNotice}</p>
       {rows.length === 0 ? (
         <p className="muted">{messages.cartEmpty}</p>
       ) : (
@@ -119,6 +131,17 @@ export function CartClient({
           <p className="shop-total">
             {messages.total}: <strong>{formatShopPrice(total)}</strong>
           </p>
+          <label>
+            {messages.shippingCountry}
+            <select
+              value={shippingCountry}
+              onChange={(e) => setShippingCountry(e.target.value as ShippingCountry)}
+            >
+              <option value="NL">Nederland — {formatShopPrice(shippingRates.NL)}</option>
+              <option value="BE">België — {formatShopPrice(shippingRates.BE)}</option>
+              <option value="DE">Deutschland — {formatShopPrice(shippingRates.DE)}</option>
+            </select>
+          </label>
           <label>
             {messages.email}
             <input

@@ -49,7 +49,6 @@ export function ShopGrid({
     <div className="shop-grid">
       {products.map((product) => {
         const image = product.images[0];
-        const soldOut = mode === "prints" && product.stock !== null && product.stock === 0;
         return (
           <article className="shop-product" key={product.uuid}>
             {image ? (
@@ -71,10 +70,6 @@ export function ShopGrid({
                 >
                   {messages.buyExternal}
                 </a>
-              ) : soldOut ? (
-                <span className="button button-muted" aria-disabled="true">
-                  {messages.soldOut}
-                </span>
               ) : (
                 <button
                   className="button"

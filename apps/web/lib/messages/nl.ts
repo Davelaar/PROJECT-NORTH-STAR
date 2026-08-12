@@ -613,6 +613,8 @@ export const messages: Messages = {
     cartTitle: "Winkelwagen",
     cartLead: "Geen account nodig. Onvoltooide winkelwagen- en ordergegevens bewaren we maximaal 30 dagen.",
     retentionNotice: "Onvoltooide winkelwagens en checkoutgegevens worden na 30 dagen automatisch verwijderd. Betaalde orders bewaren we zolang nodig is voor levering en administratie.",
+    shippingNotice: "Verzending alleen naar Nederland (€4,95), België (€9,95) en Duitsland (€9,95). Levertijd is 2-3 werkdagen. BTW is niet van toepassing.",
+    shippingCountry: "Verzendland",
     partnerLink: "Partnerlink",
     buyExternal: "Open winkel",
     addToCart: "In winkelwagen",

@@ -619,6 +619,8 @@ export const messages: Messages = {
     cartTitle: "购物车",
     cartLead: "无需账户。未完成的购物车和订单数据最多保留 30 天。",
     retentionNotice: "未完成的购物车和 checkout 数据会在 30 天后自动删除。已付款订单会为配送和管理保留必要时间。",
+    shippingNotice: "仅配送至荷兰（€4.95）、比利时（€9.95）和德国（€9.95）。配送时间为 2-3 个工作日。不适用增值税。",
+    shippingCountry: "配送国家",
     partnerLink: "推荐链接",
     buyExternal: "打开商店",
     addToCart: "加入购物车",

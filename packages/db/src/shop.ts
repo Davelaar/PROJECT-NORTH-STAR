@@ -159,9 +159,6 @@ export function createPendingShopOrder(
   }
   for (const { line, product } of products) {
     if (line.quantity < 1 || line.quantity > 99) throw new Error("Invalid quantity");
-    if (product.stock !== null && product.stock < line.quantity) {
-      throw new Error(`${product.title} is out of stock`);
-    }
   }
   const amountCents = products.reduce(
     (sum, { line, product }) => sum + product.priceCents * line.quantity,
@@ -259,7 +256,7 @@ export function markShopOrderPaid(
 ) {
   const order = getShopOrderByUuid(db, input.orderUuid);
   if (!order) throw new Error("shop_order_missing");
-  if (order.amountCents !== input.amountCents || order.currency !== input.currency) {
+  if (input.amountCents < order.amountCents || order.currency !== input.currency) {
     throw new Error("shop_order_amount_mismatch");
   }
   db.transaction(() => {
@@ -270,6 +267,7 @@ export function markShopOrderPaid(
         providerPaymentId: input.paymentIntentId,
         providerCustomerId: input.customerId ?? null,
         providerReceiptUrl: input.receiptUrl ?? null,
+        amountCents: input.amountCents,
         paidAt: input.paidAt,
         shippingJson: input.shippingJson ?? order.shippingJson,
         rawProviderStatus: "paid",
@@ -277,18 +275,6 @@ export function markShopOrderPaid(
       })
       .where(eq(schema.shopOrders.id, order.id))
       .run();
-    for (const item of getShopOrderItems(db, order.id)) {
-      const product = getShopProductByUuid(db, item.productUuid);
-      if (product && product.stock !== null) {
-        db.update(schema.shopProducts)
-          .set({
-            stock: Math.max(0, product.stock - item.quantity),
-            updatedAt: new Date().toISOString(),
-          })
-          .where(eq(schema.shopProducts.id, product.id))
-          .run();
-      }
-    }
   });
 }
 

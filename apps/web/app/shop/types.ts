@@ -35,6 +35,8 @@ export type ShopMessages = {
   cartTitle: string;
   cartLead: string;
   retentionNotice: string;
+  shippingNotice: string;
+  shippingCountry: string;
   partnerLink: string;
   buyExternal: string;
   addToCart: string;

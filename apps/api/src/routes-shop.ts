@@ -92,6 +92,12 @@ function requireShopAdmin(req: FastifyRequest, reply: FastifyReply) {
 }
 
 const pageSchema = z.enum(["filament", "hardware", "prints"]);
+const shippingCountrySchema = z.enum(["NL", "BE", "DE"]);
+const shippingRatesCents: Record<z.infer<typeof shippingCountrySchema>, number> = {
+  NL: 495,
+  BE: 995,
+  DE: 995,
+};
 const productSchema = z.object({
   uuid: z.string().uuid().optional(),
   page: pageSchema,
@@ -285,6 +291,7 @@ export async function registerShopRoutes(app: FastifyInstance) {
       const body = z
         .object({
           email: z.string().email(),
+          shippingCountry: shippingCountrySchema,
           lines: z
             .array(
               z.object({
@@ -308,6 +315,11 @@ export async function registerShopRoutes(app: FastifyInstance) {
       const base = publicBaseUrl();
       const successUrl = `${base}/shop/success?order=${encodeURIComponent(pending.order.uuid)}`;
       const cancelUrl = `${base}/shop/cart`;
+      const shippingAmount = shippingRatesCents[body.data.shippingCountry];
+      const shippingName =
+        body.data.shippingCountry === "NL"
+          ? "Shipping Netherlands (2-3 business days)"
+          : "Shipping Belgium/Germany (2-3 business days)";
       const session = await stripe.checkout.sessions.create(
         {
           mode: "payment",
@@ -323,16 +335,34 @@ export async function registerShopRoutes(app: FastifyInstance) {
           success_url: successUrl,
           cancel_url: cancelUrl,
           shipping_address_collection: {
-            allowed_countries: ["NL", "BE", "DE", "FR", "ES", "PT", "IT", "AT", "LU"],
+            allowed_countries: [body.data.shippingCountry],
           },
+          shipping_options: [
+            {
+              shipping_rate_data: {
+                display_name: shippingName,
+                type: "fixed_amount",
+                fixed_amount: {
+                  amount: shippingAmount,
+                  currency: pending.order.currency,
+                },
+                delivery_estimate: {
+                  minimum: { unit: "business_day", value: 2 },
+                  maximum: { unit: "business_day", value: 3 },
+                },
+              },
+            },
+          ],
           metadata: {
             purchase_type: "shop_print",
             openfilament_order_uuid: pending.order.uuid,
+            shipping_country: body.data.shippingCountry,
           },
           payment_intent_data: {
             metadata: {
               purchase_type: "shop_print",
               openfilament_order_uuid: pending.order.uuid,
+              shipping_country: body.data.shippingCountry,
             },
           },
           ...( { integration_identifier: "openfilament_shop_abcdwxyz" } as object ),
