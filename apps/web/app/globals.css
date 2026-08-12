@@ -1645,6 +1645,7 @@ pre {
 }
 
 .shop-hub-card,
+.shop-deal-callout,
 .shop-product,
 .shop-admin-editor,
 .shop-admin-product,
@@ -1658,6 +1659,14 @@ pre {
   color: var(--ink);
   min-height: 10rem;
   text-decoration: none;
+}
+
+.shop-deal-callout {
+  display: grid;
+  gap: 0.75rem;
+  background:
+    radial-gradient(circle at 0 0, color-mix(in srgb, var(--accent) 14%, transparent), transparent 35%),
+    var(--card);
 }
 
 .shop-hub-card span,

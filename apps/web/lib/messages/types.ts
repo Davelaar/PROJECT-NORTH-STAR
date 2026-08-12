@@ -716,6 +716,10 @@ export type Messages = {
     hubLead: string;
     filamentTitle: string;
     filamentLead: string;
+    joybuyTitle: string;
+    joybuyBody: string;
+    joybuyInviteCta: string;
+    joybuySearchCta: string;
     hardwareTitle: string;
     hardwareLead: string;
     printsTitle: string;
