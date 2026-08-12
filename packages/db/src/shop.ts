@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, lt, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, lt, or, sql } from "drizzle-orm";
 import { v4 as uuid } from "uuid";
 import { schema, type AppDb } from "./client.js";
 
@@ -390,13 +390,22 @@ export function markShopOrderCheckoutStatus(
 
 export function purgeExpiredShopOrders(db: AppDb, now = new Date()) {
   const cutoff = now.toISOString();
+  const fulfilledCutoff = new Date(
+    now.getTime() - 30 * 24 * 60 * 60 * 1000,
+  ).toISOString();
   const rows = db
     .select({ id: schema.shopOrders.id })
     .from(schema.shopOrders)
     .where(
-      and(
-        inArray(schema.shopOrders.status, ["pending", "expired", "cancelled"]),
-        lt(schema.shopOrders.expiresAt, cutoff),
+      or(
+        and(
+          inArray(schema.shopOrders.status, ["pending", "expired", "cancelled"]),
+          lt(schema.shopOrders.expiresAt, cutoff),
+        ),
+        and(
+          eq(schema.shopOrders.status, "fulfilled"),
+          lt(schema.shopOrders.updatedAt, fulfilledCutoff),
+        ),
       ),
     )
     .all();

@@ -14,6 +14,10 @@
   --card: #faf7f1;
   --input-bg: #fff;
   --shadow: rgba(20, 30, 25, 0.12);
+  --shadow-soft: 0 12px 34px rgba(20, 30, 25, 0.1);
+  --radius-sm: 0.55rem;
+  --radius-md: 0.85rem;
+  --radius-lg: 1.25rem;
   --interactive-hover: color-mix(in srgb, var(--accent) 14%, transparent);
   --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
     Georgia, serif;
@@ -37,6 +41,7 @@
     --card: #17211d;
     --input-bg: #0f1714;
     --shadow: rgba(0, 0, 0, 0.45);
+    --shadow-soft: 0 14px 40px rgba(0, 0, 0, 0.32);
     --interactive-hover: color-mix(in srgb, var(--accent) 20%, transparent);
   }
 }
@@ -74,8 +79,11 @@ a:hover {
 }
 
 .site-header {
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--shadow) 65%, transparent);
+  padding: 0.85rem 1rem;
   margin-bottom: 1.75rem;
 }
 
@@ -434,7 +442,7 @@ textarea {
   background: var(--input-bg);
   color: var(--ink);
   padding: 0.55rem 0.65rem;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
 }
 
 input:focus-visible,
@@ -453,9 +461,15 @@ button,
   background: var(--accent);
   color: var(--accent-ink);
   padding: 0.55rem 0.9rem;
-  border-radius: 2px;
+  border-radius: 999px;
   cursor: pointer;
   text-decoration: none;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    filter 160ms ease,
+    transform 160ms ease;
 }
 
 button.secondary,
@@ -467,6 +481,7 @@ button.secondary,
 button:hover,
 .button:hover {
   filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .list {
@@ -1180,8 +1195,11 @@ pre {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: var(--radius-lg);
+  margin-top: 2.5rem;
+  padding: 1rem;
   font-size: 0.95rem;
 }
 
@@ -1585,9 +1603,6 @@ pre {
   align-items: start;
 }
 
-.site-footer {
-  margin-top: 2.5rem;
-}
 .footer-nav {
   display: flex;
   flex-wrap: wrap;
@@ -1652,6 +1667,8 @@ pre {
 .shop-cart {
   border: 1px solid var(--line);
   background: color-mix(in srgb, var(--card) 88%, transparent);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
   padding: 1rem;
 }
 
@@ -1667,6 +1684,10 @@ pre {
   background:
     radial-gradient(circle at 0 0, color-mix(in srgb, var(--accent) 14%, transparent), transparent 35%),
     var(--card);
+}
+
+.shop-product {
+  overflow: hidden;
 }
 
 .shop-brand-link-grid {
