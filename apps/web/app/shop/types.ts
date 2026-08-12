@@ -12,6 +12,14 @@ export type ShopProduct = {
   page: ShopPage;
   title: string;
   description: string;
+  titleNl?: string | null;
+  titleEn?: string | null;
+  titleDe?: string | null;
+  titleFr?: string | null;
+  descriptionNl?: string | null;
+  descriptionEn?: string | null;
+  descriptionDe?: string | null;
+  descriptionFr?: string | null;
   priceCents: number;
   currency: string;
   referralUrl?: string | null;

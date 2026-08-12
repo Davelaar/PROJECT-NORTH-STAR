@@ -85,6 +85,13 @@
       "when": 1786490000000,
       "tag": "0011_simple_shop",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1786549200000,
+      "tag": "0012_shop_product_locales",
+      "breakpoints": true
     }
   ]
 }

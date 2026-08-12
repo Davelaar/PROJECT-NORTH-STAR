@@ -1756,16 +1756,57 @@ pre {
   gap: 0.85rem;
 }
 
-.shop-admin-product {
+.shop-admin-locales {
   display: grid;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
-@media (min-width: 720px) {
-  .shop-admin-product {
-    grid-template-columns: 1.3fr 0.8fr 0.6fr repeat(3, auto);
-    align-items: center;
+@media (min-width: 900px) {
+  .shop-admin-locales {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.shop-admin-locale {
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.85rem;
+}
+
+.shop-admin-product {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.shop-admin-product-main,
+.shop-admin-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.shop-admin-image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.shop-admin-image-grid figure {
+  border: 1px solid var(--line);
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.35rem;
+  width: 8rem;
+}
+
+.shop-admin-image-grid img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  width: 100%;
 }
 .table-wrap {
   overflow-x: auto;

@@ -652,7 +652,7 @@ export const messages: Messages = {
     active: "Activo",
     save: "Guardar",
     newProduct: "Nuevo producto",
-    uploadImage: "Subir imagen",
+    uploadImage: "Subir imagen(es)",
     delete: "Eliminar",
   },
   cloud: {

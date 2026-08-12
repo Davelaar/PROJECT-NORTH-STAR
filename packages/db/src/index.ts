@@ -142,5 +142,10 @@ export {
   updateShopOrderCheckout,
   upsertShopProduct,
 } from "./shop.js";
-export type { ShopPage, ShopProductInput, ShopOrderLineInput } from "./shop.js";
+export type {
+  ShopContentLocale,
+  ShopPage,
+  ShopProductInput,
+  ShopOrderLineInput,
+} from "./shop.js";
 

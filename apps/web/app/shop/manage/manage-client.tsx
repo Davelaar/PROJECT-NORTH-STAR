@@ -16,12 +16,29 @@ type Order = {
 };
 
 const pages: ShopPage[] = ["filament", "hardware", "prints"];
+const contentLocales = [
+  { code: "nl", label: "Nederlands", title: "titleNl", description: "descriptionNl" },
+  { code: "en", label: "English", title: "titleEn", description: "descriptionEn" },
+  { code: "de", label: "Deutsch", title: "titleDe", description: "descriptionDe" },
+  { code: "fr", label: "Français", title: "titleFr", description: "descriptionFr" },
+] as const;
+
+type LocalizedTitleKey = (typeof contentLocales)[number]["title"];
+type LocalizedDescriptionKey = (typeof contentLocales)[number]["description"];
 
 function blank(page: ShopPage): Partial<ShopProduct> {
   return {
     page,
     title: "",
     description: "",
+    titleNl: "",
+    titleEn: "",
+    titleDe: "",
+    titleFr: "",
+    descriptionNl: "",
+    descriptionEn: "",
+    descriptionDe: "",
+    descriptionFr: "",
     priceCents: 0,
     currency: "eur",
     referralUrl: "",
@@ -29,6 +46,25 @@ function blank(page: ShopPage): Partial<ShopProduct> {
     active: true,
     sortOrder: 0,
   };
+}
+
+function centsFromEuroInput(value: string) {
+  const normalized = value.replace(",", ".");
+  const amount = Number(normalized);
+  if (!Number.isFinite(amount) || amount < 0) return 0;
+  return Math.round(amount * 100);
+}
+
+function euroInputFromCents(cents: number | undefined) {
+  return ((cents ?? 0) / 100).toString();
+}
+
+function localizedFallback(
+  draft: Partial<ShopProduct>,
+  keys: readonly (LocalizedTitleKey | LocalizedDescriptionKey)[],
+  fallback: string,
+) {
+  return keys.map((key) => String(draft[key] ?? "").trim()).find(Boolean) ?? fallback;
 }
 
 export function ManageClient({ messages }: { messages: ShopMessages }) {
@@ -84,11 +120,29 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
   async function save() {
     setError("");
     try {
+      const title = localizedFallback(
+        draft,
+        contentLocales.map((l) => l.title),
+        draft.title ?? "",
+      );
+      const description = localizedFallback(
+        draft,
+        contentLocales.map((l) => l.description),
+        draft.description ?? "",
+      );
       await apiPost("/api/v1/shop/admin/products", {
         uuid: draft.uuid,
         page,
-        title: draft.title ?? "",
-        description: draft.description ?? "",
+        title,
+        description,
+        titleNl: draft.titleNl ?? null,
+        titleEn: draft.titleEn ?? null,
+        titleDe: draft.titleDe ?? null,
+        titleFr: draft.titleFr ?? null,
+        descriptionNl: draft.descriptionNl ?? null,
+        descriptionEn: draft.descriptionEn ?? null,
+        descriptionDe: draft.descriptionDe ?? null,
+        descriptionFr: draft.descriptionFr ?? null,
         priceCents: Number(draft.priceCents ?? 0),
         currency: "eur",
         referralUrl: page === "prints" ? null : draft.referralUrl,
@@ -105,6 +159,11 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
 
   async function remove(product: ShopProduct) {
     await apiFetch(`/api/v1/shop/admin/products/${product.uuid}`, { method: "DELETE" });
+    await load();
+  }
+
+  async function removeImage(imageUuid: string) {
+    await apiFetch(`/api/v1/shop/admin/media/${imageUuid}`, { method: "DELETE" });
     await load();
   }
 
@@ -125,6 +184,13 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
       alt: product.title,
     });
     await load();
+  }
+
+  async function uploadMany(product: ShopProduct, files: FileList | null) {
+    if (!files?.length) return;
+    for (const file of Array.from(files)) {
+      await upload(product, file);
+    }
   }
 
   if (!authenticated) {
@@ -166,6 +232,34 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
 
       <section className="shop-admin-editor">
         <h2>{draft.uuid ? messages.save : messages.newProduct}</h2>
+        <div className="shop-admin-locales">
+          {contentLocales.map((locale) => (
+            <fieldset className="shop-admin-locale" key={locale.code}>
+              <legend>{locale.label}</legend>
+              <label>
+                {messages.title}
+                <input
+                  value={String(draft[locale.title] ?? "")}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, [locale.title]: e.target.value }))
+                  }
+                />
+              </label>
+              <label>
+                {messages.description}
+                <textarea
+                  value={String(draft[locale.description] ?? "")}
+                  onChange={(e) =>
+                    setDraft((d) => ({
+                      ...d,
+                      [locale.description]: e.target.value,
+                    }))
+                  }
+                />
+              </label>
+            </fieldset>
+          ))}
+        </div>
         <label>
           {messages.title}
           <input
@@ -181,12 +275,14 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
           />
         </label>
         <label>
-          {messages.price} (cent)
+          {messages.price} (€)
           <input
+            min={0}
+            step="0.01"
             type="number"
-            value={draft.priceCents ?? 0}
+            value={euroInputFromCents(draft.priceCents)}
             onChange={(e) =>
-              setDraft((d) => ({ ...d, priceCents: Number(e.target.value) }))
+              setDraft((d) => ({ ...d, priceCents: centsFromEuroInput(e.target.value) }))
             }
           />
         </label>
@@ -218,27 +314,43 @@ export function ManageClient({ messages }: { messages: ShopMessages }) {
         <div className="shop-admin-list">
           {products.map((product) => (
             <article className="shop-admin-product" key={product.uuid}>
-              <strong>{product.title}</strong>
-              <span>{formatShopPrice(product.priceCents, product.currency)}</span>
-              <span>{product.active ? messages.active : "inactive"}</span>
-              <button type="button" onClick={() => setDraft(product)}>
-                {messages.save}
-              </button>
-              <label className="button button-muted">
-                {messages.uploadImage}
-                <input
-                  accept="image/png,image/jpeg,image/webp"
-                  hidden
-                  type="file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void upload(product, file);
-                  }}
-                />
-              </label>
-              <button type="button" onClick={() => remove(product)}>
-                {messages.delete}
-              </button>
+              <div className="shop-admin-product-main">
+                <strong>{product.title}</strong>
+                <span>{formatShopPrice(product.priceCents, product.currency)}</span>
+                <span>{product.active ? messages.active : "inactive"}</span>
+              </div>
+              <div className="shop-admin-image-grid">
+                {product.images.map((image) => (
+                  <figure key={image.uuid}>
+                    <img src={image.url} alt={image.alt || product.title} loading="lazy" />
+                    <button
+                      className="linkish"
+                      type="button"
+                      onClick={() => void removeImage(image.uuid)}
+                    >
+                      {messages.delete}
+                    </button>
+                  </figure>
+                ))}
+              </div>
+              <div className="shop-admin-actions">
+                <button type="button" onClick={() => setDraft(product)}>
+                  {messages.save}
+                </button>
+                <label className="button button-muted">
+                  {messages.uploadImage}
+                  <input
+                    accept="image/png,image/jpeg,image/webp"
+                    hidden
+                    multiple
+                    type="file"
+                    onChange={(e) => void uploadMany(product, e.target.files)}
+                  />
+                </label>
+                <button type="button" onClick={() => remove(product)}>
+                  {messages.delete}
+                </button>
+              </div>
             </article>
           ))}
         </div>

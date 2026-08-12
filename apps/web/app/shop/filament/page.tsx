@@ -40,8 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ShopFilamentPage() {
-  const { messages: m } = await getLocaleMessages();
-  const products = await fetchShopProducts("filament");
+  const { locale, messages: m } = await getLocaleMessages();
+  const products = await fetchShopProducts("filament", locale);
   return (
     <div className="stack">
       <h1>{m.shop.filamentTitle}</h1>

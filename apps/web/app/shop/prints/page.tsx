@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ShopPrintsPage() {
-  const { messages: m } = await getLocaleMessages();
-  const products = await fetchShopProducts("prints");
+  const { locale, messages: m } = await getLocaleMessages();
+  const products = await fetchShopProducts("prints", locale);
   return (
     <div className="stack">
       <h1>{m.shop.printsTitle}</h1>

@@ -20,6 +20,7 @@ import {
   updateShopOrderCheckout,
   upsertShopProduct,
   type AppDb,
+  type ShopContentLocale,
   type ShopPage,
 } from "@open-filament/db";
 import { badRequest, notFound, unauthorized } from "./errors.js";
@@ -92,6 +93,7 @@ function requireShopAdmin(req: FastifyRequest, reply: FastifyReply) {
 }
 
 const pageSchema = z.enum(["filament", "hardware", "prints"]);
+const shopContentLocaleSchema = z.enum(["en", "nl", "de", "fr"]);
 const shippingCountrySchema = z.enum(["NL", "BE", "DE"]);
 const shippingRatesCents: Record<z.infer<typeof shippingCountrySchema>, number> = {
   NL: 495,
@@ -103,6 +105,14 @@ const productSchema = z.object({
   page: pageSchema,
   title: z.string().min(1).max(160),
   description: z.string().max(2000).optional(),
+  titleNl: z.string().max(160).nullable().optional(),
+  titleEn: z.string().max(160).nullable().optional(),
+  titleDe: z.string().max(160).nullable().optional(),
+  titleFr: z.string().max(160).nullable().optional(),
+  descriptionNl: z.string().max(2000).nullable().optional(),
+  descriptionEn: z.string().max(2000).nullable().optional(),
+  descriptionDe: z.string().max(2000).nullable().optional(),
+  descriptionFr: z.string().max(2000).nullable().optional(),
   priceCents: z.number().int().min(0).max(1_000_000).optional(),
   currency: z.string().default("eur"),
   referralUrl: z.string().url().nullable().optional(),
@@ -140,12 +150,20 @@ export async function registerShopRoutes(app: FastifyInstance) {
   }, 24 * 60 * 60 * 1000);
   cleanupTimer.unref?.();
 
-  app.get<{ Querystring: { page?: ShopPage } }>(
+  app.get<{ Querystring: { page?: ShopPage; locale?: ShopContentLocale } }>(
     "/api/v1/shop/products",
     async (req) => {
       const parsed = pageSchema.optional().safeParse(req.query.page);
+      const locale = shopContentLocaleSchema.optional().safeParse(req.query.locale);
       const page = parsed.success ? parsed.data : undefined;
-      return { products: listShopProducts(db(app), page) };
+      return {
+        products: listShopProducts(
+          db(app),
+          page,
+          false,
+          locale.success ? locale.data : undefined,
+        ),
+      };
     },
   );
 

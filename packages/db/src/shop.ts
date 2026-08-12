@@ -3,10 +3,19 @@ import { v4 as uuid } from "uuid";
 import { schema, type AppDb } from "./client.js";
 
 export type ShopPage = "filament" | "hardware" | "prints";
+export type ShopContentLocale = "en" | "nl" | "de" | "fr";
 export type ShopProductInput = {
   page: ShopPage;
   title: string;
   description?: string;
+  titleNl?: string | null;
+  titleEn?: string | null;
+  titleDe?: string | null;
+  titleFr?: string | null;
+  descriptionNl?: string | null;
+  descriptionEn?: string | null;
+  descriptionDe?: string | null;
+  descriptionFr?: string | null;
   priceCents?: number;
   currency?: string;
   referralUrl?: string | null;
@@ -16,7 +25,54 @@ export type ShopProductInput = {
 };
 export type ShopOrderLineInput = { productUuid: string; quantity: number };
 
-export function listShopProducts(db: AppDb, page?: ShopPage, admin = false) {
+function cleanOptional(value: string | null | undefined) {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : null;
+}
+
+function localizedProduct<T extends { title: string; description: string }>(
+  product: T & {
+    titleNl?: string | null;
+    titleEn?: string | null;
+    titleDe?: string | null;
+    titleFr?: string | null;
+    descriptionNl?: string | null;
+    descriptionEn?: string | null;
+    descriptionDe?: string | null;
+    descriptionFr?: string | null;
+  },
+  locale?: ShopContentLocale,
+) {
+  if (!locale) return product;
+  const title =
+    locale === "nl"
+      ? product.titleNl
+      : locale === "de"
+        ? product.titleDe
+        : locale === "fr"
+          ? product.titleFr
+          : product.titleEn;
+  const description =
+    locale === "nl"
+      ? product.descriptionNl
+      : locale === "de"
+        ? product.descriptionDe
+        : locale === "fr"
+          ? product.descriptionFr
+          : product.descriptionEn;
+  return {
+    ...product,
+    title: title?.trim() || product.title,
+    description: description?.trim() || product.description,
+  };
+}
+
+export function listShopProducts(
+  db: AppDb,
+  page?: ShopPage,
+  admin = false,
+  locale?: ShopContentLocale,
+) {
   const rows = db
     .select()
     .from(schema.shopProducts)
@@ -36,17 +92,22 @@ export function listShopProducts(db: AppDb, page?: ShopPage, admin = false) {
             asc(schema.shopProductImages.id),
           )
           .all();
-  return rows.map((product) => ({
-    ...product,
-    images: images
-      .filter((img) => img.productId === product.id)
-      .map((img) => ({
-        uuid: img.uuid,
-        url: `/api/v1/shop/media/${img.uuid}`,
-        alt: img.alt,
-        sortOrder: img.sortOrder,
-      })),
-  }));
+  return rows.map((product) =>
+    localizedProduct(
+      {
+        ...product,
+        images: images
+          .filter((img) => img.productId === product.id)
+          .map((img) => ({
+            uuid: img.uuid,
+            url: `/api/v1/shop/media/${img.uuid}`,
+            alt: img.alt,
+            sortOrder: img.sortOrder,
+          })),
+      },
+      admin ? undefined : locale,
+    ),
+  );
 }
 
 export function getShopProductByUuid(db: AppDb, productUuid: string) {
@@ -66,6 +127,14 @@ export function upsertShopProduct(
     page: input.page,
     title: input.title.trim(),
     description: input.description?.trim() ?? "",
+    titleNl: cleanOptional(input.titleNl),
+    titleEn: cleanOptional(input.titleEn),
+    titleDe: cleanOptional(input.titleDe),
+    titleFr: cleanOptional(input.titleFr),
+    descriptionNl: cleanOptional(input.descriptionNl),
+    descriptionEn: cleanOptional(input.descriptionEn),
+    descriptionDe: cleanOptional(input.descriptionDe),
+    descriptionFr: cleanOptional(input.descriptionFr),
     priceCents: Math.max(0, Math.round(input.priceCents ?? 0)),
     currency: (input.currency ?? "eur").toLowerCase(),
     referralUrl: input.referralUrl?.trim() || null,
