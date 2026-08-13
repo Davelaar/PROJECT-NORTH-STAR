@@ -13,6 +13,7 @@ export { seed } from "./seed.js";
 export { reset } from "./reset.js";
 export { importOfdCatalog } from "./import-ofd.js";
 export { importOfdStarterProfiles } from "./import-ofd-starter-profiles.js";
+export { importSpoolmanDbCatalog } from "./import-spoolmandb.js";
 export {
   ensurePrinterCatalog,
   listPrinterBrands,

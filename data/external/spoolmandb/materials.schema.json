@@ -1,0 +1,25 @@
+{
+    "type": "array",
+    "items": {
+        "type": "object",
+        "required": [
+            "material",
+            "density"
+        ],
+        "properties": {
+            "material": {
+                "type": "string"
+            },
+            "density": {
+                "type": "number",
+                "exclusiveMinimum": 0
+            },
+            "extruder_temp": {
+                "type": "integer"
+            },
+            "bed_temp": {
+                "type": "integer"
+            }
+        }
+    }
+}

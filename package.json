@@ -31,7 +31,8 @@
     "db:import-open-printers": "pnpm --filter @open-filament/db import-open-printers",
     "db:dedupe-brands": "pnpm --filter @open-filament/db dedupe-brands",
     "db:fetch-ofd": "./scripts/fetch-ofd-catalog.sh",
-    "db:bootstrap-catalog": "./scripts/bootstrap-catalog.sh"
+    "db:bootstrap-catalog": "./scripts/bootstrap-catalog.sh",
+    "db:import-spoolmandb": "pnpm --filter @open-filament/db import-spoolmandb"
   },
   "devDependencies": {
     "@playwright/test": "1.51.1"

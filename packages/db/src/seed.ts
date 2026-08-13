@@ -35,6 +35,18 @@ export async function seed(dbPath?: string) {
       `OFD catalog dataset not found (${ofdPath}). Run ./scripts/fetch-ofd-catalog.sh then pnpm db:import-ofd`,
     );
   }
+
+  const spoolmanDbPath =
+    process.env.SPOOLMANDB_DATASET_PATH ??
+    path.resolve(__dirname, "../../../data/external/spoolmandb/filaments");
+  if (fs.existsSync(spoolmanDbPath)) {
+    const { importSpoolmanDbCatalog } = await import("./import-spoolmandb.js");
+    await importSpoolmanDbCatalog(dbPath, spoolmanDbPath);
+  } else {
+    console.log(
+      `SpoolmanDB dataset not found (${spoolmanDbPath}); skipping SpoolmanDB import.`,
+    );
+  }
 }
 
 async function seedFixtures(dbPath?: string) {
